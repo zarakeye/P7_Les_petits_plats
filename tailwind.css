@@ -1,0 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@200..800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: 'anton-font-regular';
+    src: url('./assets/fonts/Anton-Regular.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'manrope-font-regular';
+    src: url('./assets/fonts/Manrope-Regular.ttf') format('truetype');
+  }
+}
