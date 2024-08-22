@@ -1,7 +1,18 @@
 export function Header() {
-  const header = document.createElement('header');
-  header.id= 'header';
-  header.classList.add('flex', 'flex-col', 'items-center', 'justify-center', 'w-full', 'h-96', 'bg-[url("./../../../public/les_petis_plats_Banner.png")]', 'bg-center', 'bg-cover', 'bg-no-repeat');
+  const header = document.createElement('header')
+  header.id = 'header'
+  header.classList.add(
+    'flex',
+    'flex-col',
+    'items-center',
+    'justify-center',
+    'w-full',
+    'h-96',
+    'bg-[url("/les_petis_plats_Banner.png")]',
+    'bg-center',
+    'bg-cover',
+    'bg-no-repeat'
+  )
   header.innerHTML = `
     <h1 id="header__title" aria-label="title" class="text-5xl font-anton" >Les Petis Plats</h1>
     <p id='hero' aria-label="hero">CHERCHER PARMI PLUS DE 1500 RECETTES DU QUOTIDIEN, SIMPLES ET DÉLICIEUSES</p>
@@ -12,7 +23,7 @@ export function Header() {
         <i class="fas fa-search"></i>
       </button>
     </div>
-  `;
+  `
 
-  return header;
+  return header
 }

@@ -6,11 +6,13 @@
   "scripts": {
     "compileCss": "postcss tailwind.css -o src/mon_style.css --watch",
     "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "build": "tsc && vite build && tailwindcss -i tailwind.css -o output.css --minify",
+    "preview": "vite preview",
+    "tailwind:watch": "tailwindcss -i tailwind.css -o output.css --watch"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.41",
     "postcss-cli": "^11.0.0",
     "tailwindcss": "^3.4.10",
     "typescript": "^5.5.3",
