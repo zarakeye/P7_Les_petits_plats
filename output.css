@@ -640,12 +640,12 @@ video {
   margin-right: 3px;
 }
 
-.flex{
-  display: flex;
+.mr-\[15px\]{
+  margin-right: 15px;
 }
 
-.grid{
-  display: grid;
+.flex{
+  display: flex;
 }
 
 .h-\[11px\]{
@@ -680,6 +680,18 @@ video {
   height: 72px;
 }
 
+.h-\[84px\]{
+  height: 84px;
+}
+
+.h-\[731px\]{
+  height: 731px;
+}
+
+.h-\[478px\]{
+  height: 478px;
+}
+
 .w-\[100\%\]{
   width: 100%;
 }
@@ -692,12 +704,12 @@ video {
   width: 18px;
 }
 
-.w-\[380px\]{
-  width: 380px;
+.w-\[30\%\]{
+  width: 30%;
 }
 
-.w-\[50\%\]{
-  width: 50%;
+.w-\[380px\]{
+  width: 380px;
 }
 
 .w-\[52px\]{
@@ -716,8 +728,16 @@ video {
   width: 100%;
 }
 
-.grid-cols-3{
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+.w-\[40\%\]{
+  width: 40%;
+}
+
+.w-\[50\%\]{
+  width: 50%;
+}
+
+.w-\[45\%\]{
+  width: 45%;
 }
 
 .flex-col{
@@ -740,25 +760,16 @@ video {
   justify-content: normal;
 }
 
+.justify-start{
+  justify-content: flex-start;
+}
+
 .justify-center{
   justify-content: center;
 }
 
 .justify-between{
   justify-content: space-between;
-}
-
-.gap-4{
-  gap: 1rem;
-}
-
-.gap-x-\[48px\]{
-  -moz-column-gap: 48px;
-       column-gap: 48px;
-}
-
-.gap-y-\[66px\]{
-  row-gap: 66px;
 }
 
 .gap-x-\[66px\]{
@@ -768,6 +779,10 @@ video {
 
 .gap-y-\[48px\]{
   row-gap: 48px;
+}
+
+.overflow-hidden{
+  overflow: hidden;
 }
 
 .text-wrap{
@@ -794,14 +809,14 @@ video {
   border-radius: 0.75rem;
 }
 
-.rounded-t-\[21px\]{
-  border-top-left-radius: 21px;
-  border-top-right-radius: 21px;
-}
-
 .rounded-b-\[21px\]{
   border-bottom-right-radius: 21px;
   border-bottom-left-radius: 21px;
+}
+
+.rounded-t-\[21px\]{
+  border-top-left-radius: 21px;
+  border-top-right-radius: 21px;
 }
 
 .border-2{
@@ -817,6 +832,11 @@ video {
   border-color: rgb(0 0 0 / var(--tw-border-opacity));
 }
 
+.bg-\[\#E5E5E5\]{
+  --tw-bg-opacity: 1;
+  background-color: rgb(229 229 229 / var(--tw-bg-opacity));
+}
+
 .bg-\[\#FFD15B\]{
   --tw-bg-opacity: 1;
   background-color: rgb(255 209 91 / var(--tw-bg-opacity));
@@ -825,11 +845,6 @@ video {
 .bg-white{
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-}
-
-.bg-\[\#E5E5E5\]{
-  --tw-bg-opacity: 1;
-  background-color: rgb(229 229 229 / var(--tw-bg-opacity));
 }
 
 .bg-\[url\(\"\/les_petis_plats_Banner\.png\"\)\]{
@@ -851,10 +866,6 @@ video {
 .object-cover{
   -o-object-fit: cover;
      object-fit: cover;
-}
-
-.p-4{
-  padding: 1rem;
 }
 
 .p-\[108px\]{
@@ -887,6 +898,10 @@ video {
 
 .pl-\[35px\]{
   padding-left: 35px;
+}
+
+.pr-\[20\%\]{
+  padding-right: 20%;
 }
 
 .pt-\[32px\]{

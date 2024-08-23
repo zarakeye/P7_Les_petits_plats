@@ -7,24 +7,6 @@ const recipesArray = recipes;
 console.log('recipesArray :', recipesArray)
 
 export const HomePage = async () => {
-    
-
-  // const recipes = Array.from(recipesSources).map(
-  //   (recipeSource: any) =>
-  //     new Recipe(
-  //       recipeSource.id,
-  //       recipeSource.image,
-  //       recipeSource.name,
-  //       recipeSource.servings,
-  //       recipeSource.ingredients,
-  //       recipeSource.time,
-  //       recipeSource.description,
-  //       recipeSource.appliance,
-  //       recipeSource.ustensils
-  //     )
-  // )
-
-
   const recipesObjects: Recipe[] = recipesArray.map(
     (recipe: any) => new Recipe(
       recipe.id,
@@ -39,8 +21,6 @@ export const HomePage = async () => {
     )
   )
 
-  // console.log('recipesObjects :', recipesObjects)
-
   const page = document.createElement('div');
   
   const header = Header();
@@ -51,7 +31,15 @@ export const HomePage = async () => {
 
   const recipesSection = document.createElement('section');
   recipesSection.id = 'recipes-section';
-  recipesSection.classList.add('flex', 'flex-wrap', 'justify-between', 'p-[108px]', 'bg-[#E5E5E5]', 'gap-x-[66px]', 'gap-y-[48px]');
+  recipesSection.classList.add(
+    'flex',
+    'flex-wrap',
+    'justify-start',
+    'p-[108px]',
+    'bg-[#E5E5E5]',
+    'gap-x-[66px]',
+    'gap-y-[48px]'
+  );
   main.appendChild(recipesSection);
 
   const cards = recipesObjects.map((recipe: any) => RecipeCard(recipe));
