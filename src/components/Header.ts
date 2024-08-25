@@ -1,3 +1,5 @@
+import{ SearchBar } from '../components/SearchBar.ts'
+
 export function Header() {
   const header = document.createElement('header')
   header.id = 'header'
@@ -28,31 +30,9 @@ export function Header() {
         <div class="w-[11px] h-[11px] bg-white rounded-full border-solid border-2 border-black"></div>
       </div>
     </div>
-    <div id="search" class="relative w-full flex flex-col justify-center items-center" text-center">
-      <p
-        id='hero'
-        aria-label="hero"
-        class="font-anton text-[44px] text-[#FFD15B] w-[80%] text-center">
-        CHERCHER PARMI PLUS DE 1500 RECETTES DU QUOTIDIEN, SIMPLES ET DÉLICIEUSES
-      </p>
-      <!-- A REMPLACER PAR LE COMPOSANT SEARCHBAR QUE JE DOIS IMPLEMENTER
-      <input
-        id="search__input"
-        type="text"
-        aria-label="Champ de recherche d'une recette, d'un ingrédient, etcetera"
-        placeholder="Rechercher une recette, un ingédient, ..."
-        class="w-full h-[72px] rounded-xl pl-[35px] m-0"> -->
-      <button
-        id="search__button"
-        type="submit"
-        class="absolute w-[52px] h-[52px] bg-[#FFD15B] text-white rounded-[10px] right-[10px] bottom-[10px]">
-        <span class='sr-only'>Rechercher</span>
-        <i class="fas fa-search text-[22px] text-white"></i>
-      </button>
-    </div>
-  `
+  `;
 
-
+  header.appendChild(SearchBar());
 
   return header;
 }
