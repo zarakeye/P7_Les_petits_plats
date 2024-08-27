@@ -2,11 +2,14 @@
 export default {
   content: ['./src/**/*.{js,ts,html,css,scss}'],
   theme: {
-    extend: {},
+    extend: {  
+    },
     fontFamily: {
       anton: ['anton-font-regular', 'sans-serif'],
       manrope: ['manrope-font-regular', 'sans-serif'],
     },
   },
-  plugins: [],
+  plugins: [
+    require('tailwind-scrollbar-hide'),
+  ],
 }
