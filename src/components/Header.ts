@@ -66,7 +66,15 @@ export function Header(recipes: any[]) {
     
     const searchTerm = toLowerCase((e.target as HTMLInputElement).value);
 
-    if (searchTerm.length >= 3) {
+    if (searchTerm.length < 3) {
+      const fiterEvent = new CustomEvent('MainFilter', {
+        bubbles: true,
+        detail: {
+          recipes: recipes,
+        },
+      });
+      header.dispatchEvent(fiterEvent);
+    } else {
       for (const recipe of recipes) {
         const recipeName = toLowerCase(recipe.Name);
 
@@ -76,15 +84,17 @@ export function Header(recipes: any[]) {
           matchingRecipes.push(recipe);
         }
       }
+
+      const fiterEvent = new CustomEvent('MainFilter', {
+        bubbles: true,
+        detail: {
+          recipes: matchingRecipes,
+        },
+      });
+      header.dispatchEvent(fiterEvent);
     }
 
-    const fiterEvent = new CustomEvent('MainFilter', {
-      bubbles: true,
-      detail: {
-        recipes: matchingRecipes,
-      },
-    });
-    header.dispatchEvent(fiterEvent);
+    
   })
 
   return header;
