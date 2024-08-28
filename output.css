@@ -592,10 +592,6 @@ video {
   bottom: 10px;
 }
 
-.bottom-\[35px\]{
-  bottom: 35px;
-}
-
 .left-\[104px\]{
   left: 104px;
 }
@@ -612,14 +608,6 @@ video {
   right: 37px;
 }
 
-.right-\[90px\]{
-  right: 90px;
-}
-
-.top-\[21px\]{
-  top: 21px;
-}
-
 .top-\[26px\]{
   top: 26px;
 }
@@ -628,16 +616,16 @@ video {
   top: 51px;
 }
 
-.top-\[-21px\]{
-  top: -21px;
+.right-\[20px\]{
+  right: 20px;
 }
 
-.top-\[0px\]{
-  top: 0px;
+.top-\[50\%\]{
+  top: 50%;
 }
 
-.top-\[px\]{
-  top: px;
+.right-\[5px\]{
+  right: 5px;
 }
 
 .z-\[1\]{
@@ -688,16 +676,16 @@ video {
   display: flex;
 }
 
-.hidden{
-  display: none;
+.grid{
+  display: grid;
 }
 
 .h-\[11px\]{
   height: 11px;
 }
 
-.h-\[13px\]{
-  height: 13px;
+.h-\[132px\]{
+  height: 132px;
 }
 
 .h-\[18px\]{
@@ -718,10 +706,6 @@ video {
 
 .h-\[26px\]{
   height: 26px;
-}
-
-.h-\[28px\]{
-  height: 28px;
 }
 
 .h-\[315px\]{
@@ -756,8 +740,8 @@ video {
   height: 84px;
 }
 
-.h-\[132px\]{
-  height: 132px;
+.h-full{
+  height: 100%;
 }
 
 .w-\[11px\]{
@@ -766,10 +750,6 @@ video {
 
 .w-\[120px\]{
   width: 120px;
-}
-
-.w-\[13px\]{
-  width: 13px;
 }
 
 .w-\[163px\]{
@@ -782,10 +762,6 @@ video {
 
 .w-\[195px\]{
   width: 195px;
-}
-
-.w-\[28px\]{
-  width: 28px;
 }
 
 .w-\[380px\]{
@@ -812,6 +788,27 @@ video {
   width: 100%;
 }
 
+.translate-y-\[-50\%\]{
+  --tw-translate-y: -50%;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.auto-cols-\[minmax\(380px\2c 1fr\)\]{
+  grid-auto-columns: minmax(380px,1fr);
+}
+
+.auto-cols-\[minmax\(380px\2c 3fr\)\]{
+  grid-auto-columns: minmax(380px,3fr);
+}
+
+.grid-cols-3{
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.grid-cols-4{
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .flex-row{
   flex-direction: row;
 }
@@ -822,6 +819,14 @@ video {
 
 .flex-wrap{
   flex-wrap: wrap;
+}
+
+.content-start{
+  align-content: flex-start;
+}
+
+.items-start{
+  align-items: flex-start;
 }
 
 .items-center{
@@ -836,12 +841,36 @@ video {
   justify-content: normal;
 }
 
+.justify-start{
+  justify-content: flex-start;
+}
+
 .justify-center{
   justify-content: center;
 }
 
 .justify-between{
   justify-content: space-between;
+}
+
+.justify-around{
+  justify-content: space-around;
+}
+
+.justify-evenly{
+  justify-content: space-evenly;
+}
+
+.justify-items-start{
+  justify-items: start;
+}
+
+.justify-items-center{
+  justify-items: center;
+}
+
+.justify-items-stretch{
+  justify-items: stretch;
 }
 
 .gap-\[13px\]{
@@ -852,8 +881,17 @@ video {
   gap: 66px;
 }
 
+.gap-x-\[48px\]{
+  -moz-column-gap: 48px;
+       column-gap: 48px;
+}
+
 .gap-y-\[48px\]{
   row-gap: 48px;
+}
+
+.justify-self-start{
+  justify-self: start;
 }
 
 .overflow-hidden{
@@ -862,10 +900,6 @@ video {
 
 .overflow-y-auto{
   overflow-y: auto;
-}
-
-.overscroll-contain{
-  overscroll-behavior: contain;
 }
 
 .overscroll-y-contain{
@@ -937,11 +971,6 @@ video {
   background-color: rgb(229 229 229 / var(--tw-bg-opacity));
 }
 
-.bg-\[\#FAFAFA\]{
-  --tw-bg-opacity: 1;
-  background-color: rgb(250 250 250 / var(--tw-bg-opacity));
-}
-
 .bg-\[\#FFD15B\]{
   --tw-bg-opacity: 1;
   background-color: rgb(255 209 91 / var(--tw-bg-opacity));
@@ -955,6 +984,11 @@ video {
 .bg-white{
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
+.bg-\[\#7A7A7A\]{
+  --tw-bg-opacity: 1;
+  background-color: rgb(122 122 122 / var(--tw-bg-opacity));
 }
 
 .bg-\[url\(\"\/les_petis_plats_Banner\.png\"\)\]{
@@ -980,6 +1014,11 @@ video {
 
 .p-\[108px\]{
   padding: 108px;
+}
+
+.px-\[108px\]{
+  padding-left: 108px;
+  padding-right: 108px;
 }
 
 .px-\[15px\]{
@@ -1012,11 +1051,6 @@ video {
   padding-bottom: 5px;
 }
 
-.px-\[108px\]{
-  padding-left: 108px;
-  padding-right: 108px;
-}
-
 .pb-\[61px\]{
   padding-bottom: 61px;
 }
@@ -1025,12 +1059,16 @@ video {
   padding-left: 35px;
 }
 
-.pt-\[32px\]{
-  padding-top: 32px;
+.pr-\[70px\]{
+  padding-right: 70px;
 }
 
 .pt-\[21px\]{
   padding-top: 21px;
+}
+
+.pt-\[32px\]{
+  padding-top: 32px;
 }
 
 .text-center{
@@ -1076,10 +1114,6 @@ video {
 
 .text-\[21px\]{
   font-size: 21px;
-}
-
-.text-\[22px\]{
-  font-size: 22px;
 }
 
 .text-\[44px\]{

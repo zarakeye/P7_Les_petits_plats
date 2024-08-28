@@ -6,7 +6,6 @@ import { FiltersSection } from '../components/FiltersSection.ts';
 import { recipeFactory } from '../factory/recipe.factory.ts';
 
 const recipesArray = recipes;
-console.log('recipesArray :', recipesArray)
 
 export const HomePage = async () => {
   const recipesObjects: Recipe[] = recipesArray.map(
@@ -34,30 +33,51 @@ export const HomePage = async () => {
   const recipesSection = document.createElement('section');
   recipesSection.id = 'recipes-section';
   recipesSection.classList.add(
-    'flex',
-    'flex-wrap',
-    'justify-between',
+    'grid',
+    'grid-cols-4',
+    'content-start',
+    'justify-items-center',
     'p-[108px]',
     'bg-[#E5E5E5]',
+    'gap-x-[48px]',
     'gap-y-[48px]'
   );
-  
 
-  const cards = recipesObjects.map((recipe: any) => RecipeCard(recipe));
-  cards.map((card: any) => recipesSection.appendChild(card));
-
-  
-
-  const setOfIngredients = recipeFactory.setOf(recipesObjects, 'ingredients');
-  console.log('setOfIngredients :', setOfIngredients);
-  const setOfAppliances = recipeFactory.setOf(recipesObjects, 'appliance');
-  console.log('setOfAppliances :', setOfAppliances);
-  const setOfUstencils = recipeFactory.setOf(recipesObjects, 'ustensils');
-  console.log('setOfUstencils :', setOfUstencils);
-  
-  const filtersSection = FiltersSection(recipesObjects, ['ingredients', 'appliance', 'ustensils']);
+  for (const obj of recipesObjects) {
+    recipesSection.appendChild(RecipeCard(obj));
+  }
+  const advancedFilters = ['ingredients', 'appliance', 'ustensils'];
+  let filtersSection = FiltersSection(recipesObjects, advancedFilters);
   main.appendChild(filtersSection);
   
   main.appendChild(recipesSection);
+
+  document.addEventListener('MainFilter', (e: any) => {
+    const matchingRecipes = e.detail.recipes;
+    recipesSection.innerHTML = '';
+    for (const obj of matchingRecipes) {
+      recipesSection.appendChild(RecipeCard(obj));
+    }
+
+    for (const filter of advancedFilters) {
+      const set = recipeFactory.setOf(matchingRecipes, filter);
+      
+      const listmenu = document.querySelector(`#${filter}__items`);
+      listmenu && (listmenu.innerHTML = '');
+      
+      if (set) {
+        for(const item of set) {
+          const li = document.createElement('li');
+          li.id = `filter-list__item-${item}`;
+          li.classList.add(
+            'text-[14px]',
+            'bg-white'
+          );
+          li.textContent = item;
+          listmenu?.appendChild(li);
+        }
+      }
+    }
+  })
   return page;
 }

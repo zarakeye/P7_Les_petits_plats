@@ -1,22 +1,23 @@
 import { Recipe } from '../models/recipe.model';
 import { recipeFactory } from '../factory/recipe.factory';
+import { SearchBar } from './SearchBar';
 
 export function FilterList(recipes: Recipe[], filterRule: string) {
   let set:any = [];
-
+  let titleRule = '';
   switch (filterRule) {
     case 'ingredients':
-      filterRule = 'Ingrédients';
+      titleRule = 'Ingrédients';
       set = recipeFactory.setOf(recipes, 'ingredients');
       break;
 
     case 'appliance':
-      filterRule = 'Appareil';
+      titleRule = 'Appareil';
       set = recipeFactory.setOf(recipes, 'appliance');
       break;
 
     case 'ustensils':
-      filterRule = 'Ustensiles';
+      titleRule = 'Ustensiles';
       set = recipeFactory.setOf(recipes, 'ustensils');
       break;
   }
@@ -36,8 +37,26 @@ export function FilterList(recipes: Recipe[], filterRule: string) {
 
   itemsList = itemsList.join('');
 
+  const searchBar = SearchBar(set);
+  searchBar.classList.add(
+    'mb-[24px]',
+    'w-[163px]',
+    'h-[36px]',
+    'border',
+    'border-[#7A7A7A]',
+  );
+  const input = searchBar.querySelector('input');
+  input?.classList.add('w-full', 'h-full', 'text-[16px]');
+
+  const searchButton = searchBar.querySelector('button');
+  searchButton?.classList.add(
+    'right-[5px]',
+    'top-[50%]',
+    'translate-y-[-50%]',
+  );
+
   const filterList = document.createElement('aside');
-  filterList.id = 'filter-list';
+  filterList.id = `${filterRule}__list`;
   filterList.classList.add(
     'w-[195px]',
     'h-[315px]',
@@ -51,21 +70,18 @@ export function FilterList(recipes: Recipe[], filterRule: string) {
     <header
       class="flex flex-row justify-between items-center text-[16px] font-bold mb-[14px]"
     >
-      <h2>${filterRule}</h2>
+      <h2>${titleRule}</h2>
       <button type="button">
         <i class="fa fa-chevron-up" aria-hidden="true"></i>
       </button>
     </header>
-    <input
-      type="text"
-      class="w-[163px] h-[36px] border border-[#7A7A7A] mb-[24px]"
-      name="filter-list__item-1"
-      id="filter-list__item-1"
-    >
-    <ul class="flex flex-col justify-between w-[120px] h-[202px] gap-[13px] overscroll-y-contain overflow-y-auto scrollbar-hide">
+    <ul id="${filterRule}__items" class="flex flex-col w-[120px] h-[202px] gap-[13px] overscroll-y-contain overflow-y-auto scrollbar-hide">
       ${itemsList}
     </ul>
   `;
+
+  const header = filterList.querySelector('header');
+  header?.insertAdjacentElement('afterend', searchBar);
 
   return filterList;
 }

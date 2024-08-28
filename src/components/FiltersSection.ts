@@ -27,7 +27,11 @@ export function FiltersSection(recipes: Recipe[], filterRules: any[]) {
   `;
   
   const filtersList = filtersSection.querySelector('#filters-list');
-  filterLists.map((filterList: any) => filtersList?.appendChild(filterList));
+  // filterLists.map((filterList: any) => filtersList?.appendChild(filterList));
+
+  for (const filter of filterLists) {
+    filtersList?.appendChild(filter);
+  }
 
   return filtersSection;
 }
