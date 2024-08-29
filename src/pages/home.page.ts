@@ -1,6 +1,6 @@
 import { FilterRule } from '../components/FilterList.ts'
 import { FiltersSection } from '../components/FiltersSection.ts'
-import { Header } from '../components/Header.ts'
+import { Header, SearchbarEvent } from '../components/Header.ts'
 import { RecipeCard } from '../components/RecipeCard.ts'
 import { recipes } from '../data/recipes.ts'
 import { recipeFactory } from '../factory/recipe.factory.ts'
@@ -54,7 +54,7 @@ export const HomePage = async () => {
 
   main.appendChild(recipesSection)
 
-  document.addEventListener('MainFilter', (e: any) => {
+  document.addEventListener(SearchbarEvent, (e: any) => {
     const matchingRecipes = e.detail.recipes
     recipesSection.innerHTML = ''
 

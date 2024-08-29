@@ -1,6 +1,8 @@
 import { SearchBar } from '../components/SearchBar.ts'
-import { toLowerCase } from '../helpers'
+import { createEventAndDispatch, toLowerCase } from '../helpers'
 import { Recipe } from '../models/recipe.model'
+
+export const SearchbarEvent = 'searchbar-event'
 
 export function Header(recipes: Recipe[]) {
   const header = document.createElement('header')
@@ -77,15 +79,7 @@ export function Header(recipes: Recipe[]) {
 
     const searchTerm = toLowerCase((e.target as HTMLInputElement).value)
 
-    if (searchTerm.length < 3) {
-      const fiterEvent = new CustomEvent('MainFilter', {
-        bubbles: true,
-        detail: {
-          recipes: recipes,
-        },
-      })
-      header.dispatchEvent(fiterEvent)
-    } else {
+    if (searchTerm.length > 3) {
       for (const recipe of recipes) {
         const recipeName = toLowerCase(recipe.name)
 
@@ -101,13 +95,9 @@ export function Header(recipes: Recipe[]) {
         }
       }
 
-      const fiterEvent = new CustomEvent('MainFilter', {
-        bubbles: true,
-        detail: {
-          recipes: matchingRecipes,
-        },
-      })
-      header.dispatchEvent(fiterEvent)
+      createEventAndDispatch(header, SearchbarEvent, matchingRecipes)
+    } else {
+      createEventAndDispatch(header, SearchbarEvent, recipes)
     }
   })
 

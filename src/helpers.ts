@@ -59,3 +59,13 @@ export function toLowerCase(str: string): string {
   str = charArray.join(' ')
   return str
 }
+
+export function createEventAndDispatch(element: Node, event: string, data: any) {
+  const customEvent = new CustomEvent(event, {
+    bubbles: true,
+    detail: {
+      data: data,
+    },
+  })
+  element.dispatchEvent(customEvent)
+}
