@@ -1,8 +1,8 @@
-import { SearchBar } from '../components/SearchBar.ts';
-import { Recipe } from '../models/recipe.model';
-import { toLowerCase } from '../helpers';
+import { SearchBar } from '../components/SearchBar.ts'
+import { toLowerCase } from '../helpers'
+import { Recipe } from '../models/recipe.model'
 
-export function Header(recipes: any[]) {
+export function Header(recipes: Recipe[]) {
   const header = document.createElement('header')
   header.id = 'header'
   header.classList.add(
@@ -17,9 +17,9 @@ export function Header(recipes: any[]) {
     'bg-center',
     'bg-cover',
     'bg-no-repeat',
-    'px-[200px]',
+    'px-[200px]'
   )
-  
+
   header.innerHTML = `
     <div
       id="header__top"
@@ -47,24 +47,35 @@ export function Header(recipes: any[]) {
         CHERCHER PARMI PLUS DE 1500 RECETTES DU QUOTIDIEN, SIMPLES ET DÉLICIEUSES
       </p>
     </div>
-  `;
+  `
 
-  const searchBar = SearchBar(recipes);
-  const headerMiddle = header.querySelector('#header__middle') as HTMLDivElement;
-  headerMiddle.appendChild(searchBar);
-  
-  const searchInput = searchBar.querySelector('input') as HTMLInputElement;
-  searchInput.classList.add('h-[72px]', 'rounded-xl', 'pl-[35px]', 'pr-[70px]');
-  searchInput.setAttribute('placeholder', 'Rechercher une recette, un ingrédient, ...');
-  searchInput.setAttribute('aria-label', "Champ de recherche d'une recette, d'un ingrédient, etcetera");
+  const searchBar = SearchBar()
+  const headerMiddle = header.querySelector('#header__middle') as HTMLDivElement
+  headerMiddle.appendChild(searchBar)
 
-  const searchButton = header.querySelector('[type="submit"]') as HTMLButtonElement;
-  searchButton.classList.add('w-[52px]', 'h-[52px]', 'bg-black', 'text-white', 'rounded-[10px]', 'right-[10px]', 'bottom-[10px]');
+  const searchInput = searchBar.querySelector('input') as HTMLInputElement
+  searchInput.classList.add('h-[72px]', 'rounded-xl', 'pl-[35px]', 'pr-[70px]')
+  searchInput.setAttribute('placeholder', 'Rechercher une recette, un ingrédient, ...')
+  searchInput.setAttribute(
+    'aria-label',
+    "Champ de recherche d'une recette, d'un ingrédient, etcetera"
+  )
+
+  const searchButton = header.querySelector('[type="submit"]') as HTMLButtonElement
+  searchButton.classList.add(
+    'w-[52px]',
+    'h-[52px]',
+    'bg-black',
+    'text-white',
+    'rounded-[10px]',
+    'right-[10px]',
+    'bottom-[10px]'
+  )
 
   searchInput.addEventListener('input', (e) => {
-    let matchingRecipes: Recipe[] = [];
-    
-    const searchTerm = toLowerCase((e.target as HTMLInputElement).value);
+    let matchingRecipes: Recipe[] = []
+
+    const searchTerm = toLowerCase((e.target as HTMLInputElement).value)
 
     if (searchTerm.length < 3) {
       const fiterEvent = new CustomEvent('MainFilter', {
@@ -72,16 +83,21 @@ export function Header(recipes: any[]) {
         detail: {
           recipes: recipes,
         },
-      });
-      header.dispatchEvent(fiterEvent);
+      })
+      header.dispatchEvent(fiterEvent)
     } else {
       for (const recipe of recipes) {
-        const recipeName = toLowerCase(recipe.Name);
+        const recipeName = toLowerCase(recipe.name)
 
-        if ((recipeName.includes(searchTerm) && !matchingRecipes.includes(recipe)) ||
-          (recipe.Ingredients.some((ingredient: any) => toLowerCase(ingredient.ingredient).includes(searchTerm)) && !matchingRecipes.includes(recipe)) ||
-          (recipe.Description.includes(searchTerm) && !matchingRecipes.includes(recipe))) {
-          matchingRecipes.push(recipe);
+        if (
+          (recipeName.includes(searchTerm) && !matchingRecipes.includes(recipe)) ||
+          (recipe.ingredients.some((ingredient) =>
+            toLowerCase(ingredient.ingredient).includes(searchTerm)
+          ) &&
+            !matchingRecipes.includes(recipe)) ||
+          (recipe.description.includes(searchTerm) && !matchingRecipes.includes(recipe))
+        ) {
+          matchingRecipes.push(recipe)
         }
       }
 
@@ -90,12 +106,10 @@ export function Header(recipes: any[]) {
         detail: {
           recipes: matchingRecipes,
         },
-      });
-      header.dispatchEvent(fiterEvent);
+      })
+      header.dispatchEvent(fiterEvent)
     }
-
-    
   })
 
-  return header;
+  return header
 }

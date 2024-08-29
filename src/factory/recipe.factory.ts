@@ -1,8 +1,8 @@
-import { Recipe } from '../models/recipe.model';
-import { capitalizeFirstLetter, deleteNoneFirstOccurrence } from '../helpers';
+import { FilterRule } from '../components/FilterList'
+import { capitalizeFirstLetter, deleteNoneFirstOccurrence } from '../helpers'
+import { Recipe } from '../models/recipe.model'
 
 export const recipeFactory = {
-
   /**
    * Returns an array of ingredients for a given recipe.
    *
@@ -10,69 +10,61 @@ export const recipeFactory = {
    * @return {string[]} An array of ingredient names.
    */
   recipeIngredients: (recipe: Recipe): string[] => {
-    const ingredients: string[] = [];
+    const ingredients: string[] = []
 
-    for (const ingredient of recipe.Ingredients) {
-      ingredients.push(ingredient.ingredient);
+    for (const ingredient of recipe.ingredients) {
+      ingredients.push(ingredient.ingredient)
     }
 
-    return ingredients;
+    return ingredients
   },
-  
+
   /**
    * Returns an array of unique ingredients from an array of recipes.
    *
    * @param {Recipe[]} recipes - An array of recipe objects.
    * @return {string[]} An array of unique ingredient names.
    */
-  setOf: (recipes: Recipe[], filter: string) => {
-    let set: string[] = [];
+  setOf: (recipes: Recipe[], filter: FilterRule) => {
+    let set: string[] = []
 
     switch (filter) {
       case 'ingredients':
-        let ingredients: string[] = [];
+        let ingredients: string[] = []
         for (const recipe of recipes) {
-          for (const ingredient of recipe.Ingredients) {
-            ingredients.push(ingredient.ingredient);
+          for (const ingredient of recipe.ingredients) {
+            ingredients.push(capitalizeFirstLetter(ingredient.ingredient))
           }
         }
 
-        for (let ingredient of ingredients) {
-          ingredient = capitalizeFirstLetter(ingredient);
-        }
-
-        set = deleteNoneFirstOccurrence(ingredients);
-        return set;
+        set = deleteNoneFirstOccurrence(ingredients)
+        return set
 
       case 'appliance':
-        let appliances: string[] = [];
+        let appliances: string[] = []
         for (const recipe of recipes) {
-          appliances.push(recipe.Appliance);
+          appliances.push(capitalizeFirstLetter(recipe.appliance))
         }
 
-        for (let appliance of appliances) {
-          appliance = capitalizeFirstLetter(appliance);
-        }
-
-        set = deleteNoneFirstOccurrence(appliances);
-        return set;
+        set = deleteNoneFirstOccurrence(appliances)
+        return set
       case 'ustensils':
-        let ustensils: string[] = [];
+        let ustensils: string[] = []
         for (const recipe of recipes) {
-          for (const ustensil of recipe.Ustensils) {
-            ustensils.push(ustensil);
+          for (const ustensil of recipe.ustensils) {
+            ustensils.push(ustensil)
           }
         }
 
-        let capitalized: string[] = [];
+        let capitalized: string[] = []
         for (let ustensil of ustensils) {
-          capitalized.push(capitalizeFirstLetter(ustensil));
+          capitalized.push(capitalizeFirstLetter(ustensil))
         }
 
-        set = deleteNoneFirstOccurrence(capitalized);
-        return set;
+        set = deleteNoneFirstOccurrence(capitalized)
+        return set
       default:
-        console.log('Filter not found');
+        console.log('Filter not found')
     }
   },
 }

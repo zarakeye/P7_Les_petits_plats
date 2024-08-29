@@ -1,9 +1,6 @@
-export function SearchBar(args: any[]) {
-  const searchComponent = document.createElement('div');
-  searchComponent.classList.add(
-    'relative',
-    'w-full',
-  )
+export function SearchBar() {
+  const searchComponent = document.createElement('div')
+  searchComponent.classList.add('relative', 'w-full')
   searchComponent.innerHTML = `
     <input
       type="search"
@@ -19,7 +16,7 @@ export function SearchBar(args: any[]) {
         <i class="fa fa-search"></i>
       </span>
     </button>
-  `;
+  `
 
-  return searchComponent;
+  return searchComponent
 }

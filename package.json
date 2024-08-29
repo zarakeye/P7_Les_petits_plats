@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "tsc && vite build && tailwindcss -i tailwind.css -o output.css --minify",
     "preview": "vite preview",
-    "tailwind:watch": "tailwindcss -i tailwind.css -o output.css --watch"
+    "tailwind:watch": "tailwindcss -i tailwind.css -o output.css --watch",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
