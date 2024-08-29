@@ -55,8 +55,11 @@ export const HomePage = async () => {
   document.addEventListener('MainFilter', (e: any) => {
     const matchingRecipes = e.detail.recipes;
     recipesSection.innerHTML = '';
-    for (const obj of matchingRecipes) {
-      recipesSection.appendChild(RecipeCard(obj));
+
+    if (matchingRecipes != recipesObjects) {
+      for (const obj of matchingRecipes) {
+        recipesSection.appendChild(RecipeCard(obj));
+      }
     }
 
     for (const filter of advancedFilters) {

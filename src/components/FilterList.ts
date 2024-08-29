@@ -1,6 +1,7 @@
 import { Recipe } from '../models/recipe.model';
 import { recipeFactory } from '../factory/recipe.factory';
 import { SearchBar } from './SearchBar';
+import { toLowerCase } from '../helpers';
 
 export function FilterList(recipes: Recipe[], filterRule: string) {
   let set:any = [];
@@ -82,6 +83,18 @@ export function FilterList(recipes: Recipe[], filterRule: string) {
 
   const header = filterList.querySelector('header');
   header?.insertAdjacentElement('afterend', searchBar);
+
+  const inputElement = filterList.querySelector('input');
+  inputElement?.addEventListener('input', (e: any) => {
+    const items = filterList.querySelectorAll('li');
+    for (const item of items) {
+      if (item.textContent && toLowerCase(item.textContent).includes(toLowerCase(e.target.value))) {
+        item.style.display = 'block';
+      } else {
+        item.style.display = 'none';
+      }
+    }
+  });
 
   return filterList;
 }

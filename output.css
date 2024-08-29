@@ -608,24 +608,20 @@ video {
   right: 37px;
 }
 
+.right-\[5px\]{
+  right: 5px;
+}
+
 .top-\[26px\]{
   top: 26px;
-}
-
-.top-\[51px\]{
-  top: 51px;
-}
-
-.right-\[20px\]{
-  right: 20px;
 }
 
 .top-\[50\%\]{
   top: 50%;
 }
 
-.right-\[5px\]{
-  right: 5px;
+.top-\[51px\]{
+  top: 51px;
 }
 
 .z-\[1\]{
@@ -666,6 +662,10 @@ video {
 
 .mr-\[3px\]{
   margin-right: 3px;
+}
+
+.block{
+  display: block;
 }
 
 .inline-block{
@@ -793,18 +793,6 @@ video {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
-.auto-cols-\[minmax\(380px\2c 1fr\)\]{
-  grid-auto-columns: minmax(380px,1fr);
-}
-
-.auto-cols-\[minmax\(380px\2c 3fr\)\]{
-  grid-auto-columns: minmax(380px,3fr);
-}
-
-.grid-cols-3{
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
 .grid-cols-4{
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
@@ -825,10 +813,6 @@ video {
   align-content: flex-start;
 }
 
-.items-start{
-  align-items: flex-start;
-}
-
 .items-center{
   align-items: center;
 }
@@ -841,10 +825,6 @@ video {
   justify-content: normal;
 }
 
-.justify-start{
-  justify-content: flex-start;
-}
-
 .justify-center{
   justify-content: center;
 }
@@ -853,24 +833,8 @@ video {
   justify-content: space-between;
 }
 
-.justify-around{
-  justify-content: space-around;
-}
-
-.justify-evenly{
-  justify-content: space-evenly;
-}
-
-.justify-items-start{
-  justify-items: start;
-}
-
 .justify-items-center{
   justify-items: center;
-}
-
-.justify-items-stretch{
-  justify-items: stretch;
 }
 
 .gap-\[13px\]{
@@ -888,10 +852,6 @@ video {
 
 .gap-y-\[48px\]{
   row-gap: 48px;
-}
-
-.justify-self-start{
-  justify-self: start;
 }
 
 .overflow-hidden{
@@ -984,11 +944,6 @@ video {
 .bg-white{
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-}
-
-.bg-\[\#7A7A7A\]{
-  --tw-bg-opacity: 1;
-  background-color: rgb(122 122 122 / var(--tw-bg-opacity));
 }
 
 .bg-\[url\(\"\/les_petis_plats_Banner\.png\"\)\]{
