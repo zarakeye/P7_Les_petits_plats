@@ -1,6 +1,9 @@
 export function SearchBar() {
-  const searchComponent = document.createElement('div')
-  searchComponent.classList.add('relative', 'w-full')
+  const searchComponent = document.createElement('div');
+  searchComponent.classList.add(
+    'relative',
+    'w-full',
+  )
   searchComponent.innerHTML = `
     <input
       type="search"

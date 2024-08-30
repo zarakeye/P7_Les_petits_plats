@@ -1,9 +1,14 @@
-import { SearchBar } from '../components/SearchBar.ts'
-import { createEventAndDispatch, toLowerCase } from '../helpers'
-import { Recipe } from '../models/recipe.model'
+import { SearchBar } from '../components/SearchBar';
+import { Recipe } from '../models/recipe.model';
+import { createEventAndDispatch } from '../helpers';
 
-export const SearchbarEvent = 'searchbar-event'
+export const SearchbarEvent = 'searchbar-event';
 
+  /**
+   * Creates the header of the page, which includes a search bar.
+   * @param recipes - The array of recipes to be searched.
+   * @returns The header element.
+   */
 export function Header(recipes: Recipe[]) {
   const header = document.createElement('header')
   header.id = 'header'
@@ -75,29 +80,27 @@ export function Header(recipes: Recipe[]) {
   )
 
   searchInput.addEventListener('input', (e) => {
-    let matchingRecipes: Recipe[] = []
+    let matchingRecipes: Recipe[] = [];
+    
+    const searchTerm = (e.target as HTMLInputElement).value.trim().toLowerCase();
 
-    const searchTerm = toLowerCase((e.target as HTMLInputElement).value)
-
-    if (searchTerm.length > 3) {
+    if (searchTerm.length < 3) {
+      createEventAndDispatch(header, SearchbarEvent, recipes);
+      return;
+    } else {
       for (const recipe of recipes) {
-        const recipeName = toLowerCase(recipe.name)
-
-        if (
-          (recipeName.includes(searchTerm) && !matchingRecipes.includes(recipe)) ||
-          (recipe.ingredients.some((ingredient) =>
-            toLowerCase(ingredient.ingredient).includes(searchTerm)
-          ) &&
-            !matchingRecipes.includes(recipe)) ||
-          (recipe.description.includes(searchTerm) && !matchingRecipes.includes(recipe))
-        ) {
-          matchingRecipes.push(recipe)
+        if (!matchingRecipes.includes(recipe)) {
+          if ((recipe.name.trim().toLowerCase().includes(searchTerm) || recipe.description.trim().toLowerCase().includes(searchTerm))) {
+            matchingRecipes.push(recipe);
+          } else for (const ingredient of recipe.ingredients) {
+            if (ingredient.ingredient.trim().toLowerCase().includes(searchTerm)) {
+              matchingRecipes.push(recipe);
+            }
+          }
         }
       }
 
-      createEventAndDispatch(header, SearchbarEvent, matchingRecipes)
-    } else {
-      createEventAndDispatch(header, SearchbarEvent, recipes)
+      createEventAndDispatch(header, SearchbarEvent, matchingRecipes);
     }
   })
 

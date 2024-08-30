@@ -680,6 +680,10 @@ video {
   display: grid;
 }
 
+.hidden{
+  display: none;
+}
+
 .h-\[11px\]{
   height: 11px;
 }
@@ -1026,6 +1030,18 @@ video {
   padding-top: 32px;
 }
 
+.pr-\[15px\]{
+  padding-right: 15px;
+}
+
+.pr-\[20px\]{
+  padding-right: 20px;
+}
+
+.pl-\[5px\]{
+  padding-left: 5px;
+}
+
 .text-center{
   text-align: center;
 }
@@ -1103,6 +1119,10 @@ video {
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
+.\!filter{
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow) !important;
+}
+
 .scrollbar-hide{
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -1110,4 +1130,9 @@ video {
 
 .scrollbar-hide::-webkit-scrollbar{
   display: none;
+}
+
+.focus\:outline-none:focus{
+  outline: 2px solid transparent;
+  outline-offset: 2px;
 }

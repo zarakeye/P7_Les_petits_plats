@@ -1,67 +1,69 @@
-import { recipeFactory } from '../factory/recipe.factory'
-import { toLowerCase } from '../helpers'
-import { Recipe } from '../models/recipe.model'
-import { SearchBar } from './SearchBar'
+import { Recipe } from '../models/recipe.model';
+import { recipeFactory } from '../factory/recipe.factory';
+import { SearchBar } from './SearchBar';
+// import { toLowerCase } from '../helpers';
 
-export type FilterRule = 'ingredients' | 'appliance' | 'ustensils'
+export type FilterRule = 'ingredients' | 'appliance' | 'ustensils';
 
 export function FilterList(recipes: Recipe[], filterRule: FilterRule) {
-  let set: string[] | undefined = []
-  let titleRule = ''
+  let titleRule = '';
   switch (filterRule) {
     case 'ingredients':
-      titleRule = 'Ingrédients'
-      set = recipeFactory.setOf(recipes, 'ingredients')
-      break
+      titleRule = 'Ingrédients';
+      break;
 
     case 'appliance':
-      titleRule = 'Appareil'
-      set = recipeFactory.setOf(recipes, 'appliance')
-      break
+      titleRule = 'Appareil';
+      break;
 
     case 'ustensils':
-      titleRule = 'Ustensiles'
-      set = recipeFactory.setOf(recipes, 'ustensils')
-      break
+      titleRule = 'Ustensiles';
+      break;
   }
 
-  let itemsList: string[] = []
+  let set = recipeFactory.setOf(recipes, filterRule);
 
-  if (!set) {
-    return
-  }
-
-  for (const item of set) {
-    itemsList.push(`
+  let itemsList: string = '';
+  
+  for(const element of set) {
+    itemsList += `
       <li
-        id="filter-list__item-${item}"
+        id="filter-list__item-${element}"
         class="text-[14px] bg-white"
       >
-        ${item}
+        ${element}
       </li>
-    `)
+    `;
   }
 
-  const itemsListString = itemsList.join('')
+  const searchBar = SearchBar();
+  searchBar.classList.add(
+    'mb-[24px]',
+    'w-[163px]',
+    'h-[36px]',
+    'border',
+    'border-[#7A7A7A]',
+  );
+  const input = searchBar.querySelector('input');
+  input?.classList.add('w-full', 'h-full', 'text-[16px]');
 
-  const searchBar = SearchBar()
-  searchBar.classList.add('mb-[24px]', 'w-[163px]', 'h-[36px]', 'border', 'border-[#7A7A7A]')
-  const input = searchBar.querySelector('input')
-  input?.classList.add('w-full', 'h-full', 'text-[16px]')
+  const searchButton = searchBar.querySelector('button');
+  searchButton?.classList.add(
+    'right-[5px]',
+    'top-[50%]',
+    'translate-y-[-50%]',
+  );
 
-  const searchButton = searchBar.querySelector('button')
-  searchButton?.classList.add('right-[5px]', 'top-[50%]', 'translate-y-[-50%]')
-
-  const filterList = document.createElement('aside')
-  filterList.id = `${filterRule}__list`
+  const filterList = document.createElement('aside');
+  filterList.id = `${filterRule}__list`;
   filterList.classList.add(
     'w-[195px]',
     'h-[315px]',
     'bg-white',
     'rounded-[11px]',
     'px-[16px]',
-    'py-[17px]'
-  )
+    'py-[17px]',
+  );
 
   filterList.innerHTML = `
     <header
@@ -73,24 +75,25 @@ export function FilterList(recipes: Recipe[], filterRule: FilterRule) {
       </button>
     </header>
     <ul id="${filterRule}__items" class="flex flex-col w-[120px] h-[202px] gap-[13px] overscroll-y-contain overflow-y-auto scrollbar-hide">
-      ${itemsListString}
+      ${itemsList}
     </ul>
-  `
+  `;
 
-  const header = filterList.querySelector('header')
-  header?.insertAdjacentElement('afterend', searchBar)
+  const header = filterList.querySelector('header');
+  header?.insertAdjacentElement('afterend', searchBar);
 
-  const inputElement = filterList.querySelector('input')
+  const inputElement = filterList.querySelector('input');
   inputElement?.addEventListener('input', (e: any) => {
-    const items = filterList.querySelectorAll('li')
+    const items = filterList.querySelectorAll('li');
     for (const item of items) {
-      if (item.textContent && toLowerCase(item.textContent).includes(toLowerCase(e.target.value))) {
-        item.style.display = 'block'
-      } else {
-        item.style.display = 'none'
-      }
+        // if (item.textContent?.toLowerCase().includes(toLowerCase(e.target.value))) {
+        if (item.textContent?.toLowerCase().includes(e.target.value.trim().toLowerCase())) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
     }
-  })
+  });
 
-  return filterList
+  return filterList;
 }

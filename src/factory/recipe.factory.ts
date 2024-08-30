@@ -1,6 +1,6 @@
-import { FilterRule } from '../components/FilterList'
-import { capitalizeFirstLetter, deleteNoneFirstOccurrence } from '../helpers'
-import { Recipe } from '../models/recipe.model'
+import { Recipe } from '../models/recipe.model';
+import { capitalizeFirstLetter } from '../helpers';
+import { FilterRule } from '../components/FilterList';
 
 export const recipeFactory = {
   /**
@@ -13,7 +13,7 @@ export const recipeFactory = {
     const ingredients: string[] = []
 
     for (const ingredient of recipe.ingredients) {
-      ingredients.push(ingredient.ingredient)
+      ingredients.push(ingredient.ingredient);
     }
 
     return ingredients
@@ -25,46 +25,44 @@ export const recipeFactory = {
    * @param {Recipe[]} recipes - An array of recipe objects.
    * @return {string[]} An array of unique ingredient names.
    */
-  setOf: (recipes: Recipe[], filter: FilterRule) => {
-    let set: string[] = []
+  setOf: (recipes: Recipe[], filter: FilterRule): Set<string> => {
+    const set = new Set<string>();
 
     switch (filter) {
       case 'ingredients':
-        let ingredients: string[] = []
         for (const recipe of recipes) {
           for (const ingredient of recipe.ingredients) {
-            ingredients.push(capitalizeFirstLetter(ingredient.ingredient))
+            if (!set.has(capitalizeFirstLetter(ingredient.ingredient))) {
+              set.add(capitalizeFirstLetter(ingredient.ingredient));
+            }
           }
         }
 
-        set = deleteNoneFirstOccurrence(ingredients)
-        return set
+        break;
 
       case 'appliance':
-        let appliances: string[] = []
         for (const recipe of recipes) {
-          appliances.push(capitalizeFirstLetter(recipe.appliance))
+          if (!set.has(capitalizeFirstLetter(recipe.appliance)))
+          set.add(capitalizeFirstLetter(recipe.appliance));
         }
 
-        set = deleteNoneFirstOccurrence(appliances)
-        return set
+        break;
+
       case 'ustensils':
-        let ustensils: string[] = []
         for (const recipe of recipes) {
           for (const ustensil of recipe.ustensils) {
-            ustensils.push(ustensil)
+            if (!set.has(capitalizeFirstLetter(ustensil))) {
+              set.add(capitalizeFirstLetter(ustensil)); 
+            }
           }
         }
 
-        let capitalized: string[] = []
-        for (let ustensil of ustensils) {
-          capitalized.push(capitalizeFirstLetter(ustensil))
-        }
+        break;
 
-        set = deleteNoneFirstOccurrence(capitalized)
-        return set
       default:
         console.log('Filter not found')
     }
+
+    return set;
   },
 }

@@ -1,10 +1,10 @@
-import { FilterList, FilterRule } from '../components/FilterList.ts'
-import { Recipe } from '../models/recipe.model.ts'
+import { FilterList, FilterRule } from '../components/FilterList';
+import { Recipe } from '../models/recipe.model';
 
 export function FiltersSection(recipes: Recipe[], filterRules: FilterRule[]) {
-  let filterLists = []
-  for (const filterRule of filterRules) {
-    filterLists.push(FilterList(recipes, filterRule))
+  let filterLists = [];
+  for (const filter of filterRules) {
+    filterLists.push(FilterList(recipes, filter));
   }
 
   const filtersSection = document.createElement('section')
@@ -18,13 +18,12 @@ export function FiltersSection(recipes: Recipe[], filterRules: FilterRule[]) {
     >
     </div>
     <p class="font-anton text-[21px] text-right">1500 RECETTES</p>
-  `
+  `;
+  
+  const filtersList = filtersSection.querySelector('#filters-list');
 
-  const filtersList = filtersSection.querySelector('#filters-list')
-
-  for (const filter of filterLists) {
-    if (!filter) continue
-    filtersList?.appendChild(filter)
+  for (let i = 0; i < filterLists.length; i++) {
+    filtersList?.appendChild(filterLists[i]);
   }
 
   return filtersSection
