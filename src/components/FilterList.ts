@@ -1,7 +1,6 @@
 import { Recipe } from '../models/recipe.model';
 import { recipeFactory } from '../factory/recipe.factory';
 import { SearchBar } from './SearchBar';
-// import { toLowerCase } from '../helpers';
 
 export type FilterRule = 'ingredients' | 'appliance' | 'ustensils';
 

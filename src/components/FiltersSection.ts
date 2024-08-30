@@ -2,9 +2,9 @@ import { FilterList, FilterRule } from '../components/FilterList';
 import { Recipe } from '../models/recipe.model';
 
 export function FiltersSection(recipes: Recipe[], filterRules: FilterRule[]) {
-  let filterLists = [];
+  let itemsOfSomeGivenRule = [];
   for (const filter of filterRules) {
-    filterLists.push(FilterList(recipes, filter));
+    itemsOfSomeGivenRule.push(FilterList(recipes, filter));
   }
 
   const filtersSection = document.createElement('section')
@@ -13,17 +13,17 @@ export function FiltersSection(recipes: Recipe[], filterRules: FilterRule[]) {
 
   filtersSection.innerHTML = `
     <div
-      id="filters-list"
+      id="filter-types"
       class="absolute z-[1] flex justify-between w-[195px] h-[56px] gap-[66px] left-[104px] text-[#7A7A7A] font-bold"
     >
     </div>
     <p class="font-anton text-[21px] text-right">1500 RECETTES</p>
   `;
   
-  const filtersList = filtersSection.querySelector('#filters-list');
+  const filterTypesContainer = filtersSection.querySelector('#filter-types');
 
-  for (let i = 0; i < filterLists.length; i++) {
-    filtersList?.appendChild(filterLists[i]);
+  for (const list of itemsOfSomeGivenRule) {
+    filterTypesContainer?.appendChild(list);
   }
 
   return filtersSection
