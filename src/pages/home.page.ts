@@ -3,7 +3,6 @@ import { Recipe } from '../models/recipe.model.ts';
 import { Header, SearchbarEvent } from '../components/Header.ts';
 import { RecipeCard } from '../components/RecipeCard.ts';
 import { FiltersSection } from '../components/FiltersSection.ts';
-import { recipeFactory } from '../factory/recipe.factory.ts';
 import { FilterRule, FilterEvent, CancelFilterEvent } from '../components/FilterList.ts';
 import { Ingredient } from '../models/ingredient.model.ts';
 
@@ -79,8 +78,9 @@ export const HomePage = async () => {
     'justify-center',
     'items-center',
     'text-center',
+    'h-full',
     'text-[21px]',
-    'text-gray'
+    'bg-light-gray'
   );
 
   const advancedFilters: FilterRule[] = ['ingredients', 'appliance', 'ustensils'];
@@ -92,8 +92,6 @@ export const HomePage = async () => {
   document.addEventListener(SearchbarEvent, (e: any) => {
     const matchingRecipes: Recipe[] = e.detail.matchingRecipes;
     const searchTerm = e.detail.searchTerm;
-    console.log('matchingRecipes', matchingRecipes);
-    console.log('searchTerm', searchTerm);
 
     if (matchingRecipes?.length === 0) {
       filtersSection?.remove();
@@ -101,9 +99,9 @@ export const HomePage = async () => {
       for (const card of recipesCards) {
         card.remove();
       }
-      console.log('recipesFound', recipesFound);
+      recipesFound.remove();
       recipesSection.appendChild(noMatchingRecipes);
-      noMatchingRecipes.innerHTML = `<p>Aucune recette ne contient ${searchTerm}</p>`;
+      noMatchingRecipes.innerHTML = `<p class="text-[21px] pt-[30px]">Aucune recette ne contient "${searchTerm}"</p>`;
     } else {
       const filterLists = filtersSection.querySelectorAll('.filter-list');
       for (const filterList of filterLists) {
@@ -115,18 +113,14 @@ export const HomePage = async () => {
       for (const card of recipesCards) {
         card.remove();
       }
-      console.log('searchTerm', searchTerm);
-      console.log('matchingRecipes', matchingRecipes);
+
       filtersSection = FiltersSection(matchingRecipes, advancedFilters);
       recipesSection.insertAdjacentElement('beforebegin', filtersSection);
       noMatchingRecipes?.remove();
       for (const recipe of matchingRecipes) {
         recipesFound.appendChild(RecipeCard(recipe));
       }
-      console.log('recipesFound', recipesFound);
       recipesSection.appendChild(recipesFound);
-
-      //TODO: ajouter les filtres
     }
   });
 
@@ -135,19 +129,15 @@ export const HomePage = async () => {
     recipesBasedOn = e.detail.recipesBasedOn;
     const matchingRecipes = e.detail.matchingRecipes;
     const filter = e.detail.filter;
-    console.log('recipesBasedOn', recipesBasedOn);
-    console.log('matchingRecipes', matchingRecipes);
-    console.log('filter', filter);
 
     const recipesCards = recipesFound.querySelectorAll('.recipe');
     for (const card of recipesCards) {
       card.remove();
     }
-    console.log('recipesFound', recipesFound);
     for (const recipe of matchingRecipes) {
       recipesFound.appendChild(RecipeCard(recipe));
     }
-    console.log('recipesFound', recipesFound);
+
     recipesSection.appendChild(recipesFound);
   });
 
@@ -156,7 +146,6 @@ export const HomePage = async () => {
     for (let filter of activeFiltersRemaining) {
       filter = filter.trim();
     }
-    console.log('activeFiltersRemaining', activeFiltersRemaining);
 
     const matchingRecipes: Recipe[] = [];
     for (const recipe of recipesBasedOn) {
@@ -175,12 +164,10 @@ export const HomePage = async () => {
       }
     }
 
-    console.log('matchingRecipes', matchingRecipes);
     const recipesCards = recipesFound.querySelectorAll('.recipe');
     for (const card of recipesCards) {
       card.remove();
     }
-    console.log('recipesFound', recipesFound);
     if (matchingRecipes.length !== 0) {  
       for (const recipe of matchingRecipes) {
         recipesFound.appendChild(RecipeCard(recipe));
@@ -190,12 +177,7 @@ export const HomePage = async () => {
         recipesFound.appendChild(RecipeCard(recipe));
       }
     }
-    console.log('recipesFound', recipesFound);
     recipesSection.appendChild(recipesFound);
-    
-
-    // for (const filter of activeFiltersRemaining) {
-
   });
 
   return page;

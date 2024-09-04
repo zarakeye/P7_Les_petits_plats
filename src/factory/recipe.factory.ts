@@ -71,15 +71,8 @@ export const recipeFactory = {
 
   filterRecipes: (recipes: Recipe[], filter: string): Recipe[] => {
     const matchingRecipes: Recipe[] = [];
-    // console.log('recipes', recipes);
-    // console.log('filter', filter);
-    // console.log('typeof filter : ', typeof filter);
     for (const recipe of recipes) {
       for (const ingredient of recipe.ingredients) {
-        // console.log('ingredient.ingredient', ingredient.ingredient);
-        // console.log('typeof ingredient.ingredient : ', typeof ingredient.ingredient);
-        // console.log('ingredient.ingredient === filter', ingredient.ingredient === filter);
-        console.log('ingredient.ingredient.valueOf() == filter', ingredient.ingredient.trim().valueOf() == filter.trim().valueOf());
         if (ingredient.ingredient.trim().valueOf() === filter.trim().valueOf()) {
           matchingRecipes.push(recipe);
         }
@@ -93,23 +86,7 @@ export const recipeFactory = {
       if (recipe.appliance.trim().valueOf() == filter.trim().valueOf()) {
         matchingRecipes.push(recipe);
       }
-
-      // console.log('ingredients', ingredients);
-      // console.log('ustensils', ustensils);
-
-      // console.log('ingredients.includes(filter) === ', ingredients.includes(filter));
-      // console.log('typeof ingredients : ', typeof ingredients);
-      // console.log('(recipe.appliance === filter) === ', recipe.appliance === filter);
-      // console.log('typeof recipe.appliance : ', typeof recipe.appliance);
-      // console.log('ustensils.includes(filter) === ', ustensils.includes(filter));
-      // console.log('typeof ustensils : ', typeof ustensils);
-
-
-      // if (ingredients.includes(`${filter}`) || ustensils.includes(filter) || recipe.appliance == filter) {
-      //   matchingRecipes.push(recipe);
-      // }
     }
-    console.log('matchingRecipes', matchingRecipes);
         
     return matchingRecipes;
   }

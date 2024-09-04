@@ -36,11 +36,9 @@ export function Header(recipes: Recipe[]) {
         aria-label="title"
         class="text-2xl font-anton text-white top-[51px] left-[69px] mr-[3px]"
       >
-        Les Petits Plats
+        <span class='sr-only'>Les Petits Plats</span>
+        <img src="Logo.png" alt="Les Petits Plats Logo" class="h-[25px]">
       </h1>
-      <div class="flex justify-center items-center w-[18px] h-[18px] bg-white rounded-full border-solid border-2 border-black mb-[10px]">
-        <div class="w-[11px] h-[11px] bg-white rounded-full border-solid border-2 border-black"></div>
-      </div>
     </div>
     <div
       id="header__middle"

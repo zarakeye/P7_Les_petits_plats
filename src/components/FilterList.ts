@@ -150,49 +150,11 @@ export function FilterList(recipes: Recipe[], filterRule: FilterRule) {
   const items = filterList.querySelectorAll(`.${filterRule}`) as NodeListOf<HTMLLIElement>;
   for (const item of items) {
     item.addEventListener('click', () => {
-      console.log('recipes', recipes);
       if (item.textContent === null) {
         item.textContent = '';
       }
       
-      // switch (filterRule) {
-      //   case 'ingredients':
-      //     for (const recipe of recipes) {
-      //       const ingredients: string[] = [];
-      //       for (const ingredient of recipe.ingredients) {
-      //         ingredients.push(ingredient.ingredient);
-      //       }
-      //       if (ingredients.includes(item.textContent)) {
-      //         matchingRecipes.push(recipe);
-      //       }
-      //     }
-      //     break;
-
-      //   case 'appliance':
-      //     for (const recipe of recipes) {
-      //       if (recipe.appliance === item.textContent) {
-      //         matchingRecipes.push(recipe);
-      //       }
-      //     }
-      //     break;
-
-      //   case 'ustensils':
-      //     for (const recipe of recipes) {
-      //       const ustensils: string[] = [];
-      //       for (const ustensil of recipe.ustensils) {
-      //         ustensils.push(ustensil);
-      //       }
-      //       if (ustensils.includes(item.textContent)) {
-      //         matchingRecipes.push(recipe);
-      //       }
-      //     }
-      //     break;
-      // }
-      // console.log('matchingRecipes', matchingRecipes);
-
-      console.log('item.textContent', item.textContent);
       const matchingRecipes = recipeFactory.filterRecipes(recipes, item.textContent);
-      console.log('matchingRecipes', matchingRecipes);
       createEventAndDispatch(filterList, FilterEvent, {recipesBasedOn: recipes, matchingRecipes: matchingRecipes, filter: item.textContent});
 
       searchBar.classList.remove('mb-[24px]');
