@@ -49,7 +49,7 @@ export function Header(recipes: Recipe[]) {
       <p
         id="hero"
         aria-label="hero"
-        class="font-anton text-[44px] text-[#FFD15B] w-[80%] text-center"
+        class="font-anton text-[44px] text-yellow w-[80%] text-center"
       >
         CHERCHER PARMI PLUS DE 1500 RECETTES DU QUOTIDIEN, SIMPLES ET DÉLICIEUSES
       </p>
@@ -85,7 +85,7 @@ export function Header(recipes: Recipe[]) {
     const searchTerm = (e.target as HTMLInputElement).value.trim().toLowerCase();
 
     if (searchTerm.length < 3) {
-      createEventAndDispatch(header, SearchbarEvent, recipes);
+      createEventAndDispatch(header, SearchbarEvent, {matchingRecipes: recipes});
       return;
     } else {
       for (const recipe of recipes) {
@@ -100,7 +100,7 @@ export function Header(recipes: Recipe[]) {
         }
       }
 
-      createEventAndDispatch(header, SearchbarEvent, matchingRecipes);
+      createEventAndDispatch(header, SearchbarEvent, {searchTerm: searchTerm, matchingRecipes: matchingRecipes});
     }
   })
 

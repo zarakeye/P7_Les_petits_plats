@@ -9,15 +9,15 @@ export function FiltersSection(recipes: Recipe[], filterRules: FilterRule[]) {
 
   const filtersSection = document.createElement('section')
   filtersSection.id = 'filters-section'
-  filtersSection.classList.add('relative', 'bg-[#E5E5E5]', 'h-[132px]', 'pt-[21px]', 'px-[108px]')
+  filtersSection.classList.add('relative', 'flex', 'justify-between','bg-light-gray', 'pt-[21px]', 'px-[108px]')
 
   filtersSection.innerHTML = `
     <div
       id="filter-types"
-      class="absolute z-[1] flex justify-between w-[195px] h-[56px] gap-[66px] left-[104px] text-[#7A7A7A] font-bold"
+      class="flex justify-between w-[669px] gap-[66px] left-[104px] text-gray font-bold"
     >
     </div>
-    <p class="font-anton text-[21px] text-right">1500 RECETTES</p>
+    <p class="font-anton text-[21px] pt-[17px]">1500 RECETTES</p>
   `;
   
   const filterTypesContainer = filtersSection.querySelector('#filter-types');

@@ -28,41 +28,89 @@ export const recipeFactory = {
   setOf: (recipes: Recipe[], filter: FilterRule): Set<string> => {
     const set = new Set<string>();
 
-    switch (filter) {
-      case 'ingredients':
-        for (const recipe of recipes) {
-          for (const ingredient of recipe.ingredients) {
-            if (!set.has(capitalizeFirstLetter(ingredient.ingredient))) {
-              set.add(capitalizeFirstLetter(ingredient.ingredient));
+    if (recipes) {
+      switch (filter) {
+        case 'ingredients':
+          for (const recipe of recipes) {
+            for (const ingredient of recipe.ingredients) {
+              if (!set.has(capitalizeFirstLetter(ingredient.ingredient))) {
+                set.add(capitalizeFirstLetter(ingredient.ingredient));
+              }
             }
           }
-        }
 
-        break;
+          break;
 
-      case 'appliance':
-        for (const recipe of recipes) {
-          if (!set.has(capitalizeFirstLetter(recipe.appliance)))
-          set.add(capitalizeFirstLetter(recipe.appliance));
-        }
+        case 'appliance':
+          for (const recipe of recipes) {
+            if (!set.has(capitalizeFirstLetter(recipe.appliance)))
+            set.add(capitalizeFirstLetter(recipe.appliance));
+          }
 
-        break;
+          break;
 
-      case 'ustensils':
-        for (const recipe of recipes) {
-          for (const ustensil of recipe.ustensils) {
-            if (!set.has(capitalizeFirstLetter(ustensil))) {
-              set.add(capitalizeFirstLetter(ustensil)); 
+        case 'ustensils':
+          for (const recipe of recipes) {
+            for (const ustensil of recipe.ustensils) {
+              if (!set.has(capitalizeFirstLetter(ustensil))) {
+                set.add(capitalizeFirstLetter(ustensil)); 
+              }
             }
           }
-        }
 
-        break;
+          break;
 
-      default:
-        console.log('Filter not found')
+        default:
+          console.log('Filter not found')
+      }
     }
+      
 
     return set;
   },
+
+  filterRecipes: (recipes: Recipe[], filter: string): Recipe[] => {
+    const matchingRecipes: Recipe[] = [];
+    // console.log('recipes', recipes);
+    // console.log('filter', filter);
+    // console.log('typeof filter : ', typeof filter);
+    for (const recipe of recipes) {
+      for (const ingredient of recipe.ingredients) {
+        // console.log('ingredient.ingredient', ingredient.ingredient);
+        // console.log('typeof ingredient.ingredient : ', typeof ingredient.ingredient);
+        // console.log('ingredient.ingredient === filter', ingredient.ingredient === filter);
+        console.log('ingredient.ingredient.valueOf() == filter', ingredient.ingredient.trim().valueOf() == filter.trim().valueOf());
+        if (ingredient.ingredient.trim().valueOf() === filter.trim().valueOf()) {
+          matchingRecipes.push(recipe);
+        }
+      }
+      for (const ustensil of recipe.ustensils) {
+        if (ustensil.trim().valueOf() == filter.trim().valueOf()) {
+          matchingRecipes.push(recipe);
+        }
+      }
+
+      if (recipe.appliance.trim().valueOf() == filter.trim().valueOf()) {
+        matchingRecipes.push(recipe);
+      }
+
+      // console.log('ingredients', ingredients);
+      // console.log('ustensils', ustensils);
+
+      // console.log('ingredients.includes(filter) === ', ingredients.includes(filter));
+      // console.log('typeof ingredients : ', typeof ingredients);
+      // console.log('(recipe.appliance === filter) === ', recipe.appliance === filter);
+      // console.log('typeof recipe.appliance : ', typeof recipe.appliance);
+      // console.log('ustensils.includes(filter) === ', ustensils.includes(filter));
+      // console.log('typeof ustensils : ', typeof ustensils);
+
+
+      // if (ingredients.includes(`${filter}`) || ustensils.includes(filter) || recipe.appliance == filter) {
+      //   matchingRecipes.push(recipe);
+      // }
+    }
+    console.log('matchingRecipes', matchingRecipes);
+        
+    return matchingRecipes;
+  }
 }
