@@ -5,8 +5,9 @@ import { createEventAndDispatch } from '../helpers';
 
 export type FilterRule = 'ingredients' | 'appliance' | 'ustensils';
 export const FilterEvent = 'filter-event';
+export const CancelFilterEvent = 'cancel-filter-event';
 
-export function FilterList(recipes: Recipe[], filterRule: FilterRule): Node {
+export function FilterList(recipes: Recipe[], filterRule: FilterRule) {
   let titleRule = '';
   switch (filterRule) {
     case 'ingredients':
@@ -203,7 +204,7 @@ export function FilterList(recipes: Recipe[], filterRule: FilterRule): Node {
       activeItem.classList.add(`active-${filterRule}`, 'relative', 'text-[14px]', 'text-center', 'bg-yellow', 'text-gray');
       activeItem.innerHTML = `
         <p
-          class="text-[14px] text-left px-[16px] py-[9px] mb-px"
+          class="active-item text-[14px] text-left px-[16px] py-[9px] mb-px"
           aria-label="filtre ${item.textContent} actif"
         >
           ${item.textContent}
@@ -229,7 +230,7 @@ export function FilterList(recipes: Recipe[], filterRule: FilterRule): Node {
       
 
       //---------------
-      activeItem.addEventListener('click', () => {
+      activeItem.addEventListener('click', (e) => {
         item.classList.remove('hidden');
         activeItem.remove();
         filterButton.remove();
@@ -238,9 +239,18 @@ export function FilterList(recipes: Recipe[], filterRule: FilterRule): Node {
           searchBar.classList.add('mb-[24px]');
           itemsUL?.classList.remove('mt-[20px]');
         }
+
+        const activeItemsContents = filterList.querySelectorAll(`.active-item`);
+        const activeFiltersRemaining: string[] = [];
+        for (const active of activeItemsContents) {
+          if (active !== e.target && active.textContent !== null) {
+            activeFiltersRemaining.push(active.textContent.trim());
+          }
+        }
+        createEventAndDispatch(filterList, CancelFilterEvent, {activeFiltersRemaining: activeFiltersRemaining});
       });
 
-      filterButton.addEventListener('click', () => {
+      filterButton.addEventListener('click', (e) => {
         item.classList.remove('hidden');
         activeItem.remove();
         filterButton.remove();
@@ -249,6 +259,15 @@ export function FilterList(recipes: Recipe[], filterRule: FilterRule): Node {
           searchBar.classList.add('mb-[24px]');
           itemsUL?.classList.remove('mt-[20px]');
         }
+
+        const activeFiltersButtons = filterList.querySelectorAll(`.current-${filterRule}`);
+        const activeFiltersRemaining: string[] = [];
+        for (const active of activeFiltersButtons) {
+          if (active !== e.target && active.textContent !== null) {
+            activeFiltersRemaining.push(active.textContent.trim());
+          }
+        }
+        createEventAndDispatch(filterList, CancelFilterEvent, {activeFiltersRemaining: activeFiltersRemaining});
       });
 
       const activeItems = filterList.querySelectorAll(`.active-${filterRule}`) as NodeListOf<HTMLLIElement>;

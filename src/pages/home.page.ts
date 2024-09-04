@@ -4,7 +4,7 @@ import { Header, SearchbarEvent } from '../components/Header.ts';
 import { RecipeCard } from '../components/RecipeCard.ts';
 import { FiltersSection } from '../components/FiltersSection.ts';
 import { recipeFactory } from '../factory/recipe.factory.ts';
-import { FilterRule, FilterEvent } from '../components/FilterList.ts';
+import { FilterRule, FilterEvent, CancelFilterEvent } from '../components/FilterList.ts';
 import { Ingredient } from '../models/ingredient.model.ts';
 
 const recipesArray = recipes
@@ -130,8 +130,9 @@ export const HomePage = async () => {
     }
   });
 
+  let recipesBasedOn: Recipe[] = [];
   document.addEventListener(FilterEvent, (e: any) => {
-    const recipesBasedOn = e.detail.recipesBasedOn;
+    recipesBasedOn = e.detail.recipesBasedOn;
     const matchingRecipes = e.detail.matchingRecipes;
     const filter = e.detail.filter;
     console.log('recipesBasedOn', recipesBasedOn);
@@ -148,6 +149,53 @@ export const HomePage = async () => {
     }
     console.log('recipesFound', recipesFound);
     recipesSection.appendChild(recipesFound);
+  });
+
+  document.addEventListener(CancelFilterEvent, (e: any) => {
+    const activeFiltersRemaining = e.detail.activeFiltersRemaining;
+    for (let filter of activeFiltersRemaining) {
+      filter = filter.trim();
+    }
+    console.log('activeFiltersRemaining', activeFiltersRemaining);
+
+    const matchingRecipes: Recipe[] = [];
+    for (const recipe of recipesBasedOn) {
+      for (const ingredient of recipe.ingredients) {
+        if (activeFiltersRemaining.includes(ingredient.ingredient.trim()) && !matchingRecipes.includes(recipe)) {
+          matchingRecipes.push(recipe);
+        }
+      }
+      for (const ustensil of recipe.ustensils) {
+        if (activeFiltersRemaining.includes(ustensil) && !matchingRecipes.includes(recipe)) {
+          matchingRecipes.push(recipe);
+        }
+      }
+      if (activeFiltersRemaining.includes(recipe.appliance) && !matchingRecipes.includes(recipe)) {
+        matchingRecipes.push(recipe);
+      }
+    }
+
+    console.log('matchingRecipes', matchingRecipes);
+    const recipesCards = recipesFound.querySelectorAll('.recipe');
+    for (const card of recipesCards) {
+      card.remove();
+    }
+    console.log('recipesFound', recipesFound);
+    if (matchingRecipes.length !== 0) {  
+      for (const recipe of matchingRecipes) {
+        recipesFound.appendChild(RecipeCard(recipe));
+      }
+    } else {
+      for (const recipe of recipesBasedOn) {
+        recipesFound.appendChild(RecipeCard(recipe));
+      }
+    }
+    console.log('recipesFound', recipesFound);
+    recipesSection.appendChild(recipesFound);
+    
+
+    // for (const filter of activeFiltersRemaining) {
+
   });
 
   return page;
