@@ -8,6 +8,11 @@ import { Ingredient } from '../models/ingredient.model.ts';
 
 const recipesArray = recipes
 
+  /**
+   * Creates the home page, which includes a header with a search bar, a
+   * section for the recipes and, before it, a section for the filters to apply on the recipes.
+   * @returns The home page element.
+   */
 export const HomePage = async () => {
   const recipes: Recipe[] = [];
   for (const recipe of recipesArray) {
@@ -34,13 +39,13 @@ export const HomePage = async () => {
     }
     recipes.push(new Recipe(
       recipe.id,
-      recipe.image,
-      recipe.name,
+      recipe.image.trim(),
+      recipe.name.trim(),
       recipe.servings,
       ingredients,
       recipe.time,
       recipe.description,
-      recipe.appliance,
+      recipe.appliance.trim(),
       recipe.ustensils
     ));
   }
@@ -58,7 +63,7 @@ export const HomePage = async () => {
   let recipesFound = document.createElement('div');
   recipesFound.classList.add(
     'grid',
-    'grid-cols-4',
+    'grid-cols-3',
     'content-start',
     'justify-items-center',
     'p-[108px]',

@@ -6,7 +6,7 @@ export const SearchbarEvent = 'searchbar-event';
 
   /**
    * Creates the header of the page, which includes a search bar.
-   * @param recipes - The array of recipes to be searched.
+   * @param recipes - The array of recipes on which the input will base its search.
    * @returns The header element.
    */
 export function Header(recipes: Recipe[]) {
@@ -97,10 +97,10 @@ export function Header(recipes: Recipe[]) {
           }
         }
       }
-
+      console.log('matchingRecipes', matchingRecipes);
       createEventAndDispatch(header, SearchbarEvent, {searchTerm: searchTerm, matchingRecipes: matchingRecipes});
     }
   })
 
-  return header
+  return header;
 }

@@ -4,22 +4,6 @@ import { FilterRule } from '../components/FilterList';
 
 export const recipeFactory = {
   /**
-   * Returns an array of ingredients for a given recipe.
-   *
-   * @param {Recipe} recipe - The recipe object.
-   * @return {string[]} An array of ingredient names.
-   */
-  recipeIngredients: (recipe: Recipe): string[] => {
-    const ingredients: string[] = []
-
-    for (const ingredient of recipe.ingredients) {
-      ingredients.push(ingredient.ingredient);
-    }
-
-    return ingredients
-  },
-
-  /**
    * Returns an array of unique ingredients from an array of recipes.
    *
    * @param {Recipe[]} recipes - An array of recipe objects.

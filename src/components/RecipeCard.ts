@@ -1,5 +1,10 @@
 import { Recipe } from '../models/recipe.model'
 
+  /**
+   * Creates a recipe card element from a given recipe.
+   * @param recipe - The recipe to display.
+   * @returns The recipe card element.
+   */
 export function RecipeCard(recipe: Recipe) {
   const card = document.createElement('article')
   card.id = `recipe-${recipe.id}`
