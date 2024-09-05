@@ -58,14 +58,23 @@ export function RecipeCard(recipe: Recipe) {
   `;
 
   const ingredientsList = card.querySelector(`#recipe-${recipe.id}-ingredients`) as HTMLUListElement;
-  for (const ingredient of recipe.ingredients) {
+  // for (const ingredient of recipe.ingredients) {
+  //   ingredientsList.innerHTML += `
+  //     <li class="w-[50%] mb-[21px] text-[14px]">
+  //       <p>${ingredient.ingredient}</p>
+  //       <p class="text-gray">${ingredient.quantity ?? '-'} ${ingredient.unit ?? ''}</p>
+  //     </li>
+  //   `;
+  // }
+
+  recipe.ingredients.forEach(ingredient => {
     ingredientsList.innerHTML += `
       <li class="w-[50%] mb-[21px] text-[14px]">
         <p>${ingredient.ingredient}</p>
         <p class="text-gray">${ingredient.quantity ?? '-'} ${ingredient.unit ?? ''}</p>
       </li>
     `;
-  }
+  });
 
   return card
 }

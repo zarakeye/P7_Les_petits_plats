@@ -2,10 +2,12 @@ import { FilterList, FilterRule } from '../components/FilterList';
 import { Recipe } from '../models/recipe.model';
 
 export function FiltersSection(recipes: Recipe[], filterRules: FilterRule[]) {
-  let itemsOfSomeGivenRule = [];
-  for (const filter of filterRules) {
-    itemsOfSomeGivenRule.push(FilterList(recipes, filter));
-  }
+  // let itemsOfSomeGivenRule = [];
+  // for (const filter of filterRules) {
+  //   itemsOfSomeGivenRule.push(FilterList(recipes, filter));
+  // }
+
+  let itemsOfSomeGivenRule = filterRules.map(filter => FilterList(recipes, filter));
 
   const filtersSection = document.createElement('section')
   filtersSection.id = 'filters-section'
@@ -22,9 +24,13 @@ export function FiltersSection(recipes: Recipe[], filterRules: FilterRule[]) {
   
   const filterTypesContainer = filtersSection.querySelector('#filter-types');
 
-  for (const list of itemsOfSomeGivenRule) {
-    filterTypesContainer?.appendChild(list);
-  }
+  // for (const list of itemsOfSomeGivenRule) {
+  //   filterTypesContainer?.appendChild(list);
+  // }
 
-  return filtersSection
+  itemsOfSomeGivenRule.forEach(list => {
+    filterTypesContainer?.appendChild(list);
+  });
+
+  return filtersSection;
 }

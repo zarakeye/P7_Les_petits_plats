@@ -86,17 +86,28 @@ export function Header(recipes: Recipe[]) {
       createEventAndDispatch(header, SearchbarEvent, {matchingRecipes: recipes});
       return;
     } else {
-      for (const recipe of recipes) {
+      // for (const recipe of recipes) {
+      //   if (!matchingRecipes.includes(recipe)) {
+      //     if ((recipe.name.trim().toLowerCase().includes(searchTerm) || recipe.description.trim().toLowerCase().includes(searchTerm))) {
+      //       matchingRecipes.push(recipe);
+      //     } else for (const ingredient of recipe.ingredients) {
+      //       if (ingredient.ingredient.trim().toLowerCase().includes(searchTerm)) {
+      //         matchingRecipes.push(recipe);
+      //       }
+      //     }
+      //   }
+      // }
+      recipes.forEach(recipe => {
         if (!matchingRecipes.includes(recipe)) {
           if ((recipe.name.trim().toLowerCase().includes(searchTerm) || recipe.description.trim().toLowerCase().includes(searchTerm))) {
             matchingRecipes.push(recipe);
-          } else for (const ingredient of recipe.ingredients) {
+          } else recipe.ingredients.forEach(ingredient => {
             if (ingredient.ingredient.trim().toLowerCase().includes(searchTerm)) {
               matchingRecipes.push(recipe);
             }
-          }
+          })
         }
-      }
+      })
 
       createEventAndDispatch(header, SearchbarEvent, {searchTerm: searchTerm, matchingRecipes: matchingRecipes});
     }

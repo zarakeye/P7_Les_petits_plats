@@ -28,7 +28,19 @@ export function FilterList(recipes: Recipe[], filterRule: FilterRule) {
   let itemsList: string = '';
 
   let setCounter = 0;
-  for (const element of set) {
+  // for (const element of set) {
+  //   itemsList += `
+  //     <li
+  //       id="${filterRule}-${setCounter}"
+  //       class="${filterRule} text-[14px] bg-white"
+  //     >
+  //       ${element}
+  //     </li>
+  //   `;
+
+  //   setCounter++;
+  // }
+  set.forEach(element => {
     itemsList += `
       <li
         id="${filterRule}-${setCounter}"
@@ -37,9 +49,8 @@ export function FilterList(recipes: Recipe[], filterRule: FilterRule) {
         ${element}
       </li>
     `;
-
     setCounter++;
-  }
+  });
 
   const searchBar = SearchBar();
   searchBar.classList.add(
@@ -104,9 +115,12 @@ export function FilterList(recipes: Recipe[], filterRule: FilterRule) {
       itemsUL?.classList.add('flex');
       activeContainer?.classList.remove('hidden');
       if (activeItems) {
-        for (const active of activeItems) {
+        // for (const active of activeItems) {
+        //   active?.classList.remove('hidden');
+        // }
+        activeItems.forEach(active => {
           active?.classList.remove('hidden');
-        }
+        });
       }
     } else {
       if (dropdownMenu.querySelector('header')?.contains(e.target)) {
@@ -135,7 +149,16 @@ export function FilterList(recipes: Recipe[], filterRule: FilterRule) {
   const inputElement = filterList.querySelector('input');
   inputElement?.addEventListener('input', (e: any) => {
     const items = filterList.querySelectorAll('li');
-    for (const item of items) {
+    // for (const item of items) {
+    //   if (item.textContent?.trim().toLowerCase().includes(e.target.value.trim().toLowerCase())) {
+    //     item.classList.remove('hidden');
+    //     item.classList.add('flex');
+    //   } else {
+    //     item.classList.remove('flex');
+    //     item.classList.add('hidden');
+    //   }
+    // }
+    items.forEach(item => {
       if (item.textContent?.trim().toLowerCase().includes(e.target.value.trim().toLowerCase())) {
         item.classList.remove('hidden');
         item.classList.add('flex');
@@ -143,12 +166,13 @@ export function FilterList(recipes: Recipe[], filterRule: FilterRule) {
         item.classList.remove('flex');
         item.classList.add('hidden');
       }
-    }
+    });
   });
 
   // Add click event listener to each list item
   const items = filterList.querySelectorAll(`.${filterRule}`) as NodeListOf<HTMLLIElement>;
-  for (const item of items) {
+  // for (const item of items) {
+  items.forEach(item => {
     item.addEventListener('click', () => {
       if (item.textContent === null) {
         item.textContent = '';
@@ -189,8 +213,6 @@ export function FilterList(recipes: Recipe[], filterRule: FilterRule) {
       filterButton.textContent = item.textContent;
       currentContainer?.appendChild(filterButton);
 
-      
-
       //---------------
       activeItem.addEventListener('click', (e) => {
         item.classList.remove('hidden');
@@ -203,12 +225,16 @@ export function FilterList(recipes: Recipe[], filterRule: FilterRule) {
         }
 
         const activeItemsContents = filterList.querySelectorAll(`.active-item`);
-        const activeFiltersRemaining: string[] = [];
-        for (const active of activeItemsContents) {
-          if (active !== e.target && active.textContent !== null) {
-            activeFiltersRemaining.push(active.textContent.trim());
-          }
-        }
+        // const activeFiltersRemaining: string[] = [];
+        // for (const active of activeItemsContents) {
+        //   if (active !== e.target && active.textContent !== null) {
+        //     activeFiltersRemaining.push(active.textContent.trim());
+        //   }
+        // }
+        const activeFiltersRemaining = Array.from(activeItemsContents)
+          .filter(active => active !== e.target)
+          .map(active => active.textContent?.trim());
+
         createEventAndDispatch(filterList, CancelFilterEvent, {activeFiltersRemaining: activeFiltersRemaining});
       });
 
@@ -223,12 +249,17 @@ export function FilterList(recipes: Recipe[], filterRule: FilterRule) {
         }
 
         const activeFiltersButtons = filterList.querySelectorAll(`.current-${filterRule}`);
-        const activeFiltersRemaining: string[] = [];
-        for (const active of activeFiltersButtons) {
-          if (active !== e.target && active.textContent !== null) {
-            activeFiltersRemaining.push(active.textContent.trim());
-          }
-        }
+        // const activeFiltersRemaining: string[] = [];
+        // for (const active of activeFiltersButtons) {
+        //   if (active !== e.target && active.textContent !== null) {
+        //     activeFiltersRemaining.push(active.textContent.trim());
+        //   }
+        // }
+
+        const activeFiltersRemaining = Array.from(activeFiltersButtons)
+          .filter(active => active !== e.target)
+          .map(active => active.textContent?.trim());
+
         createEventAndDispatch(filterList, CancelFilterEvent, {activeFiltersRemaining: activeFiltersRemaining});
       });
 
@@ -236,14 +267,16 @@ export function FilterList(recipes: Recipe[], filterRule: FilterRule) {
       dropdownMenu?.addEventListener('click', () => {
         if (dropdownMenu.getAttribute('aria-expanded') === 'true') {
           if (activeItems.length!== 0) {
-            for (const active of activeItems) {
-              active?.classList.remove('hidden');
-            } 
+            // for (const active of activeItems) {
+            //   active?.classList.remove('hidden');
+            // }
+            activeItems.forEach(active => active?.classList.remove('hidden'));
           }           
         } else {
-          for (const active of activeItems) {
-            active?.classList.add('hidden');
-          }
+          // for (const active of activeItems) {
+          //   active?.classList.add('hidden');
+          // }
+          activeItems.forEach(active => active?.classList.add('hidden'));
         }
       });
 
@@ -253,6 +286,7 @@ export function FilterList(recipes: Recipe[], filterRule: FilterRule) {
         }
       });
     });
-  }
+  // }
+  });
   return filterList;
 }
