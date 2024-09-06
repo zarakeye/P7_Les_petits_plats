@@ -1,5 +1,4 @@
-import { Recipe } from '../models/recipe.model';
-import { recipeFactory } from '../factory/recipe.factory';
+import { Recipe } from '../modules/recipe';
 import { SearchBar } from './SearchBar';
 import { createEventAndDispatch } from '../helpers';
 
@@ -23,7 +22,7 @@ export function FilterList(recipes: Recipe[], filterRule: FilterRule) {
       break;
   }
 
-  let set = recipeFactory.setOf(recipes, filterRule);
+  let set = Recipe.setOf(recipes, filterRule);
 
   let itemsList: string = '';
 
@@ -154,7 +153,7 @@ export function FilterList(recipes: Recipe[], filterRule: FilterRule) {
         item.textContent = '';
       }
       
-      const matchingRecipes = recipeFactory.filterRecipes(recipes, item.textContent);
+      const matchingRecipes = Recipe.filterRecipes(recipes, item.textContent);
       createEventAndDispatch(filterList, FilterEvent, {recipesBasedOn: recipes, matchingRecipes: matchingRecipes, filter: item.textContent});
 
       searchBar.classList.remove('mb-[24px]');

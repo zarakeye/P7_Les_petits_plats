@@ -1,5 +1,5 @@
 import { FilterList, FilterRule } from '../components/FilterList';
-import { Recipe } from '../models/recipe.model';
+import { Recipe } from '../modules/recipe';
 
 export function FiltersSection(recipes: Recipe[], filterRules: FilterRule[]) {
   let itemsOfSomeGivenRule = [];

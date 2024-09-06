@@ -614,6 +614,10 @@ video {
   border-width: 0;
 }
 
+.static{
+  position: static;
+}
+
 .absolute{
   position: absolute;
 }
@@ -818,10 +822,6 @@ video {
 .rotate-180{
   --tw-rotate: 180deg;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.grid-cols-4{
-  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .grid-cols-3{
@@ -1060,10 +1060,6 @@ video {
 
 .pt-\[21px\]{
   padding-top: 21px;
-}
-
-.pt-\[30px\]{
-  padding-top: 30px;
 }
 
 .pt-\[32px\]{

@@ -1,5 +1,5 @@
 import { SearchBar } from '../components/SearchBar';
-import { Recipe } from '../models/recipe.model';
+import { Recipe } from '../modules/recipe';
 import { createEventAndDispatch } from '../helpers';
 
 export const SearchbarEvent = 'searchbar-event';
@@ -86,21 +86,23 @@ export function Header(recipes: Recipe[]) {
       createEventAndDispatch(header, SearchbarEvent, {matchingRecipes: recipes});
       return;
     } else {
+      const matchingRecipesIds: number[] = [];
       for (const recipe of recipes) {
-        if (!matchingRecipes.includes(recipe)) {
+        if (!matchingRecipesIds.includes(recipe.id)) {
           if ((recipe.name.trim().toLowerCase().includes(searchTerm) || recipe.description.trim().toLowerCase().includes(searchTerm))) {
             matchingRecipes.push(recipe);
-          } else for (const ingredient of recipe.ingredients) {
-            if (ingredient.ingredient.trim().toLowerCase().includes(searchTerm)) {
-              matchingRecipes.push(recipe);
+          } else {
+            for (const ingredient of recipe.ingredients) {
+              if (ingredient.ingredient.trim().toLowerCase().includes(searchTerm)) {
+                matchingRecipes.push(recipe);
+              }
             }
           }
-        }
       }
       console.log('matchingRecipes', matchingRecipes);
       createEventAndDispatch(header, SearchbarEvent, {searchTerm: searchTerm, matchingRecipes: matchingRecipes});
     }
-  })
+  }});
 
   return header;
 }

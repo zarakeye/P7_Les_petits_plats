@@ -1,4 +1,4 @@
-import { Recipe } from '../models/recipe.model'
+import { Recipe } from '../modules/recipe';
 
   /**
    * Creates a recipe card element from a given recipe.
