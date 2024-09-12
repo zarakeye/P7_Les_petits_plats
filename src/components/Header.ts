@@ -1,6 +1,6 @@
 import { SearchBar } from '../components/SearchBar';
 import { Recipe } from '../modules/recipe';
-import { createEventAndDispatch } from '../helpers';
+import { createEventAndDispatch, escapeSearchTerm } from '../helpers';
 
 export const SearchbarEvent = 'searchbar-event';
 
@@ -80,7 +80,10 @@ export function Header(recipes: Recipe[]) {
   searchInput.addEventListener('input', (e) => {
     let matchingRecipes: Recipe[] = [];
     
-    const searchTerm = (e.target as HTMLInputElement).value.trim().toLowerCase();
+    const searchTerm = escapeSearchTerm((e.target as HTMLInputElement).value);
+    const regexp = new RegExp(searchTerm, 'i');
+
+    console.log('searchTerm', searchTerm);
 
     if (searchTerm.length < 3) {
       createEventAndDispatch(header, SearchbarEvent, {matchingRecipes: recipes});
@@ -88,21 +91,50 @@ export function Header(recipes: Recipe[]) {
     } else {
       const matchingRecipesIds: number[] = [];
       for (const recipe of recipes) {
-        if (!matchingRecipesIds.includes(recipe.id)) {
-          if ((recipe.name.trim().toLowerCase().includes(searchTerm) || recipe.description.trim().toLowerCase().includes(searchTerm))) {
+        let isRecipeMatching: boolean = false;
+
+        for (const recipeID of matchingRecipesIds) {
+          if (recipeID === recipe.id) {
+            isRecipeMatching = true;
+            break;
+          }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////
+
+        if (!isRecipeMatching) { // check if recipe is already in matchingRecipes
+        // if (!matchingRecipesIds.includes(recipe.id)) {
+          if (regexp.test(recipe.name)) {
+            const matchWithName = regexp.exec(recipe.name);
+            console.log(`index of match with name in ${recipe.name}`, `${matchWithName?.index}`);
+
             matchingRecipes.push(recipe);
+            matchingRecipesIds.push(recipe.id);
+          } else if (regexp.test(recipe.description)){
+            const matchWithDescription = regexp.exec(recipe.description);
+            console.log(`index of match with description of ${recipe.name}`, `${matchWithDescription?.index}`);
+            matchingRecipes.push(recipe);
+            matchingRecipesIds.push(recipe.id);
           } else {
             for (const ingredient of recipe.ingredients) {
-              if (ingredient.ingredient.trim().toLowerCase().includes(searchTerm)) {
+              if (regexp.test(ingredient.ingredient)) {
+                const matchWithIngredient = regexp.exec(ingredient.ingredient);
+                console.log(`index of match with ingredient ${ingredient.ingredient}`, `${matchWithIngredient?.index}`);
                 matchingRecipes.push(recipe);
+                matchingRecipesIds.push(recipe.id);
               }
+
             }
           }
+        }
       }
+
+      Recipe.mainSearchMatchingRecipes = matchingRecipes;
+
       console.log('matchingRecipes', matchingRecipes);
       createEventAndDispatch(header, SearchbarEvent, {searchTerm: searchTerm, matchingRecipes: matchingRecipes});
     }
-  }});
+  });
 
   return header;
 }

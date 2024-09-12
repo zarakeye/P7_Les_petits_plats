@@ -1,12 +1,16 @@
-import { recipes as recipesArray } from '../data/recipes.ts';
-import { Recipe, Ingredient } from '../modules/recipe.ts';
+import { recipes as recipesArray } from '../data/recipes';
+import { Recipe, Ingredient } from '../modules/recipe';
 import { RecipesSection } from '../components/RecipesSection';
 import { RecipesGrid } from '../components/RecipesGrid';
-import { NoMatchFound } from '../components/NoMatchFound';
-import { Header, SearchbarEvent } from '../components/Header.ts';
-import { RecipeCard } from '../components/RecipeCard.ts';
-import { FiltersSection } from '../components/FiltersSection.ts';
-import { FilterRule, FilterEvent, CancelFilterEvent } from '../components/FilterList.ts';
+import { Header, SearchbarEvent } from '../components/Header';
+import { FilterFactory } from '../factories/filter.factory';
+import { FilterEvent, UnactivateFilterEvent } from '../components/SomeTypeFiltersMenu';
+import { FilterType, Filter } from '../modules/filter';
+import { DisplayFiltersMenusEvent, HideFiltersMenusEvent } from '../components/SomeTypeOfFiltersManager';
+import { displayFiltersMenu, hideFiltersMenu } from '../components/SomeTypeFiltersMenu';
+import { /*FilterListClickItemEvent, */SelectFilterEvent,handleClickOnFilterListItem } from '../components/Filter';
+import { UnselectFilterEvent, unselectFilter } from '../components/FilterButton';
+import { hideActiveFiltersMenu } from '../components/SomeTypeActiveFiltersMenu';
 
   /**
    * Creates the home page, which includes a header with a search bar, a
@@ -14,9 +18,6 @@ import { FilterRule, FilterEvent, CancelFilterEvent } from '../components/Filter
    * @returns The home page element.
    */
 export const HomePage = async () => {
-  const recipes: Recipe[] = [];
-
-  // Create recipes
   for (const recipe of recipesArray) {
     const ingredients: Ingredient[] = [];
     const ustensils: string[] = [];
@@ -46,7 +47,7 @@ export const HomePage = async () => {
       ustensils.push(ustensil.trim());
     }
 
-    recipes.push(new Recipe(
+    const newRecipe = new Recipe(
       recipe.id,
       recipe.image.trim(),
       recipe.name.trim(),
@@ -55,99 +56,54 @@ export const HomePage = async () => {
       recipe.time,
       recipe.description.trim(),
       recipe.appliance.trim(),
-      ustensils
-    ));
-  }
+      ustensils,
+    )
 
+    Recipe.originalListOfRecipes.push(newRecipe);
+  }
   const page = document.createElement('div');
   
-  const header = Header(recipes);
+  const header = Header(Recipe.originalListOfRecipes);
   page.appendChild(header);
 
   const main = document.createElement('main')
   page.appendChild(main);
 
-  // const recipesSection = document.createElement('section');
-  // recipesSection.id = 'recipes-section';
-  // let recipesFound = document.createElement('div');
-  // recipesFound.classList.add(
-  //   'grid',
-  //   'grid-cols-3',
-  //   'content-start',
-  //   'justify-items-center',
-  //   'p-[108px]',
-  //   'bg-light-gray',
-  //   'gap-x-[48px]',
-  //   'gap-y-[48px]'
-  // )
-
-  // for (const recipe of recipes) {
-  //   recipesFound.appendChild(RecipeCard(recipe));
-  // }
-
-  // recipesSection.appendChild(recipesFound);
-  // const noMatchingRecipes = document.createElement('div');
-  // noMatchingRecipes.classList.add(
-  //   'flex',
-  //   'justify-center',
-  //   'items-center',
-  //   'text-center',
-  //   'h-full',
-  //   'text-[21px]',
-  //   'bg-light-gray'
-  // );
-
   const recipesSection: HTMLElement = RecipesSection();
 
-  let recipesGrid: HTMLDivElement = RecipesGrid(recipes);
+  let recipesGrid: HTMLDivElement = RecipesGrid(Recipe.originalListOfRecipes);
   recipesSection.appendChild(recipesGrid);
+  
+  // const filters = FilterFactory.createFilters(Recipe.originalListOfRecipes);
 
-  const advancedFilters: FilterRule[] = ['ingredients', 'appliance', 'ustensils'];
-  let filtersSection = FiltersSection(recipes, advancedFilters);
+  const filterTypes = ['ingredient', 'appliance', 'ustensil'] as FilterType[];
+
+  const filters = FilterFactory.createFilters(Recipe.originalListOfRecipes, filterTypes);
+  console.log('filters', filters);
+  const DOMFilters = FilterFactory.createDOMFilters(filterTypes, filters);
+  console.log('DOMFilters', DOMFilters);
+  let filtersSection = FilterFactory.buildFilterSection(filterTypes, DOMFilters);
+
   main.appendChild(filtersSection);
   
   main.appendChild(recipesSection);
 
-  // document.addEventListener(SearchbarEvent, (e: any) => {
-  //   recipesSection.innerHTML = '';
-  //   const matchingRecipes: Recipe[] = e.detail.matchingRecipes;
-  //   const searchTerm = e.detail.searchTerm;
+  page.addEventListener(SearchbarEvent, (e: any) => Recipe.handleSearchbarEvent(e));
 
-  //   if (matchingRecipes?.length === 0) {
-  //     filtersSection?.remove();
-  //     const recipesCards = recipesGrid.querySelectorAll('.recipe');
-  //     for (const card of recipesCards) {
-  //       card.remove();
-  //     }
-  //     recipesGrid.remove();
-  //     const noMatchFound = NoMatchFound(searchTerm);
-  //     recipesSection.appendChild(noMatchFound);
-  //   } else {
-  //     const filterLists = filtersSection.querySelectorAll('.filter-list');
-  //     for (const filterList of filterLists) {
-  //       filterList.remove();
-  //     }
-  //     filtersSection.remove();
+  page.addEventListener(SelectFilterEvent, (e: any) => handleClickOnFilterListItem(e, page));
 
-  //     const recipesCards = recipesGrid.querySelectorAll('.recipe');
-  //     for (const card of recipesCards) {
-  //       card.remove();
-  //     }
+  page.addEventListener(UnselectFilterEvent, (e: any) => handleUnselectFilterEvent(e, page));
 
-  //     filtersSection = FiltersSection(matchingRecipes, advancedFilters);
-  //     recipesSection.insertAdjacentElement('beforebegin', filtersSection);
-  //     recipesSection.innerHTML = '';
-  //     recipesGrid = RecipesGrid(matchingRecipes);
-  //     recipesSection.appendChild(recipesGrid);
-  //   }
-  // });
+  page.addEventListener(DisplayFiltersMenusEvent, (e: any) => displayFiltersMenu(e, page));
 
-  page.addEventListener(SearchbarEvent, (e: any) => Recipe.handleSearchbarEvent(e, advancedFilters));
-
-  let recipesBasedOn: Recipe[] = [];
-  document.addEventListener(FilterEvent, (e: any) =>  Recipe.handleFilterEvent(e, recipesBasedOn, recipesSection, recipesGrid));
-
-  document.addEventListener(CancelFilterEvent, (e: any) => Recipe.handleCancelFilterEvent(e, recipesBasedOn, recipesSection, recipesGrid));
+  page.addEventListener(HideFiltersMenusEvent, (e: any) => hideFiltersMenu(e, page));
 
   return page;
+}
+
+function handleUnselectFilterEvent(e: any, page: HTMLElement) {
+  const filter = e.detail.filter;
+  unselectFilter(e, page);
+
+  hideActiveFiltersMenu(filter.type, page);
 }

@@ -65,8 +65,8 @@ export function RecipeCard(recipe: Recipe) {
   const ingredientsList = card.querySelector(`#recipe-${recipe.id}-ingredients`) as HTMLUListElement;
   for (const ingredient of recipe.ingredients) {
     ingredientsList.innerHTML += `
-      <li class="w-[50%] mb-[21px] text-[14px]">
-        <p>${ingredient.ingredient}</p>
+      <li class="w-[50%] h-[63px] text-[14px]">
+        <p class="ingredient">${ingredient.ingredient}</p>
         <p class="text-gray">${ingredient.quantity ?? '-'} ${ingredient.unit ?? ''}</p>
       </li>
     `;

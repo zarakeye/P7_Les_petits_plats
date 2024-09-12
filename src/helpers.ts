@@ -34,3 +34,14 @@ export function createEventAndDispatch(element: HTMLElement, event: string, deta
   });
   element.dispatchEvent(eventToDispatch);
 }
+
+export function escapeSearchTerm(searchTerm: string): string {
+  return searchTerm.toLowerCase().trim()
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+    .replace(/\//g, '&#47;')
+    ;
+}

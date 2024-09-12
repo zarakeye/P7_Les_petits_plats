@@ -1,3 +1,5 @@
+import { plugin } from 'postcss';
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{js,ts,html,css,scss}'],
@@ -18,5 +20,27 @@ export default {
   },
   plugins: [
     require('tailwind-scrollbar-hide'),
+    // plugin(function ({ addUtilities }) {
+    //   const newUtilities = {
+    //     '.scrollbar-hide': {
+    //       '&::-webkit-scrollbar': {
+    //         display: 'none',
+    //       },
+    //     },
+        
+    //     '.selectable-filter': {
+    //       'font-size': '14px',
+    //       'background-color': white
+    //     },
+        
+    //     '.active-filter': {
+    //       'font-size': '14px',
+    //       'text-align': 'left',
+    //       'padding': '9px 16px',
+    //       'mb': '1px',
+    //     }//text-[14px] text-left px-[16px] py-[9px] mb-px
+    //   };
+    //   addUtilities(newUtilities, ['responsive']);
+    // })
   ],
 }

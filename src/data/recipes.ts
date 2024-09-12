@@ -1736,7 +1736,7 @@ export const recipes = [
         unit: 'barquettes',
       },
       {
-        ingredient: 'Champignons de paris',
+        ingredient: 'Champignons de Paris',
         quantity: 1,
         unit: 'boites',
       },
