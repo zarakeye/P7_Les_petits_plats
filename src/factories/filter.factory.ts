@@ -1,61 +1,14 @@
-import { Recipe } from '../modules/recipe';
-// import { FilterTypeItem } from '../components/FilterTypeItem';
 import { SomeTypeFiltersMenu } from '../components/SomeTypeFiltersMenu';
 import { SomeTypeActiveFiltersMenu } from '../components/SomeTypeActiveFiltersMenu';
 import { SomeTypeButtonsContainerOfActiveFilters } from '../components/SomeTypeButtonsContainerOfActiveFilters';
 import { SomeTypeOfFiltersManager } from '../components/SomeTypeOfFiltersManager';
-import { FilterType, Filter as FilterObject} from '../modules/filter';
-import { Filter } from '../components/Filter';
+import { FilterTag } from '../components/FilterTag';
 import { FiltersSection } from '../components/FiltersSection';
 import { FilterButton } from '../components/FilterButton';
+import { FilterType } from '../modules/recipe';
 
 
 export const FilterFactory = {
-  createFilters(recipes: Recipe[], filterTypes: FilterType[]) {
-    let filters: any = {
-      ingredients: [],
-      appliances: [],
-      ustensils: []
-    }
-
-    for (const recipe of recipes) {
-      for (const ingredient of recipe.ingredients) {
-        filters.ingredients.push(ingredient.ingredient);
-      }
-
-      filters.appliances.push(recipe.appliance);
-
-      for (const ustensil of recipe.ustensils) {
-        filters.ustensils.push(ustensil);
-      }
-    }
-
-    for (const type of filterTypes) {
-      filters[`${type}s`] = [...new Set(filters[`${type}s`])];
-      const length = filters[`${type}s`].length;
-      for (let i = 0; i < length; i++) {
-        FilterObject.filters[`${type}s`].push(new FilterObject(i, filters[`${type}s`][i], type, false));
-        
-      }
-    }
-
-    return FilterObject.filters;
-  },
-
-  createDOMFilters(filterTypes: FilterType[], filters: any) {
-    const DOMFilters: any = [];
-
-    for (const type of filterTypes) {
-      const length = filters[`${type}s`].length;
-      DOMFilters[`${type}s`] = [];
-      for (let i = 0; i < length; i++) {
-        DOMFilters[`${type}s`].push(Filter(filters[`${type}s`][i]));
-      }
-    }
-
-    return DOMFilters;
-  },
-
   createMappingOfActiveFiltersByName(filters: any[]) {
     const mappingOfActiveFiltersByName: string[] = [];
 
@@ -66,48 +19,64 @@ export const FilterFactory = {
     return mappingOfActiveFiltersByName;
   },
 
-  buildFiltersTypeManager(filterType: FilterType, domfilter: HTMLLIElement[]) {
-      const filtersMenu = SomeTypeFiltersMenu(filterType);
+  buildFiltersTypeManager(filterType: FilterType, domfilters: HTMLLIElement[]) {
+    const filtersMenu = SomeTypeFiltersMenu(filterType);
 
-      filtersMenu.classList.add('hidden');
+    filtersMenu.classList.add('hidden');
 
-      for (const value of domfilter) {
-        filtersMenu.appendChild(value);
+    for (const value of domfilters) {
+      filtersMenu.appendChild(value);
+    }
+
+    const activeFiltersMenu = SomeTypeActiveFiltersMenu(filterType);
+    const activeFiltersButtonsContainer = SomeTypeButtonsContainerOfActiveFilters(filterType);
+    const filtersManager = SomeTypeOfFiltersManager(filterType);
+    const filtersManagerTitle = filtersManager.querySelector('h2');
+    if (filtersManagerTitle) {
+      switch (filterType) {
+        case 'ingredient':
+          filtersManagerTitle.textContent = 'Ingrédients';
+          break;
+        case 'appliance':
+          filtersManagerTitle.textContent = 'Appareils';
+          break;
+        case 'ustensil':
+          filtersManagerTitle.textContent = 'Ustensiles';
+          break;
       }
+    }
+    const filtersManagerDropdown = filtersManager.querySelector('aside');
 
-      const activeFiltersMenu = SomeTypeActiveFiltersMenu(filterType);
-      const activeFiltersButtonsContainer = SomeTypeButtonsContainerOfActiveFilters(filterType);
-      const filtersManager = SomeTypeOfFiltersManager(filterType);
-      const filtersManagerTitle = filtersManager.querySelector('h2');
-      if (filtersManagerTitle) {
-        switch (filterType) {
-          case 'ingredient':
-            filtersManagerTitle.textContent = 'Ingrédients';
-            break;
-          case 'appliance':
-            filtersManagerTitle.textContent = 'Appareils';
-            break;
-          case 'ustensil':
-            filtersManagerTitle.textContent = 'Ustensiles';
-            break;
-        }
+    filtersManagerDropdown?.appendChild(activeFiltersMenu);
+    filtersManagerDropdown?.appendChild(filtersMenu);
+    filtersManager?.appendChild(activeFiltersButtonsContainer);
+
+    return filtersManager;
+  },
+  
+  updateSelectableFiltersDisplay(filters: any, page: HTMLElement) {
+    const filterTypes: FilterType[] = ['ingredient', 'appliance', 'ustensil'];
+
+    const domfilters = page.querySelectorAll('.filter');
+    console.log('domfilters', domfilters);
+
+    for (const domFilter of domfilters) {
+      domFilter.remove();
+    }
+
+    for (const type of filterTypes) {
+      for (const filter of filters[`${type}s`]) {
+        page.querySelector(`list-of-selectable-${type}s`)?.appendChild(FilterTag(filter, type));
       }
-      const filtersManagerDropdown = filtersManager.querySelector('aside');
-
-      filtersManagerDropdown?.appendChild(activeFiltersMenu);
-      filtersManagerDropdown?.appendChild(filtersMenu);
-      filtersManager?.appendChild(activeFiltersButtonsContainer);
-
-      return filtersManager;
+    }
   },
 
-
-  buildFilterSection(filterTypes: FilterType[], domFilters: any) {
+  buildFilterSection(filterTypes: FilterType[], filtersTags: any) {
     const filtersSection = FiltersSection();
     const typesManagersContainers = filtersSection.querySelector('#filter-types-managers_container');
 
     for (const filterType of filterTypes) {
-      const filtersTypeManager = FilterFactory.buildFiltersTypeManager(filterType, domFilters[`${filterType}s`]);
+      const filtersTypeManager = FilterFactory.buildFiltersTypeManager(filterType, filtersTags[`${filterType}s`]);
       typesManagersContainers?.appendChild(filtersTypeManager);
     }
 
@@ -115,7 +84,7 @@ export const FilterFactory = {
   },
 
   createClearButtonOfSelectedFilterAndBindToContainer(selectedFilter: FilterObject, clearButtonsContainer: HTMLDivElement) {
-    const clearButton = FilterButton(selectedFilter);
+    const clearButton = FilterButton(selectedFilter, filterType);
     clearButtonsContainer?.appendChild(clearButton);
   }
 }

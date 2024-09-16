@@ -1,7 +1,7 @@
 import { SearchBar } from './SearchBar';
 import { createEventAndDispatch } from '../helpers';
 import { FilterEvent, UnactivateFilterEvent } from './SomeTypeFiltersMenu';
-import { FilterType } from '../modules/filter';
+import { FilterType } from '../modules/recipe';
 
 export const DisplayFiltersMenusEvent = 'display-selectable-filters-event';
 export const HideFiltersMenusEvent = 'hide-selectable-filters-event';
@@ -61,9 +61,9 @@ export function SomeTypeOfFiltersManager(filterType: FilterType) {
   const dropdownMenu = filterList.querySelector(`#${filterType}__dropdown`);
   const page = document.querySelector('#app') as HTMLElement;
 
-  dropdownMenu?.addEventListener('click', (e: any) => handleClickEventOnDropdownMenu(e,));
+  dropdownMenu?.addEventListener('click', (e: any) => handleClickEventOnDropdownMenu(e, page));
 
-  page.addEventListener('click', (e: any) => handleClickEventOutOfDropdownMenu(e));
+  page.addEventListener('click', (e: any) => handleClickEventOutOfDropdownMenu(e, page));
 
   const inputElement = filterList.querySelector('input');
   inputElement?.addEventListener('input', (e: any) => handleInputEvent(e));
@@ -179,13 +179,14 @@ export function SomeTypeOfFiltersManager(filterType: FilterType) {
    * If the dropdown menu is collapsed, it expands it and shows the search bar, items list and active container.
    * It also removes the hidden class from all the active items.
    */
-   function handleClickEventOnDropdownMenu(e: any) {
+   function handleClickEventOnDropdownMenu(e: any, page: HTMLElement) {
     if (dropdownMenu?.getAttribute('aria-expanded') === 'false') {
       dropdownMenu.setAttribute('aria-expanded', 'true');
       expandCollapse?.classList.add('rotate-180');
       searchBar.classList.remove('hidden');
       searchBar.classList.add('flex');
       searchBar.querySelector('input')?.focus();
+      page.querySelector(`#list-of-active-${filterType}s`)?.classList.remove('hidden');
       createEventAndDispatch(filterList, DisplayFiltersMenusEvent, {filterType: filterType});
     } else {
       if (dropdownMenu?.querySelector('header')?.contains(e.target)) {
@@ -193,20 +194,22 @@ export function SomeTypeOfFiltersManager(filterType: FilterType) {
         expandCollapse?.classList.remove('rotate-180');
         searchBar.classList.remove('flex');
         searchBar.classList.add('hidden');
-        // const menuItems = filterList.querySelector(`#${filterType}__items`);
-        // menuItems?.classList.add('hidden');
+        page.querySelector(`#list-of-active-${filterType}s`)?.classList.add('hidden');
         createEventAndDispatch(filterList, HideFiltersMenusEvent, {filterType: filterType});
       }
     }
   }
 
-  function handleClickEventOutOfDropdownMenu(e: any) {
+  function handleClickEventOutOfDropdownMenu(e: any, page: HTMLElement) {
     if (!dropdownMenu?.contains(e.target)) {
       dropdownMenu?.setAttribute('aria-expanded', 'false');
       expandCollapse?.classList.remove('rotate-180');
       searchBar.classList.remove('flex');
       searchBar.classList.add('hidden');
-      createEventAndDispatch(filterList, HideFiltersMenusEvent, {filterType: filterType});
+      const activeFiltersMenu = page.querySelector(`#list-of-active-${filterType}s`);
+      activeFiltersMenu?.classList.add('hidden');
+      const selectableFiltersMenu = page.querySelector(`#list-of-selectable-${filterType}s`);
+      selectableFiltersMenu?.classList.add('hidden');
     }
   }
 

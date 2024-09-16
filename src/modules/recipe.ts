@@ -1,7 +1,7 @@
-import { capitalizeFirstLetter } from '../helpers';
-import { NoMatchFound } from '../components/NoMatchFound';
+import { firstStringInSecondString, introSort } from '../helpers';
 import { RecipesGrid } from '../components/RecipesGrid';
 import { RecipeCard } from '../components/RecipeCard';
+import { FilterTag } from '../components/FilterTag';
 
 export type Ingredient = {
   ingredient: string;
@@ -9,9 +9,47 @@ export type Ingredient = {
   unit?: string;
 }
 
-
+export type FilterType = 'ingredient' | 'appliance' | 'ustensil';
 
 export class Recipe {
+  static filterRecipesWithActivatedFilter(recipes: Recipe[], filterType: FilterType, filter: any) {
+    const filteredRecipes: Recipe[] = [];
+
+    switch (filterType) {
+      case 'ingredient':
+        recipes.forEach((recipe) => {
+          if (recipe.ingredients.some((ingredient) => ingredient.ingredient === filter)) {
+            filteredRecipes.push(recipe);
+          }
+        });
+        break;
+      case 'appliance':
+        recipes.forEach((recipe) => {
+          if (recipe.appliance === filter) {
+            filteredRecipes.push(recipe);
+          }
+        });
+        break;
+      case 'ustensil':
+        recipes.forEach((recipe) => {
+          if (recipe.ustensils.some((ustensil) => ustensil === filter)) {
+            filteredRecipes.push(recipe);
+          }
+        });
+        break;
+    }
+
+    Recipe.matchingRecipes = filteredRecipes;
+  }
+
+  static createRecipesCards(recipes: Recipe[]) {
+    const recipesCards = [];
+    for (const recipe of recipes) {
+      recipesCards.push(RecipeCard(recipe));
+    }
+    return recipesCards;
+  }
+
   constructor(
     public id: number,
     public image: string,
@@ -24,176 +62,150 @@ export class Recipe {
     public ustensils: string[]
   ) {}
 
-  static originalListOfRecipes: Recipe[] = [];
-  static mainSearchMatchingRecipes: Recipe[] = [];
+  static originalRecipes: Recipe[] = [];
+  static matchingRecipes: Recipe[] = [];
+  static activeFilters: any = {
+    ingredients: [],
+    appliances: [],
+    ustensils: [],
+  };
+
+  static createRecipes(recipes: any[]): Recipe[] {
+    for (const recipe of recipes) {
+      const ingredients: Ingredient[] = [];
+      const ustensils: string[] = [];
+      // Parse ingredients and ustensils
+      for (const ingredient of recipe.ingredients) {
+        let quantity;
+  
+        switch (typeof ingredient.quantity) {
+          case 'number':
+            quantity = ingredient.quantity;
+            break;
+          case 'string':
+            quantity = Number(ingredient.quantity.trim()); // Convert string to number when given in string
+            break;
+          default:
+            quantity = undefined;
+        }
+        
+        ingredients.push({
+          ingredient: ingredient.ingredient.trim(),
+          quantity,
+          unit: ingredient.unit
+        });
+      }
+  
+      for (const ustensil of recipe.ustensils) {
+        ustensils.push(ustensil.trim());
+      }
+  
+      const newRecipe = new Recipe(
+        recipe.id,
+        recipe.image.trim(),
+        recipe.name.trim(),
+        recipe.servings,
+        ingredients,
+        recipe.time,
+        recipe.description.trim(),
+        recipe.appliance.trim(),
+        ustensils,
+      );
+  
+      Recipe.originalRecipes.push(newRecipe);
+    }
+
+    let recipesNames = Recipe.originalRecipes.map((recipe) => recipe.name);
+    recipesNames = [...new Set(introSort(recipesNames))];
+    
+    const sortedRecipes: Recipe[] = [];
+    recipesNames.forEach((name) => {
+      const recipe = Recipe.originalRecipes.find((recipe) => recipe.name === name);
+      if (recipe) {
+        sortedRecipes.push(recipe);
+      }
+    });
+
+    if (sortedRecipes !== undefined) {
+      Recipe.originalRecipes = sortedRecipes;
+    }
+
+    return Recipe.originalRecipes;
+  }
+
+  static extractFilters(recipes: Recipe[], filtersTypes: FilterType[]): any {
+    let filters: any = {
+      ingredients: [],
+      appliances: [],
+      ustensils: []
+    }
+
+    for (const recipe of recipes) {
+      for (const ingredient of recipe.ingredients) {
+        filters.ingredients.push(ingredient.ingredient);
+      }
+
+      filters.appliances.push(recipe.appliance);
+
+      for (const ustensil of recipe.ustensils) {
+        filters.ustensils.push(ustensil);
+      }
+    }
+
+    for (const type of filtersTypes) {
+      filters[`${type}s`] = [...new Set(filters[`${type}s`])];
+      console.log(`filters`, filters);
+    }
+
+    return filters;
+  }
 
   public clone(): Recipe {
     return new Recipe(this.id, this.image, this.name, this.servings, this.ingredients, this.time, this.description, this.appliance, this.ustensils);
   }
 
-  static matchingRecipes: Recipe[] = [];
+  static createFiltersTags(filters: any): any {
+    let filtersTags: any = {
+      ingredients: [],
+      appliances: [],
+      ustensils: []
+    }
+    
+    Object.keys(filters).forEach((key) => {
+      filters[key] = introSort(filters[key]);
+      filters[key].forEach((filter: string) => {
+        const newFilterTag = FilterTag(filter, key.split('')[0] as FilterType);
+        filtersTags[key].push(newFilterTag);
+      })
+    })
 
+    return filtersTags;
+  }
 
-  static filterRecipes(recipes: Recipe[], filter: string, page: HTMLElement): void {
+  static filterRecipeswithUserInput(recipes: Recipe[], entry: string): void {
     let matchingRecipes: Recipe[] = [];
+    
     for (const recipe of recipes) {
       for (const ingredient of recipe.ingredients) {
-        if (ingredient.ingredient === filter) {
+        if (firstStringInSecondString(entry, ingredient.ingredient)) {
           matchingRecipes.push(recipe);
-          break;
         }
       }
 
-      if (recipe.appliance === filter) {
+      if (firstStringInSecondString(entry, recipe.name)) {
         matchingRecipes.push(recipe);
-        break;
       }
 
-      for (const ustensil of recipe.ustensils) {
-        if (ustensil === filter) {
-          matchingRecipes.push(recipe);
-          break;
-        }
+      if (firstStringInSecondString(entry, recipe.description)) {
+        matchingRecipes.push(recipe);
       }
     }
 
-    // console.log('Recipe.matchingRecipes', Recipe.matchingRecipes);
     matchingRecipes = [...new Set(matchingRecipes)];
+    console.log('matchingRecipes', matchingRecipes);
 
-    Recipe.rebuildFiltersSection(matchingRecipes, page);
     Recipe.matchingRecipes = matchingRecipes;
-
-    
-    
-    //! A montrer à Aghilès !!!!!!!!!!!!!!!!!
-    // const recipesCards = page.querySelectorAll('.recipe');
-    // for (const recipe of matchingRecipes) {
-    //   const recipeID: string = `recipe-${recipe.id}`;
-    //   for (const card of recipesCards) {
-    //     if (card.id.trim() != recipeID.trim()) {
-    //       card.classList.add('hidden');
-    //       // card.classList.remove('flex');
-    //     }
-    //   }
-    // }
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-  //   console.log(`filtering ${filter} with ${recipes.length} recipes`);
-  //   const filterValue = filter.trim().valueOf();
-  //   const regexp = new RegExp(`^${filterValue}`);
-  //   console.log('regexp', regexp);
-    
-  //   if (recipes === Recipe.originalListOfRecipes) {
-  //     if (Recipe.matchingRecipes.length === 0) {
-  //       recipes.forEach((recipe) => {
-  //         const ingredients = recipe.ingredients.map((ingredient) => ingredient.ingredient);
-
-  //         if ((ingredients.find((ingredient) => regexp.test(ingredient)) || regexp.test(recipe.appliance)) || recipe.ustensils.find((ustensil) => regexp.test(ustensil)) && !Recipe.matchingRecipes.includes(recipe)) {
-  //           Recipe.matchingRecipes.push(recipe);
-  //         }
-  //       })
-  //     }
-  //   } else {
-  //     Recipe.matchingRecipes = recipes.filter((recipe) => recipe.ingredients.some((ingredient) => regexp.test(ingredient.ingredient)) ||
-  //       recipe.ustensils.some((ustensil) => regexp.test(ustensil)) ||
-  //       regexp.test(recipe.appliance)
-  //     );
-  //   }
   }
-
-  // static filterRecipes(recipes: Recipe[], filters: string[], page: HTMLElement): void {
-  //   let matchingRecipesIDs: number[] = [];
-    // for (const filter of filters) {
-    //   for (const recipe of recipes) {
-    //     let matchWithIngredient: boolean = false;
-    //     let matchWithAppliance: boolean = false;
-    //     let matchWithUstensil: boolean = false;
-    //     for (const ingredient of recipe.ingredients) {
-    //       if (filter === ingredient.ingredient) {
-    //         matchWithIngredient = true;
-    //         break;
-    //       }
-    //     }
-
-    //     if (filter === recipe.appliance) {
-    //       matchWithAppliance = true;
-    //     }
-
-    //     for (const ustensil of recipe.ustensils) {
-    //       if (filter === ustensil) {
-    //         matchWithUstensil = true;
-    //         break;
-    //       }
-    //     }
-
-    //     if (matchWithIngredient && matchWithAppliance || matchWithUstensil) {
-    //       matchingRecipesIDs.push(recipe.id);
-    //     }
-    //   }
-    // }
-
-    // for (const recipe of recipes) {
-    //   let matchCounter = 0;
-    //   for (const filter of filters) {
-    //     for (const ingredient of recipe.ingredients) {
-    //       if (filter === ingredient.ingredient) {
-    //         matchCounter++;
-    //         break;
-    //       }
-    //     }
-
-    //     if (filter === recipe.appliance) {
-    //       matchCounter++;
-    //     }
-
-    //     for (const ustensil of recipe.ustensils) {
-    //       if (filter === ustensil) {
-    //         matchCounter++;
-    //         break;
-    //       }
-    //     }
-    //   }
-    //   if (matchCounter === filters.length) {
-    //     Recipe.matchingRecipes.push(recipe);
-    //   }
-    // }
-
-    // matchingRecipesIDs = [...new Set(matchingRecipesIDs)];
-
-    // console.log('matching recipes ids', matchingRecipesIDs);
-
-    // if (matchingRecipesIDs.length !== 0) {
-    //   for (const id of matchingRecipesIDs) {
-    //     for (const recipe of recipes) {
-    //       if (recipe.id === id) {
-    //         Recipe.matchingRecipes.push(recipe);
-    //       }
-    //     }
-    //   }
-    // } else {
-    //   Recipe.matchingRecipes = [];
-    // }
-
-    // const recipesCards = page.querySelectorAll('.recipe');
-
-    // for (const card of recipesCards) {
-    //   card.remove();
-    // }
-
-    // const recipesGrid = page.querySelector('#recipes-grid');
-    // for (const recipe of Recipe.matchingRecipes) {
-    //   recipesGrid?.append(RecipeCard(recipe));
-    // }
-
-  //   if (Recipe.matchingRecipes.length !== 0) {
-  //     Recipe.rebuildFiltersSection(Recipe.matchingRecipes, page);
-  //   } else {
-  //     Recipe.rebuildFiltersSection(Recipe.originalListOfRecipes, page);
-  //   }
-
-  //   console.log('matching recipes', Recipe.matchingRecipes);
-  // }
 
   static rebuildFiltersSection(recipes: Recipe[], page: HTMLElement) {
     const recipesCards = page.querySelectorAll('.recipe');
@@ -213,95 +225,15 @@ export class Recipe {
    * and the recipes grid, and adding a "No match found" card if no recipe matches the search term.
    * @param event - The CustomEvent emitted by the SearchBar component, with the matching recipes and search term.
    */
-  static handleSearchbarEvent(event: any) {
-    let recipesSection = document.getElementById('recipes-section');
-    let filtersSection = document.getElementById('filters-section');
-    let recipesGrid = document.getElementById('recipes-grid');
+  
 
-    if (recipesSection) {
-      
-      Recipe.matchingRecipes = event.detail.matchingRecipes;
-      console.log('matching recipes', Recipe.matchingRecipes);
-      const searchTerm: string = event.detail.searchTerm;
-      const filtersItems = filtersSection?.querySelectorAll('.filter');
-
-      if (Recipe.matchingRecipes.length === 0) {
-        // filtersSection?.remove();
-        filtersSection?.classList.remove('flex');//<--
-        filtersSection?.classList.add('hidden');//<--
-        const recipesCards = recipesGrid?.querySelectorAll('.recipe');
-
-        recipesGrid?.classList.add('hidden');//<--
-        recipesGrid?.classList.remove('grid');//<--
-        
-        recipesSection.innerHTML = '';
-        const noMatchFound = NoMatchFound(searchTerm);
-        recipesSection.appendChild(noMatchFound);
-      } else {
-        const recipesCards = recipesGrid?.querySelectorAll('.recipe');
-
-        if (recipesCards) {
-          for (const card of recipesCards) {
-            card.remove();
-          }
-        }
-        recipesGrid?.remove();
-
-        recipesGrid = RecipesGrid(Recipe.matchingRecipes);
-        recipesSection.appendChild(recipesGrid);
-
-        const filters = filtersSection?.querySelectorAll('.filter');
-        if (filters) {
-          for (const filter of filters) {
-            filter.remove();
-          }
-        }
-        // if (filtersSection) {
-        //   FilterFactory.createAndBindLIListOFItemsOfEveryFilterTypeToTheseMenus(Recipe.matchingRecipes, filtersSection);
-        // }
-        
-        console.log('Recipe.matchingRecipes', Recipe.matchingRecipes);
-        console.log('Recipe.originalListOfRecipes', Recipe.originalListOfRecipes);
-      }
-    }
-  }
-  static handleFilterEvent(event: any) {
-    const filter = event.detail.filter;
-    
-    console.log('Recipe.originalListOfRecipes', Recipe.originalListOfRecipes);
-    console.log('Recipe.matchingRecipes', Recipe.matchingRecipes);
-
-    if (Recipe.matchingRecipes.length === 0) {
-      this.filterRecipes(Recipe.originalListOfRecipes, filter);
-      console.log('Recipe.matchingRecipes', Recipe.matchingRecipes);
-    } else {
-      this.filterRecipes(Recipe.matchingRecipes, filter);
-      console.log('Recipe.matchingRecipes', Recipe.matchingRecipes);
-    }
-
-    let filtersSection = document.getElementById('filters-section');
-
-    const recipesSection = document.getElementById('recipes-section');
-
-    let recipesGrid = document.getElementById('recipes-grid');
-    const recipesCards = recipesGrid?.querySelectorAll('.recipe');
-    if (recipesSection && recipesGrid && recipesCards) {
-      for (const card of recipesCards) {
-        card.remove();
-      }
-      recipesGrid.remove();
-      recipesGrid = RecipesGrid(Recipe.matchingRecipes);
-      recipesSection.appendChild(recipesGrid);
-    }    
-  }
-
-  static handleCancelFilterEvent(event: any) {
+  static handleCancelFilterEvent() {
     const matchingRecipes: Recipe[] = [];
     /**
      * For each recipe in the original list of recipes, check if any of its ingredients, appliances or ustensils match any of the active filters
      * to determine if the recipe should be included in the list of matching recipes
      */
-    for (const recipe of Recipe.originalListOfRecipes) {
+    for (const recipe of Recipe.originalRecipes) {
       const ingredients = recipe.ingredients.map((ingredient) => ingredient.ingredient);
       let matchingCount = 0;
 
@@ -339,7 +271,7 @@ export class Recipe {
     const recipesSection = document.getElementById('recipes-section');
     let recipesGrid = document.getElementById('recipes-grid');
     const recipesCards = recipesGrid?.querySelectorAll('.recipe');
-    // console.log('recipesCards', recipesCards);
+    
     if (recipesCards && recipesGrid && recipesSection) {
       for (const card of recipesCards) {
         card.remove();
@@ -349,7 +281,7 @@ export class Recipe {
       if (matchingRecipes.length !== 0) {
         recipesGrid = RecipesGrid(matchingRecipes);
       } else {
-        recipesGrid = RecipesGrid(Recipe.originalListOfRecipes);
+        recipesGrid = RecipesGrid(Recipe.originalRecipes);
       }
 
       recipesSection.appendChild(recipesGrid);

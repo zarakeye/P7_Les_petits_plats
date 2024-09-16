@@ -1,94 +1,54 @@
 import { recipes as recipesArray } from '../data/recipes';
-import { Recipe, Ingredient } from '../modules/recipe';
+import { Recipe } from '../modules/recipe';
 import { RecipesSection } from '../components/RecipesSection';
 import { RecipesGrid } from '../components/RecipesGrid';
-import { Header, SearchbarEvent } from '../components/Header';
+import { Header, MainSearchbarEvent,handleMainSearchbarEvent } from '../components/Header';
 import { FilterFactory } from '../factories/filter.factory';
-import { FilterEvent, UnactivateFilterEvent } from '../components/SomeTypeFiltersMenu';
-import { FilterType, Filter } from '../modules/filter';
+import {  FilterType } from '../modules/recipe';
 import { DisplayFiltersMenusEvent, HideFiltersMenusEvent } from '../components/SomeTypeOfFiltersManager';
 import { displayFiltersMenu, hideFiltersMenu } from '../components/SomeTypeFiltersMenu';
-import { /*FilterListClickItemEvent, */SelectFilterEvent,handleClickOnFilterListItem } from '../components/Filter';
+import { SelectFilterEvent,handleClickOnFilterListItem } from '../components/FilterTag';
 import { UnselectFilterEvent, unselectFilter } from '../components/FilterButton';
 import { hideActiveFiltersMenu } from '../components/SomeTypeActiveFiltersMenu';
+import { RecipesCounter } from '../components/RecipesCounter';
 
-  /**
-   * Creates the home page, which includes a header with a search bar, a
-   * section for the recipes and, before it, a section for the filters to apply on the recipes.
-   * @returns The home page element.
-   */
+/**
+ * Creates the home page, which includes a header with a search bar, a
+ * section for the recipes and, before it, a section for the filters to apply on the recipes.
+ * @returns The home page element.
+ */
 export const HomePage = async () => {
-  for (const recipe of recipesArray) {
-    const ingredients: Ingredient[] = [];
-    const ustensils: string[] = [];
-    // Parse ingredients and ustensils
-    for (const ingredient of recipe.ingredients) {
-      let quantity;
-
-      switch (typeof ingredient.quantity) {
-        case 'number':
-          quantity = ingredient.quantity;
-          break;
-        case 'string':
-          quantity = Number(ingredient.quantity); // Convert string to number when given in string
-          break;
-        default:
-          quantity = undefined;
-      }
-      
-      ingredients.push({
-        ingredient: ingredient.ingredient.trim(),
-        quantity,
-        unit: ingredient.unit
-      });
-    }
-
-    for (const ustensil of recipe.ustensils) {
-      ustensils.push(ustensil.trim());
-    }
-
-    const newRecipe = new Recipe(
-      recipe.id,
-      recipe.image.trim(),
-      recipe.name.trim(),
-      recipe.servings,
-      ingredients,
-      recipe.time,
-      recipe.description.trim(),
-      recipe.appliance.trim(),
-      ustensils,
-    )
-
-    Recipe.originalListOfRecipes.push(newRecipe);
-  }
+  Recipe.originalRecipes = Recipe.createRecipes(recipesArray);
+  
   const page = document.createElement('div');
   
-  const header = Header(Recipe.originalListOfRecipes);
+  const header = Header();
   page.appendChild(header);
 
   const main = document.createElement('main')
   page.appendChild(main);
 
   const recipesSection: HTMLElement = RecipesSection();
+  const recipesCards = Recipe.createRecipesCards(Recipe.originalRecipes);
 
-  let recipesGrid: HTMLDivElement = RecipesGrid(Recipe.originalListOfRecipes);
+  let recipesGrid: HTMLDivElement = RecipesGrid(Recipe.originalRecipes);
+  recipesGrid.append(...recipesCards);
   recipesSection.appendChild(recipesGrid);
   
-  // const filters = FilterFactory.createFilters(Recipe.originalListOfRecipes);
+  const filtersTypes = ['ingredient', 'appliance', 'ustensil'] as FilterType[];
 
-  const filterTypes = ['ingredient', 'appliance', 'ustensil'] as FilterType[];
+  const filters = Recipe.extractFilters(Recipe.originalRecipes, filtersTypes);
+  const filtersTags = Recipe.createFiltersTags(filters);
+  const recipesCounter = RecipesCounter(Recipe.originalRecipes);
+  let filtersSection = FilterFactory.buildFilterSection(filtersTypes, filtersTags);
 
-  const filters = FilterFactory.createFilters(Recipe.originalListOfRecipes, filterTypes);
-  console.log('filters', filters);
-  const DOMFilters = FilterFactory.createDOMFilters(filterTypes, filters);
-  console.log('DOMFilters', DOMFilters);
-  let filtersSection = FilterFactory.buildFilterSection(filterTypes, DOMFilters);
+  filtersSection.appendChild(recipesCounter);
 
   main.appendChild(filtersSection);
   
   main.appendChild(recipesSection);
 
-  page.addEventListener(SearchbarEvent, (e: any) => Recipe.handleSearchbarEvent(e));
+  page.addEventListener(MainSearchbarEvent, (e: any) => handleMainSearchbarEvent(e, page));
 
   page.addEventListener(SelectFilterEvent, (e: any) => handleClickOnFilterListItem(e, page));
 

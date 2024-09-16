@@ -1,5 +1,4 @@
-import { FilterType } from '../modules/filter';
-import { HideFiltersMenusEvent } from './SomeTypeOfFiltersManager';
+import { FilterType } from '../modules/recipe';
 export function SomeTypeActiveFiltersMenu(filterType: FilterType) {
   const filterTypeItems: HTMLUListElement = document.createElement('ul');
   filterTypeItems.id = `list-of-active-${filterType}s`;

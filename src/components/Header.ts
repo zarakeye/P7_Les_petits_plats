@@ -1,15 +1,18 @@
 import { SearchBar } from '../components/SearchBar';
-import { Recipe } from '../modules/recipe';
+import { Recipe, FilterType } from '../modules/recipe';
 import { createEventAndDispatch, escapeSearchTerm } from '../helpers';
+import { FilterTag } from './FilterTag';
+import { NoMatchFound } from './NoMatchFound';
+import { updateRecipesCounter } from './RecipesCounter';
 
-export const SearchbarEvent = 'searchbar-event';
+export const MainSearchbarEvent = 'main-searchbar-event';
 
   /**
    * Creates the header of the page, which includes a search bar.
    * @param recipes - The array of recipes on which the input will base its search.
    * @returns The header element.
    */
-export function Header(recipes: Recipe[]) {
+export function Header() {
   const header = document.createElement('header')
   header.id = 'header'
   header.classList.add(
@@ -78,63 +81,46 @@ export function Header(recipes: Recipe[]) {
   )
 
   searchInput.addEventListener('input', (e) => {
-    let matchingRecipes: Recipe[] = [];
-    
-    const searchTerm = escapeSearchTerm((e.target as HTMLInputElement).value);
-    const regexp = new RegExp(searchTerm, 'i');
+    const userInput = escapeSearchTerm((e.target as HTMLInputElement).value);
 
-    console.log('searchTerm', searchTerm);
+    console.log('searchTerm', userInput);
 
-    if (searchTerm.length < 3) {
-      createEventAndDispatch(header, SearchbarEvent, {matchingRecipes: recipes});
-      return;
-    } else {
-      const matchingRecipesIds: number[] = [];
-      for (const recipe of recipes) {
-        let isRecipeMatching: boolean = false;
-
-        for (const recipeID of matchingRecipesIds) {
-          if (recipeID === recipe.id) {
-            isRecipeMatching = true;
-            break;
-          }
-        }
-
-        ////////////////////////////////////////////////////////////////////////////////
-
-        if (!isRecipeMatching) { // check if recipe is already in matchingRecipes
-        // if (!matchingRecipesIds.includes(recipe.id)) {
-          if (regexp.test(recipe.name)) {
-            const matchWithName = regexp.exec(recipe.name);
-            console.log(`index of match with name in ${recipe.name}`, `${matchWithName?.index}`);
-
-            matchingRecipes.push(recipe);
-            matchingRecipesIds.push(recipe.id);
-          } else if (regexp.test(recipe.description)){
-            const matchWithDescription = regexp.exec(recipe.description);
-            console.log(`index of match with description of ${recipe.name}`, `${matchWithDescription?.index}`);
-            matchingRecipes.push(recipe);
-            matchingRecipesIds.push(recipe.id);
-          } else {
-            for (const ingredient of recipe.ingredients) {
-              if (regexp.test(ingredient.ingredient)) {
-                const matchWithIngredient = regexp.exec(ingredient.ingredient);
-                console.log(`index of match with ingredient ${ingredient.ingredient}`, `${matchWithIngredient?.index}`);
-                matchingRecipes.push(recipe);
-                matchingRecipesIds.push(recipe.id);
-              }
-
-            }
-          }
-        }
+    if (userInput.length >= 3) {
+      if (Recipe.matchingRecipes.length !== 0) {
+        Recipe.filterRecipeswithUserInput(Recipe.matchingRecipes, userInput);
+        createEventAndDispatch(header, MainSearchbarEvent, {searchTerm: userInput});
+      } else {
+        Recipe.filterRecipeswithUserInput(Recipe.originalRecipes, userInput);
+        createEventAndDispatch(header, MainSearchbarEvent, {searchTerm: userInput});
       }
-
-      Recipe.mainSearchMatchingRecipes = matchingRecipes;
-
-      console.log('matchingRecipes', matchingRecipes);
-      createEventAndDispatch(header, SearchbarEvent, {searchTerm: searchTerm, matchingRecipes: matchingRecipes});
     }
   });
 
   return header;
+}
+
+export function handleMainSearchbarEvent(e: any, page: HTMLElement) {
+  if (Recipe.matchingRecipes.length !== 0) {
+    const filtersTypes = ['ingredient', 'appliance', 'ustensil'] as FilterType[];
+    const newFilters: any = Recipe.extractFilters(Recipe.matchingRecipes, filtersTypes);
+ 
+    for (const type of filtersTypes) {
+      const filtersMenu = page.querySelector(`#list-of-selectable-${type}s`) as HTMLUListElement;
+      filtersMenu.innerHTML = '';
+
+      for (const newFilter of newFilters[`${type}s`]) {
+        filtersMenu.appendChild(FilterTag(newFilter, type));
+      }
+    }
+    
+    const recipesGrid = page.querySelector('#recipes-grid') as HTMLDivElement;
+    const newRecipesCards = Recipe.createRecipesCards(Recipe.matchingRecipes);
+    recipesGrid.replaceChildren(...newRecipesCards);
+
+    updateRecipesCounter(Recipe.matchingRecipes.length, page);
+  } else {
+    const main = page.querySelector('main') as HTMLElement;
+    main.innerHTML = '';
+    main.appendChild(NoMatchFound(e.detail.searchTerm));
+  }
 }

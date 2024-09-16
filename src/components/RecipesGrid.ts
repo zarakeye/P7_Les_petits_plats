@@ -15,9 +15,5 @@ export function RecipesGrid(recipes: Recipe[]) {
     'gap-y-[48px]'
   );
 
-  for (const recipe of recipes) {
-    recipesGrid.appendChild(RecipeCard(recipe));
-  }
-
   return recipesGrid;
 }
