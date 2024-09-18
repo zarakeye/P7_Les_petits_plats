@@ -3,14 +3,13 @@ import { Recipe } from '../modules/recipe';
 import { RecipesSection } from '../components/RecipesSection';
 import { RecipesGrid } from '../components/RecipesGrid';
 import { Header, MainSearchbarEvent,handleMainSearchbarEvent } from '../components/Header';
-import { FilterFactory } from '../factories/filter.factory';
 import {  FilterType } from '../modules/recipe';
 import { DisplayFiltersMenusEvent, HideFiltersMenusEvent } from '../components/SomeTypeOfFiltersManager';
 import { displayFiltersMenu, hideFiltersMenu } from '../components/SomeTypeFiltersMenu';
 import { SelectFilterEvent,handleClickOnFilterListItem } from '../components/FilterTag';
 import { UnselectFilterEvent, unselectFilter } from '../components/FilterButton';
-import { hideActiveFiltersMenu } from '../components/SomeTypeActiveFiltersMenu';
 import { RecipesCounter } from '../components/RecipesCounter';
+import { buildFilterSection } from '../components/FiltersSection';
 
 /**
  * Creates the home page, which includes a header with a search bar, a
@@ -37,10 +36,10 @@ export const HomePage = async () => {
   
   const filtersTypes = ['ingredient', 'appliance', 'ustensil'] as FilterType[];
 
-  const filters = Recipe.extractFilters(Recipe.originalRecipes, filtersTypes);
-  const filtersTags = Recipe.createFiltersTags(filters);
+  Recipe.updateSelectableFilters();
+  
   const recipesCounter = RecipesCounter(Recipe.originalRecipes);
-  let filtersSection = FilterFactory.buildFilterSection(filtersTypes, filtersTags);
+  let filtersSection = buildFilterSection(filtersTypes);
 
   filtersSection.appendChild(recipesCounter);
 
@@ -52,7 +51,7 @@ export const HomePage = async () => {
 
   page.addEventListener(SelectFilterEvent, (e: any) => handleClickOnFilterListItem(e, page));
 
-  page.addEventListener(UnselectFilterEvent, (e: any) => handleUnselectFilterEvent(e, page));
+  page.addEventListener(UnselectFilterEvent, (e: any) => unselectFilter(e, page));
 
   page.addEventListener(DisplayFiltersMenusEvent, (e: any) => displayFiltersMenu(e, page));
 
@@ -61,9 +60,3 @@ export const HomePage = async () => {
   return page;
 }
 
-function handleUnselectFilterEvent(e: any, page: HTMLElement) {
-  const filter = e.detail.filter;
-  unselectFilter(e, page);
-
-  hideActiveFiltersMenu(filter.type, page);
-}

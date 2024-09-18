@@ -1,11 +1,14 @@
 import { SearchBar } from './SearchBar';
 import { createEventAndDispatch } from '../helpers';
 import { FilterEvent, UnactivateFilterEvent } from './SomeTypeFiltersMenu';
-import { FilterType } from '../modules/recipe';
+import { FilterType, Recipe } from '../modules/recipe';
+import { SomeTypeActiveFiltersMenu } from './SomeTypeActiveFiltersMenu';
+import { SomeTypeFiltersMenu } from './SomeTypeFiltersMenu';
+import { SomeTypeButtonsContainerOfActiveFilters } from './SomeTypeButtonsContainerOfActiveFilters';
+import { createTagsOfATypeOfFilters } from './FilterTag';
 
 export const DisplayFiltersMenusEvent = 'display-selectable-filters-event';
 export const HideFiltersMenusEvent = 'hide-selectable-filters-event';
-export const UpdateSelectableFiltersEvent = 'update-selectable-filters-event';
 
 export function SomeTypeOfFiltersManager(filterType: FilterType) {
   const searchBar = SearchBar();
@@ -36,9 +39,9 @@ export function SomeTypeOfFiltersManager(filterType: FilterType) {
       aria-expanded="false"
     >
       <header
-        class="flex flex-row justify-between items-center text-[16px] px-[16px] font-bold"
+        class="flex flex-row justify-between items-center text-[16px] text-black px-[16px] font-bold"
       >
-        <h2>${filterType}</h2>
+        <h2 class="">${filterType}</h2>
         <button type="button" class="expandCollapse">
           <i class="fa fa-chevron-up" aria-hidden="true"></i>
         </button>
@@ -61,7 +64,7 @@ export function SomeTypeOfFiltersManager(filterType: FilterType) {
   const dropdownMenu = filterList.querySelector(`#${filterType}__dropdown`);
   const page = document.querySelector('#app') as HTMLElement;
 
-  dropdownMenu?.addEventListener('click', (e: any) => handleClickEventOnDropdownMenu(e, page));
+  dropdownMenu?.addEventListener('click', (e: any) => handleClickEventOnDropdownMenu(e));
 
   page.addEventListener('click', (e: any) => handleClickEventOutOfDropdownMenu(e, page));
 
@@ -75,8 +78,6 @@ export function SomeTypeOfFiltersManager(filterType: FilterType) {
     searchBar.reset();
     searchBar.classList.remove('mb-[24px]');
     searchBar.classList.add('mb-[15px]');
-    // menu?.classList.add('mt-[20px]');
-    // menu?.classList.remove('hidden');
     
     const activeItem = document.createElement('div');
     activeItem.classList.add(`active-${filterType}`, 'relative', 'text-[14px]', 'text-center', 'bg-yellow', 'text-gray');
@@ -95,14 +96,11 @@ export function SomeTypeOfFiltersManager(filterType: FilterType) {
         <i class="fa fa-times" aria-hidden="true"></i>
       </button>
     `;
-    // activeContainer?.appendChild(activeItem);
 
     const filterButton = document.createElement('button');
     filterButton.classList.add(`current-${filterType}`, 'z-0', 'active', 'text-[14px]', 'text-center', 'bg-yellow', 'text-gray', 'rounded-[10px]', 'px-[18px]', 'py-[17px]', 'mr-[5px]','mb-[21px]', 'first:mt-[79px]');
     filterButton.textContent = filterName;
     currentContainer?.appendChild(filterButton);
-
-
 
     activeItem.addEventListener('click', (e) => cancelActiveFilterInDropdownMenu(e, filterName, activeItem, filterButton));
 
@@ -157,7 +155,7 @@ export function SomeTypeOfFiltersManager(filterType: FilterType) {
     activeItem.remove();
     filterButton.remove();
     if (activeItems.length === 0) {
-      searchBar.classList.remove('mb-[15px]');
+      searchBar.classList.remove('mb-[15px]', 'hidden');
       searchBar.classList.add('mb-[24px]');
       menu?.classList.remove('mt-[20px]');
     }
@@ -179,22 +177,31 @@ export function SomeTypeOfFiltersManager(filterType: FilterType) {
    * If the dropdown menu is collapsed, it expands it and shows the search bar, items list and active container.
    * It also removes the hidden class from all the active items.
    */
-   function handleClickEventOnDropdownMenu(e: any, page: HTMLElement) {
-    if (dropdownMenu?.getAttribute('aria-expanded') === 'false') {
-      dropdownMenu.setAttribute('aria-expanded', 'true');
-      expandCollapse?.classList.add('rotate-180');
-      searchBar.classList.remove('hidden');
-      searchBar.classList.add('flex');
-      searchBar.querySelector('input')?.focus();
-      page.querySelector(`#list-of-active-${filterType}s`)?.classList.remove('hidden');
-      createEventAndDispatch(filterList, DisplayFiltersMenusEvent, {filterType: filterType});
-    } else {
-      if (dropdownMenu?.querySelector('header')?.contains(e.target)) {
+   function handleClickEventOnDropdownMenu(e: any) {
+    if (dropdownMenu?.querySelector('header')?.contains(e.target)) {
+      if (dropdownMenu?.getAttribute('aria-expanded') === 'false') {
+        dropdownMenu.setAttribute('aria-expanded', 'true');
+        expandCollapse?.classList.add('rotate-180');
+        searchBar.classList.remove('hidden');
+        searchBar.classList.add('flex');
+        searchBar.querySelector('input')?.focus();
+        const selectablefiltersMenu = SomeTypeFiltersMenu(filterType);
+        dropdownMenu?.appendChild(selectablefiltersMenu);
+        Recipe.updateSelectableFilters();
+        const tags = createTagsOfATypeOfFilters(filterType);
+        const activeTagsMenu = dropdownMenu.querySelector(`#list-of-active-${filterType}s`) as HTMLUListElement;
+        activeTagsMenu.classList.remove('hidden');
+        selectablefiltersMenu.replaceChildren(...tags);
+
+        // page.querySelector(`#list-of-active-${filterType}s`)?.classList.remove('hidden');
+        createEventAndDispatch(filterList, DisplayFiltersMenusEvent, {filterType: filterType});
+      } else {
         dropdownMenu.setAttribute('aria-expanded', 'false');
         expandCollapse?.classList.remove('rotate-180');
         searchBar.classList.remove('flex');
         searchBar.classList.add('hidden');
-        page.querySelector(`#list-of-active-${filterType}s`)?.classList.add('hidden');
+        dropdownMenu?.querySelector(`#list-of-selectable-${filterType}s`)?.remove();
+        dropdownMenu?.querySelector(`#list-of-active-${filterType}s`)?.classList.add('hidden');
         createEventAndDispatch(filterList, HideFiltersMenusEvent, {filterType: filterType});
       }
     }
@@ -209,7 +216,7 @@ export function SomeTypeOfFiltersManager(filterType: FilterType) {
       const activeFiltersMenu = page.querySelector(`#list-of-active-${filterType}s`);
       activeFiltersMenu?.classList.add('hidden');
       const selectableFiltersMenu = page.querySelector(`#list-of-selectable-${filterType}s`);
-      selectableFiltersMenu?.classList.add('hidden');
+      selectableFiltersMenu?.remove();
     }
   }
 
@@ -226,4 +233,30 @@ export function SomeTypeOfFiltersManager(filterType: FilterType) {
     }
   }
   return filterList;
+}
+
+export function buildFiltersTypeManager(filterType: FilterType) {
+  const activeFiltersMenu = SomeTypeActiveFiltersMenu(filterType);
+  const activeFiltersButtonsContainer = SomeTypeButtonsContainerOfActiveFilters(filterType);
+  const filtersManager = SomeTypeOfFiltersManager(filterType);
+  const filtersManagerTitle = filtersManager.querySelector('h2');
+  if (filtersManagerTitle) {
+    switch (filterType) {
+      case 'ingredient':
+        filtersManagerTitle.textContent = 'Ingrédients';
+        break;
+      case 'appliance':
+        filtersManagerTitle.textContent = 'Appareils';
+        break;
+      case 'ustensil':
+        filtersManagerTitle.textContent = 'Ustensiles';
+        break;
+    }
+  }
+  const filtersManagerDropdown = filtersManager.querySelector('aside');
+
+  filtersManagerDropdown?.appendChild(activeFiltersMenu);
+  filtersManager?.appendChild(activeFiltersButtonsContainer);
+
+  return filtersManager;
 }

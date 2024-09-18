@@ -70,6 +70,12 @@ export class Recipe {
     ustensils: [],
   };
 
+  static selectableFilters: any = {
+    ingredients: [],
+    appliances: [],
+    ustensils: [],
+  };
+
   static createRecipes(recipes: any[]): Recipe[] {
     for (const recipe of recipes) {
       const ingredients: Ingredient[] = [];
@@ -153,8 +159,10 @@ export class Recipe {
     }
 
     for (const type of filtersTypes) {
-      filters[`${type}s`] = [...new Set(filters[`${type}s`])];
-      console.log(`filters`, filters);
+      let temporaryArray = [...new Set(filters[`${type}s`])];
+      let temporaryArrayCastedToArrayOfStrings: string[] = temporaryArray.map((item) => String(item));
+      temporaryArray= [...introSort(temporaryArrayCastedToArrayOfStrings)];
+      filters[`${type}s`] = [...new Set(temporaryArray)];
     }
 
     return filters;
@@ -202,7 +210,6 @@ export class Recipe {
     }
 
     matchingRecipes = [...new Set(matchingRecipes)];
-    console.log('matchingRecipes', matchingRecipes);
 
     Recipe.matchingRecipes = matchingRecipes;
   }
@@ -244,20 +251,17 @@ export class Recipe {
         ingredients.find(ingredient => {
           if (regexp.exec(ingredient)) {
             matchingCount++;
-            console.log(`filter ${filter} found in ${recipe.name}`);
           }
         });
         
         recipe.ustensils.find(ustensil => {
           if (regexp.exec(ustensil)) {
             matchingCount++;
-            console.log(`filter ${filter} found in ${recipe.name}`);
           }
         });
         
         if (regexp.exec(recipe.appliance)) {
           matchingCount++;
-          console.log(`filter ${filter} found in ${recipe.name}`);
         }
       });
 
@@ -266,7 +270,6 @@ export class Recipe {
       }
     }
     Recipe.matchingRecipes = matchingRecipes;
-    console.log('matchingRecipes', Recipe.matchingRecipes);
 
     const recipesSection = document.getElementById('recipes-section');
     let recipesGrid = document.getElementById('recipes-grid');
@@ -285,6 +288,53 @@ export class Recipe {
       }
 
       recipesSection.appendChild(recipesGrid);
+    }
+  }
+
+  static updateSelectableFilters() {
+    const filtersTypes: FilterType[] = ['ingredient', 'appliance', 'ustensil'];
+    if (Recipe.matchingRecipes.length !== 0) {
+      console.log('Recipe.matchingRecipes.length', Recipe.matchingRecipes.length);
+      const filters = Recipe.extractFilters(Recipe.matchingRecipes, filtersTypes);
+      console.log('extracted filters', filters);
+      console.log('Recipe.activeFilters', Recipe.activeFilters);
+
+      filtersTypes.forEach((type: FilterType) => {
+        if (Recipe.activeFilters[`${type}s`].length !== 0) {
+          // this.selectableFilters[`${type}s`] = filters[`${type}s`].map((filter: any) => !Recipe.activeFilters[`${type}s`].includes(filter));
+          this.selectableFilters[`${type}s`] = [];
+          console.log(`this.selectableFilters[${type}s]`, this.selectableFilters[`${type}s`]);
+          filters[`${type}s`].forEach((filter: any) => {
+            console.log('filter', filter);
+            if (!Recipe.activeFilters[`${type}s`].includes(filter)) {
+              this.selectableFilters[`${type}s`].push(filter);
+            }
+            console.log(`this.selectableFilters[${type}s]`, this.selectableFilters[`${type}s`]);
+          });
+        } else {
+          this.selectableFilters[`${type}s`] = filters[`${type}s`];
+        }
+      });
+
+      console.log('this.selectableFilters', this.selectableFilters);
+      
+
+      // this.selectableFilters.forEach((type: FilterType) => {
+      //   const key = `${type}s` as keyof typeof this.selectableFilters;
+      //   this.selectableFilters[key] = [...introSort(this.selectableFilters[key])];
+      //   console.log('this.selectableFilters[key]', this.selectableFilters[key]);
+      // });
+      Object.keys(this.selectableFilters).forEach((key: string) => {
+        this.selectableFilters[key] = [...introSort(this.selectableFilters[key])];
+        this.selectableFilters[key] = [...new Set(this.selectableFilters[key])];
+      });
+      console.log('this.selectableFilters', this.selectableFilters);
+    } else {
+      const filters = Recipe.extractFilters(Recipe.originalRecipes, filtersTypes);
+      filtersTypes.forEach((type: FilterType) => {
+        this.selectableFilters[`${type}s`] = filters[`${type}s`];
+      });
+      console.log('this.selectableFilters', this.selectableFilters);
     }
   }
 }

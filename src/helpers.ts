@@ -121,7 +121,6 @@ function medianOfThree(array: string[]): string {
   
   const middle = array[medianIndex];
   const last = array[array.length - 1];
-  console.log(`first: ${first}, middle: ${middle}, last: ${last}`);
   if (first.localeCompare(middle, undefined, { sensitivity: 'base' }) < 0 && middle.localeCompare(last, undefined, { sensitivity: 'base' }) < 0) {
     return middle;
   } else if (first.localeCompare(last, undefined, { sensitivity: 'base' }) < 0 && last.localeCompare(middle, undefined, { sensitivity: 'base' }) < 0) {

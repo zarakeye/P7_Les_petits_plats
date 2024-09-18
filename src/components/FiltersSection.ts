@@ -1,3 +1,6 @@
+import { FilterType } from "../modules/recipe";
+import { buildFiltersTypeManager } from "./SomeTypeOfFiltersManager";
+
 export function FiltersSection() {
   const filtersSection = document.createElement('section');
   filtersSection.id = 'filters-section';
@@ -12,6 +15,18 @@ export function FiltersSection() {
     </div>
   `;
   
+  return filtersSection;
+}
+
+export function buildFilterSection(filterTypes: FilterType[]) {
+  const filtersSection = FiltersSection();
+  const typesManagersContainers = filtersSection.querySelector('#filter-types-managers_container');
+
+  for (const filterType of filterTypes) {
+    const filtersTypeManager = buildFiltersTypeManager(filterType);
+    typesManagersContainers?.appendChild(filtersTypeManager);
+  }
+
   return filtersSection;
 }
 

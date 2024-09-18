@@ -1,30 +1,31 @@
 import { createEventAndDispatch } from '../helpers';
-import { capitalizeFirstLetter, introSort } from '../helpers';
+import { capitalizeFirstLetter } from '../helpers';
 import { Recipe, FilterType } from '../modules/recipe';
 import { updateRecipesCounter } from './RecipesCounter';
+import { FilterButton } from './FilterButton';
 
 export const SelectFilterEvent = 'select-filter-event';
 
 export function FilterTag(filter: any, type: FilterType) {
   const filterName = String(filter);
-  const filterTag: HTMLLIElement = document.createElement('li');
-  filterTag.classList.add('text-[14px]', 'bg-white', `${type}`, 'filter'); 
-  filterTag.textContent = capitalizeFirstLetter(filterName);
+  const tag: HTMLLIElement = document.createElement('li');
+  tag.classList.add('text-[14px]', 'bg-white', `${type}`, 'filter', 'text-black'); 
+  tag.textContent = capitalizeFirstLetter(filterName);
 
-  filterTag.addEventListener('click', () => {
-    createEventAndDispatch(filterTag, SelectFilterEvent, { filter: filterName });
+  tag.addEventListener('click', () => {
+    createEventAndDispatch(tag, SelectFilterEvent, { filter: filterName });
   });
 
-  return filterTag;
+  return tag;
 }
 
 export function handleClickOnFilterListItem(event: any, page: HTMLElement) {
   const filter: string = event.detail.filter;
-  const filterTag = event.target;
-  const textContent = filterTag.textContent;
-  filterTag.classList.toggle('active');
+  const tag = event.target;
+  const textContent = tag.textContent;
+  tag.classList.toggle('active');
 
-  const parent = filterTag.parentElement;
+  const parent = tag.parentElement;
   // extract filter type from parent id
   const parentId = parent?.id;
   const splittedParentId = parentId?.split('-');
@@ -34,115 +35,110 @@ export function handleClickOnFilterListItem(event: any, page: HTMLElement) {
   const filtersTypesList = ['ingredient', 'appliance', 'ustensil'] as FilterType[];
 
   const activeFiltersMenu = page.querySelector(`#list-of-active-${filterType}`);
-  if (filterTag.classList.contains('active')) {
+  if (tag.classList.contains('active')) {
     Recipe.activeFilters[filterType].push(filter);
-    activeFiltersMenu?.appendChild(filterTag);
-    filterTag.classList.add('relative', 'text-[14px]', 'text-center', 'bg-yellow', 'text-gray');
-    filterTag.textContent = '';
-    filterTag.innerHTML = `
+    activeFiltersMenu?.appendChild(tag);
+    tag.classList.add('relative', 'text-[14px]', 'text-center', 'bg-yellow');
+    tag.textContent = '';
+    tag.innerHTML = `
       <p
-        class="active-item text-[14px] text-left px-[16px] py-[9px] mb-px"
+        class="active-item text-[14px] text-black text-left px-[16px] py-[9px] mb-px hover:font-bold"
         aria-label="filtre ${textContent} actif"
       >
         ${textContent}
       </p>
-      <button
-        type="button"
-        class="absolute right-[5px] top-[50%] translate-y-[-50%]"
+      <div
+        class="absolute right-[5px] top-[50%] translate-y-[-50%] w-[17px] h-[17px] hover:bg-black hover:text-yellow rounded-[50%] flex justify-center items-center"
         aria-label="close ${textContent}"
       >
-        <i class="fa fa-times" aria-hidden="true"></i>
+        <img src="icons/close_yellow.svg" alt"close button"class="h-[5px] p-[12px]" aria-hidden="true"></i>
       </button>
     `;
 
+
     if (Recipe.matchingRecipes.length === 0) {
-      updateCardsAndFiltersTagsWhenSomeFilterIsSelected(Recipe.originalRecipes, filter, realType, filtersTypesList, page);
-      // console.log('page: ', page);
-      // const recipesCounter = page.querySelector('#recipes-counter');
-      // console.log('recipesCounter: ', recipesCounter);
-      // if (recipesCounter) {
-      //   recipesCounter.textContent = `${Recipe.matchingRecipes.length} RECETTES`;
-      // }
+      updateCardsAndFiltersTagsWhenSomeFilterIsSelected(Recipe.originalRecipes, filter, realType, page);
+      
       
     } else {
-      updateCardsAndFiltersTagsWhenSomeFilterIsSelected(Recipe.matchingRecipes, filter, realType, filtersTypesList, page);
-      // const recipesCounter = page.querySelector('#recipes-counter');
-      // console.log('recipesCounter: ', recipesCounter);
-      // if (recipesCounter) {
-      //   recipesCounter.textContent = `${Recipe.matchingRecipes.length} RECETTES`;
-      // }
+      updateCardsAndFiltersTagsWhenSomeFilterIsSelected(Recipe.matchingRecipes, filter, realType, page);
     }
   } else {
-    // remove filter tag from active filters menu and add it to selectable filters menu
-    filterTag.innerHTML = textContent;
-    filterTag.classList.remove('relative', 'text-[14px]', 'text-center', 'bg-yellow', 'text-gray');
-    page.querySelector(`#list-of-selectable-${filterType}`)?.appendChild(filterTag);
-
-    // remove filter from active filters
-    Recipe.activeFilters[filterType] = Recipe.activeFilters[filterType].filter((activeFilter: string) => activeFilter !== filter);
-    console.log('Recipe.activeFilters[filterType]: ', Recipe.activeFilters[filterType]);
-    
-    // refilter recipes. Matching repcipes initially must contains all recipes.
-    // Remove from matchingRecipes any recipe that does not match any of the active filters
-    Recipe.matchingRecipes = Recipe.originalRecipes;
-    filtersTypesList.forEach((type: FilterType) => {
-        Recipe.activeFilters[`${type}s`].forEach((activeFilter: any) => {
-          Recipe.filterRecipesWithActivatedFilter(Recipe.matchingRecipes, type, activeFilter);
-        })
-        const updatedRecipesCards = Recipe.createRecipesCards(Recipe.matchingRecipes);
-        const recipesGrid = page.querySelector('#recipes-grid');
-        recipesGrid?.replaceChildren(...updatedRecipesCards);
-    });
-
-    // update possible filters
-    let updatedFilters = Recipe.extractFilters(Recipe.matchingRecipes, filtersTypesList);
-
-    // remove from updatedFilters any filter present in the active filters
-    filtersTypesList.forEach((type: FilterType) => {
-      if (Recipe.activeFilters[`${type}s`].length !== 0) {
-        updatedFilters[`${type}s`] = updatedFilters[`${type}s`].filter((filter: any) => !Recipe.activeFilters[`${type}s`].includes(filter));
-      }
-    })
-
-    Object.keys(updatedFilters).forEach((key: string) => {
-      updatedFilters[key] = [...introSort(updatedFilters[key])];
-    });
-
-    // create new filters tags
-    let newFiltersTags = Recipe.createFiltersTags(updatedFilters);
-    filtersTypesList.forEach((type: FilterType) => {
-      const clickableFitersMenu = page.querySelector(`#list-of-selectable-${type}s`);
-      clickableFitersMenu?.replaceChildren(...newFiltersTags[`${type}s`]);
-    });
-
-    console.log('Recipe.matchingRecipes', Recipe.matchingRecipes);
-    updateRecipesCounter(Recipe.matchingRecipes.length, page);
+    updateCardsAndFiltersTagsWhenAFilterIsRemoved(filter, realType, filtersTypesList, page);
+  
   }
 }
 
-function updateCardsAndFiltersTagsWhenSomeFilterIsSelected(recipes: Recipe[], filter: string, type: FilterType, filtersTypesList: FilterType[], page: HTMLElement) {
+function updateCardsAndFiltersTagsWhenSomeFilterIsSelected(recipes: Recipe[], filter: string, type: FilterType, page: HTMLElement) {
+  updateRecipesGrid(recipes, type, filter, page);
+  updateClickableFiltersMenu(type, page);
+  addUnselectFilterButton(filter, type, page);
+  updateRecipesCounter(Recipe.matchingRecipes.length, page);
+}
+
+export function updateCardsAndFiltersTagsWhenAFilterIsRemoved(filter: string, type: FilterType, filtersTypesList: FilterType[], page: HTMLElement) {
+  const activeTagsMenu = page.querySelectorAll(`#list-of-active-${type}s .filter`);
+  const tag = Array.from(activeTagsMenu).find(tag => String(tag.querySelector('p')?.textContent?.trim()) === filter.trim()) as HTMLLIElement;
+  
+  // remove tag from active tags menu, it will be created after updating selectable filters
+  tag.remove();
+
+
+
+  // remove filter from active ones
+  const activeFiltersKey = `${type}s` as keyof typeof Recipe.activeFilters;
+  Recipe.activeFilters[activeFiltersKey] = Recipe.activeFilters[activeFiltersKey].filter((activeFilter: string) => activeFilter !== filter);
+  
+  // Refilter recipes. Matching recipes inited with all recipes.
+  // Remove from matchingRecipes any recipe that does not match any of the active filters
+  Recipe.matchingRecipes = Recipe.originalRecipes;
+  filtersTypesList.forEach((type: FilterType) => {
+      Recipe.activeFilters[`${type}s`].forEach((activeFilter: any) => {
+        Recipe.filterRecipesWithActivatedFilter(Recipe.matchingRecipes, type, activeFilter);
+      })
+      const updatedRecipesCards = Recipe.createRecipesCards(Recipe.matchingRecipes);
+      const recipesGrid = page.querySelector('#recipes-grid');
+      recipesGrid?.replaceChildren(...updatedRecipesCards);
+  });
+
+  let newFiltersTags = createTagsOfATypeOfFilters(type);
+  const clickableFitersMenu = page.querySelector(`#list-of-selectable-${type}s`);
+  clickableFitersMenu?.replaceChildren(...newFiltersTags);
+
+  const clearButons = page.querySelectorAll(`.current-${type}`);
+  Array.from(clearButons).find(button => String(button.textContent?.trim()) === filter.trim())?.parentElement?.remove();
+
+  updateRecipesCounter(Recipe.matchingRecipes.length, page);
+}
+
+export function createTagsOfATypeOfFilters(type: FilterType): HTMLLIElement[] {
+  const key = `${type}s`;
+
+  let filtersOfType: string[] = [];
+  if (Recipe.selectableFilters[key]) {
+    filtersOfType = (Recipe.selectableFilters as any)[key];
+  }
+  console.log('typeof filtersOfType', typeof filtersOfType);
+  return filtersOfType.map((filter: string) => FilterTag(filter, type));
+}
+
+function updateRecipesGrid(recipes: Recipe[], type: FilterType, filter: string, page: HTMLElement) {
   Recipe.filterRecipesWithActivatedFilter(recipes, type, filter);
   const updatedRecipesCards = Recipe.createRecipesCards(Recipe.matchingRecipes);
   const recipesGrid = page.querySelector('#recipes-grid');
   recipesGrid?.replaceChildren(...updatedRecipesCards);
-  let updatedFilters = Recipe.extractFilters(Recipe.matchingRecipes, filtersTypesList);
+}
 
-  filtersTypesList.forEach((type: FilterType) => {
-    if (Recipe.activeFilters[`${type}s`].length !== 0) {
-      updatedFilters[`${type}s`] = updatedFilters[`${type}s`].filter((filter: any) => !Recipe.activeFilters[`${type}s`].includes(filter));
-    }
-  });
-
-  Object.keys(updatedFilters).forEach((key) => {
-    updatedFilters[key] = [...introSort(updatedFilters[key])];
-  });
-  
-  let newFiltersTags = Recipe.createFiltersTags(updatedFilters);
+function updateClickableFiltersMenu(type: FilterType, page: HTMLElement) {
+  Recipe.updateSelectableFilters();
+  let newFiltersTags = createTagsOfATypeOfFilters(type);
     
-  filtersTypesList.forEach((type: FilterType) => {
-    const clickableFitersMenu = page.querySelector(`#list-of-selectable-${type}s`);
-    clickableFitersMenu?.replaceChildren(...newFiltersTags[`${type}s`]);
-  });
+  const clickableFitersMenu = page.querySelector(`#list-of-selectable-${type}s`);
+  clickableFitersMenu?.replaceChildren(...newFiltersTags);
+}
 
-  updateRecipesCounter(Recipe.matchingRecipes.length, page);
+function addUnselectFilterButton(filter: string, type: FilterType, page: HTMLElement) {
+  const buttonsContainer = page.querySelector(`#active-${type}s-clear-buttons_container`);
+  const unselectFilterButton = FilterButton(filter, type);
+  buttonsContainer?.appendChild(unselectFilterButton);
 }

@@ -1,7 +1,4 @@
 import { FilterType } from '../modules/recipe';
-// import { createEventAndDispatch } from '../helpers';
-// import { Recipe } from '../modules/recipe';
-// import { DisplaySelectableFiltersEvent, HideSelectableFiltersEvent } from '../components/SomeTypeOfFiltersManager';
 
 export const UnactivateFilterEvent = 'cancel-filter-event';
 export const FilterEvent = 'filter-event';
