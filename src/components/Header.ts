@@ -101,17 +101,17 @@ export function Header() {
 
 export function handleMainSearchbarEvent(e: any, page: HTMLElement) {
   if (Recipe.matchingRecipes.length !== 0) {
-    const filtersTypes = ['ingredient', 'appliance', 'ustensil'] as FilterType[];
-    const newFilters: any = Recipe.extractFilters(Recipe.matchingRecipes, filtersTypes);
+    // const filtersTypes = ['ingredient', 'appliance', 'ustensil'] as FilterType[];
+    // const newFilters: any = Recipe.extractFilters(Recipe.matchingRecipes, filtersTypes);
  
-    for (const type of filtersTypes) {
-      const filtersMenu = page.querySelector(`#list-of-selectable-${type}s`) as HTMLUListElement;
-      filtersMenu.innerHTML = '';
+    // for (const type of filtersTypes) {
+    //   const filtersMenu = page.querySelector(`#list-of-selectable-${type}s`) as HTMLUListElement;
+    //   filtersMenu.innerHTML = '';
 
-      for (const newFilter of newFilters[`${type}s`]) {
-        filtersMenu.appendChild(FilterTag(newFilter, type));
-      }
-    }
+    //   for (const newFilter of newFilters[`${type}s`]) {
+    //     filtersMenu.appendChild(FilterTag(newFilter, type));
+    //   }
+    // }
     
     const recipesGrid = page.querySelector('#recipes-grid') as HTMLDivElement;
     const newRecipesCards = Recipe.createRecipesCards(Recipe.matchingRecipes);

@@ -211,6 +211,8 @@ export class Recipe {
 
     matchingRecipes = [...new Set(matchingRecipes)];
 
+    console.log('matchingRecipes', matchingRecipes);
+
     Recipe.matchingRecipes = matchingRecipes;
   }
 

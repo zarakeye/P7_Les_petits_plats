@@ -47,14 +47,16 @@ export function escapeSearchTerm(searchTerm: string): string {
 }
 
 export function firstStringInSecondString(a: string, b: string): boolean {
-  for (let i = 0; i < b.length - a.length; i++) {
+  const aLowerCase = a.toLowerCase();
+  const bLowerCase = b.toLowerCase();
+  for (let i = 0; i < bLowerCase.length - aLowerCase.length; i++) {
     let j: number;
-    for (j = 0; j < a.length; j++) {
-      if (b[i + j] !== a[j]) {
+    for (j = 0; j < aLowerCase.length; j++) {
+      if (bLowerCase[i + j] !== aLowerCase[j]) {
         break;
       }
     }
-    if (j === a.length) {
+    if (j === aLowerCase.length) {
       return true;
     }
   }
