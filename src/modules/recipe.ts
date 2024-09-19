@@ -168,8 +168,8 @@ export class Recipe {
     return filters;
   }
 
-  public clone(): Recipe {
-    return new Recipe(this.id, this.image, this.name, this.servings, this.ingredients, this.time, this.description, this.appliance, this.ustensils);
+  static clone(recipe: Recipe): Recipe {
+    return new Recipe(recipe.id, recipe.image, recipe.name, recipe.servings, recipe.ingredients, recipe.time, recipe.description, recipe.appliance, recipe.ustensils);
   }
 
   static createFiltersTags(filters: any): any {

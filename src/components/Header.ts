@@ -93,6 +93,27 @@ export function Header() {
         Recipe.filterRecipeswithUserInput(Recipe.originalRecipes, userInput);
         createEventAndDispatch(header, MainSearchbarEvent, {searchTerm: userInput});
       }
+    } else {
+      const filtersTypes = ['ingredient', 'appliance', 'ustensil'] as FilterType[];
+
+      if (Recipe.activeFilters.ingredients.length === 0 && Recipe.activeFilters.appliances.length == 0 && Recipe.activeFilters.ustensils.length !== 0) {
+        const updatedRecipesCards = Recipe.createRecipesCards(Recipe.originalRecipes);
+        const recipesGrid = document.querySelector('#recipes-grid');
+        recipesGrid?.replaceChildren(...updatedRecipesCards);
+      } else {
+        Recipe.matchingRecipes = Recipe.originalRecipes;
+        filtersTypes.forEach((type: FilterType) => {
+          Recipe.activeFilters[`${type}s`].forEach((activeFilter: any) => {
+            Recipe.filterRecipesWithActivatedFilter(Recipe.matchingRecipes, type, activeFilter);
+          })
+          const updatedRecipesCards = Recipe.createRecipesCards(Recipe.matchingRecipes);
+          const recipesGrid = document.querySelector('#recipes-grid');
+
+          recipesGrid?.replaceChildren(...updatedRecipesCards);
+        });
+      }
+      
+      createEventAndDispatch(header, MainSearchbarEvent, {searchTerm: userInput});
     }
   });
 
@@ -100,6 +121,7 @@ export function Header() {
 }
 
 export function handleMainSearchbarEvent(e: any, page: HTMLElement) {
+  const searchTerm = e.detail.searchTerm;
   if (Recipe.matchingRecipes.length !== 0) {
     // const filtersTypes = ['ingredient', 'appliance', 'ustensil'] as FilterType[];
     // const newFilters: any = Recipe.extractFilters(Recipe.matchingRecipes, filtersTypes);
@@ -119,8 +141,15 @@ export function handleMainSearchbarEvent(e: any, page: HTMLElement) {
 
     updateRecipesCounter(Recipe.matchingRecipes.length, page);
   } else {
-    const main = page.querySelector('main') as HTMLElement;
-    main.innerHTML = '';
-    main.appendChild(NoMatchFound(e.detail.searchTerm));
+    if (searchTerm.length >= 3) {
+      const main = page.querySelector('main') as HTMLElement;
+      main.innerHTML = '';
+      main.appendChild(NoMatchFound(e.detail.searchTerm));
+    } else {
+      const recipesGrid = page.querySelector('#recipes-grid') as HTMLElement;
+      recipesGrid.innerHTML = '';
+      const newRecipesCards = Recipe.createRecipesCards(Recipe.originalRecipes);
+      recipesGrid.append(...newRecipesCards);
+    } 
   }
 }
