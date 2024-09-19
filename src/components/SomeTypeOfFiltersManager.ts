@@ -5,7 +5,7 @@ import { FilterType, Recipe } from '../modules/recipe';
 import { SomeTypeActiveFiltersMenu } from './SomeTypeActiveFiltersMenu';
 import { SomeTypeFiltersMenu } from './SomeTypeFiltersMenu';
 import { SomeTypeButtonsContainerOfActiveFilters } from './SomeTypeButtonsContainerOfActiveFilters';
-import { createTagsOfATypeOfFilters } from './FilterTag';
+import { createTagsOfATypeOfFilters, updateCardsAndFiltersTagsWhenAFilterIsRemoved, updateCardsAndFiltersTagsWhenSomeFilterIsSelected } from './FilterTag';
 
 export const DisplayFiltersMenusEvent = 'display-selectable-filters-event';
 export const HideFiltersMenusEvent = 'hide-selectable-filters-event';
@@ -71,105 +71,105 @@ export function SomeTypeOfFiltersManager(filterType: FilterType) {
   const inputElement = filterList.querySelector('input');
   inputElement?.addEventListener('input', (e: any) => handleInputEvent(e));
   const menu: HTMLUListElement | null = filterList.querySelector(`#${filterType}__items`);
-  filterList.addEventListener(FilterEvent, (e: any) => ActivateFilterByClickingOnItInList(e));
+  // filterList.addEventListener(FilterEvent, (e: any) => ActivateFilterByClickingOnItInList(e));
 
-  function ActivateFilterByClickingOnItInList(e: any) {
-    const filterName: string = e.detail.filter;
-    searchBar.reset();
-    searchBar.classList.remove('mb-[24px]');
-    searchBar.classList.add('mb-[15px]');
+  // function ActivateFilterByClickingOnItInList(e: any) {
+  //   const filterName: string = e.detail.filter;
+  //   searchBar.reset();
+  //   searchBar.classList.remove('mb-[24px]');
+  //   searchBar.classList.add('mb-[15px]');
     
-    const activeItem = document.createElement('div');
-    activeItem.classList.add(`active-${filterType}`, 'relative', 'text-[14px]', 'text-center', 'bg-yellow', 'text-gray');
-    activeItem.innerHTML = `
-      <p
-        class="active-item text-[14px] text-left px-[16px] py-[9px] mb-px"
-        aria-label="filtre ${filterName} actif"
-      >
-        ${filterName}
-      </p>
-      <button
-        type="button"
-        class="absolute right-[5px] top-[50%] translate-y-[-50%]"
-        aria-label="close ${filterName}"
-      >
-        <i class="fa fa-times" aria-hidden="true"></i>
-      </button>
-    `;
+  //   const activeItem = document.createElement('div');
+  //   activeItem.classList.add(`active-${filterType}`, 'relative', 'text-[14px]', 'text-center', 'bg-yellow', 'text-gray');
+  //   activeItem.innerHTML = `
+  //     <p
+  //       class="active-item text-[14px] text-left px-[16px] py-[9px] mb-px"
+  //       aria-label="filtre ${filterName} actif"
+  //     >
+  //       ${filterName}
+  //     </p>
+  //     <button
+  //       type="button"
+  //       class="absolute right-[5px] top-[50%] translate-y-[-50%]"
+  //       aria-label="close ${filterName}"
+  //     >
+  //       <i class="fa fa-times" aria-hidden="true"></i>
+  //     </button>
+  //   `;
 
-    const filterButton = document.createElement('button');
-    filterButton.classList.add(`current-${filterType}`, 'z-0', 'active', 'text-[14px]', 'text-center', 'bg-yellow', 'text-gray', 'rounded-[10px]', 'px-[18px]', 'py-[17px]', 'mr-[5px]','mb-[21px]', 'first:mt-[79px]');
-    filterButton.textContent = filterName;
-    currentContainer?.appendChild(filterButton);
+  //   const filterButton = document.createElement('button');
+  //   filterButton.classList.add(`current-${filterType}`, 'z-0', 'active', 'text-[14px]', 'text-center', 'bg-yellow', 'text-gray', 'rounded-[10px]', 'px-[18px]', 'py-[17px]', 'mr-[5px]','mb-[21px]', 'first:mt-[79px]');
+  //   filterButton.textContent = filterName;
+  //   currentContainer?.appendChild(filterButton);
 
-    activeItem.addEventListener('click', (e) => cancelActiveFilterInDropdownMenu(e, filterName, activeItem, filterButton));
+  //   activeItem.addEventListener('click', (e) => cancelActiveFilterInDropdownMenu(e, filterName, activeItem, filterButton));
 
-    filterButton.addEventListener('click', (e) => cancelActiveFilterByClickingOnFilterButton(e, filterName, activeItem, filterButton));
+  //   filterButton.addEventListener('click', (e) => cancelActiveFilterByClickingOnFilterButton(e, filterName, activeItem, filterButton));
 
-    const activeItems = filterList.querySelectorAll(`.active-${filterType}`) as NodeListOf<HTMLLIElement>;
-    dropdownMenu?.addEventListener('click', () => handleClickEventOnDropdownMenuWhenSomeFiltersMayBeActive(dropdownMenu, activeItems));
+  //   const activeItems = filterList.querySelectorAll(`.active-${filterType}`) as NodeListOf<HTMLLIElement>;
+  //   dropdownMenu?.addEventListener('click', () => handleClickEventOnDropdownMenuWhenSomeFiltersMayBeActive(dropdownMenu, activeItems));
 
-    page.addEventListener('click', (e: any) => handleClickEventOutOfDropdownMenuWhenSomeFiltersMayBeActive(e, activeItem));
-  }
+  //   page.addEventListener('click', (e: any) => handleClickEventOutOfDropdownMenuWhenSomeFiltersMayBeActive(e, activeItem));
+  // }
 
-  function handleClickEventOutOfDropdownMenuWhenSomeFiltersMayBeActive(e: any, activeItem: HTMLDivElement) {
-    if (!dropdownMenu?.contains(e.target)) {
-      activeItem.classList.add('hidden');
-    }
-  }
+  // function handleClickEventOutOfDropdownMenuWhenSomeFiltersMayBeActive(e: any, activeItem: HTMLDivElement) {
+  //   if (!dropdownMenu?.contains(e.target)) {
+  //     activeItem.classList.add('hidden');
+  //   }
+  // }
 
-  function handleClickEventOnDropdownMenuWhenSomeFiltersMayBeActive(dropdownMenu: Element, activeItems: NodeListOf<HTMLLIElement>) {
-    if (dropdownMenu.getAttribute('aria-expanded') === 'true') {
-      if (activeItems.length!== 0) {
-        for (const active of activeItems) {
-          active?.classList.remove('hidden');
-        } 
-      }           
-    } else {
-      for (const active of activeItems) {
-        active?.classList.add('hidden');
-      }
-    }
-  }
+  // function handleClickEventOnDropdownMenuWhenSomeFiltersMayBeActive(dropdownMenu: Element, activeItems: NodeListOf<HTMLLIElement>) {
+  //   if (dropdownMenu.getAttribute('aria-expanded') === 'true') {
+  //     if (activeItems.length!== 0) {
+  //       for (const active of activeItems) {
+  //         active?.classList.remove('hidden');
+  //       } 
+  //     }           
+  //   } else {
+  //     for (const active of activeItems) {
+  //       active?.classList.add('hidden');
+  //     }
+  //   }
+  // }
 
-  function cancelActiveFilterByClickingOnFilterButton(e: any, activeFilter: string, activeItem: HTMLDivElement, filterButton: HTMLButtonElement) {
-    activeItem.remove();
-    filterButton.remove();
-    if (activeItems.length === 0) {
-      searchBar.classList.remove('mb-[15px]');
-      searchBar.classList.add('mb-[24px]');
-      itemsUL?.classList.remove('mt-[20px]');
-    }
+  // function cancelActiveFilterByClickingOnFilterButton(e: any, activeFilter: string, activeItem: HTMLDivElement, filterButton: HTMLButtonElement) {
+  //   activeItem.remove();
+  //   filterButton.remove();
+  //   if (activeItems.length === 0) {
+  //     searchBar.classList.remove('mb-[15px]');
+  //     searchBar.classList.add('mb-[24px]');
+  //     itemsUL?.classList.remove('mt-[20px]');
+  //   }
 
-    const activeFiltersButtons = filterList.querySelectorAll(`.current-${filterType}`);
-    const activeFiltersRemaining: string[] = [];
-    for (const active of activeFiltersButtons) {
-      if (active !== e.target && active.textContent !== null) {
-        activeFiltersRemaining.push(active.textContent.trim());
-      }
-    }
-    createEventAndDispatch(filterList, UnactivateFilterEvent, {unactiveFilter: activeFilter});
-  }
+  //   const activeFiltersButtons = filterList.querySelectorAll(`.current-${filterType}`);
+  //   const activeFiltersRemaining: string[] = [];
+  //   for (const active of activeFiltersButtons) {
+  //     if (active !== e.target && active.textContent !== null) {
+  //       activeFiltersRemaining.push(active.textContent.trim());
+  //     }
+  //   }
+  //   createEventAndDispatch(filterList, UnactivateFilterEvent, {unactiveFilter: activeFilter});
+  // }
 
-  function cancelActiveFilterInDropdownMenu(e: any, activeFilter: string, activeItem: HTMLDivElement, filterButton: HTMLButtonElement) {
-    activeItem.remove();
-    filterButton.remove();
-    if (activeItems.length === 0) {
-      searchBar.classList.remove('mb-[15px]', 'hidden');
-      searchBar.classList.add('mb-[24px]');
-      menu?.classList.remove('mt-[20px]');
-    }
+  // function cancelActiveFilterInDropdownMenu(e: any, activeFilter: string, activeItem: HTMLDivElement, filterButton: HTMLButtonElement) {
+  //   activeItem.remove();
+  //   filterButton.remove();
+  //   if (activeItems.length === 0) {
+  //     searchBar.classList.remove('mb-[15px]', 'hidden');
+  //     searchBar.classList.add('mb-[24px]');
+  //     menu?.classList.remove('mt-[20px]');
+  //   }
 
-    const activeItemsContents = filterList.querySelectorAll(`.active-item`);
-    const activeFiltersRemaining: string[] = [];
-    for (const active of activeItemsContents) {
-      if (active !== e.target && active.textContent !== null) {
-        activeFiltersRemaining.push(active.textContent.trim());
-      }
-    }
+  //   const activeItemsContents = filterList.querySelectorAll(`.active-item`);
+  //   const activeFiltersRemaining: string[] = [];
+  //   for (const active of activeItemsContents) {
+  //     if (active !== e.target && active.textContent !== null) {
+  //       activeFiltersRemaining.push(active.textContent.trim());
+  //     }
+  //   }
 
-    createEventAndDispatch(filterList, UnactivateFilterEvent, {unactiveFilter: activeFilter, activeFiltersRemaining: activeFiltersRemaining});
-  }
+  //   createEventAndDispatch(filterList, UnactivateFilterEvent, {unactiveFilter: activeFilter, activeFiltersRemaining: activeFiltersRemaining});
+  // }
 
   /**
    * Handles the click event on the dropdown menu.
@@ -204,6 +204,69 @@ export function SomeTypeOfFiltersManager(filterType: FilterType) {
         dropdownMenu?.querySelector(`#list-of-active-${filterType}s`)?.classList.add('hidden');
         createEventAndDispatch(filterList, HideFiltersMenusEvent, {filterType: filterType});
       }
+    } else {
+      const page = document.querySelector('#app') as HTMLElement;
+      const dropdownMenuInDOM = page.querySelector(`#${filterType}__dropdown`);
+      console.log('dropdownMenuInDOM', dropdownMenuInDOM)
+      const selectableFiltersMenu = dropdownMenuInDOM?.querySelector(`#list-of-selectable-${filterType}s`);
+      console.log('selectableFiltersMenu', selectableFiltersMenu);
+      const activeFiltersMenu = dropdownMenuInDOM?.querySelector(`#list-of-active-${filterType}s`);
+
+      /******************* */
+      if (selectableFiltersMenu?.contains(e.target)) {
+        const tag = e.target;
+        const filter = tag.textContent.trim();
+        const tagsInDOM = dropdownMenuInDOM?.querySelectorAll('.filter');
+        let tagInDOM;
+        if (tagsInDOM) {
+          tagInDOM = Array.from(tagsInDOM)?.find(tag => tag.textContent === e.target.textContent);
+        }
+        const textContent = tag.textContent;
+        tagInDOM?.classList.add('active');
+
+        const activeFiltersMenu = page.querySelector(`#list-of-active-${filterType}s`);
+        Recipe.activeFilters[`${filterType}s`].push(filter);
+        if (tagInDOM) {
+          activeFiltersMenu?.appendChild(tagInDOM);
+          tagInDOM.classList.add('relative', 'text-[14px]', 'text-center', 'bg-yellow');
+          tagInDOM.textContent = '';
+          tagInDOM.innerHTML = `
+            <p
+              class="active-item text-[14px] text-black text-left px-[16px] py-[9px] mb-px hover:font-bold"
+              aria-label="filtre ${textContent} actif"
+            >
+              ${textContent}
+            </p>
+            <div
+              class="absolute right-[5px] top-[50%] translate-y-[-50%] w-[17px] h-[17px] hover:bg-black hover:text-yellow rounded-[50%] flex justify-center items-center"
+              aria-label="close ${textContent}"
+            >
+              <img src="icons/close_yellow.svg" alt"close button"class="h-[5px] p-[12px]" aria-hidden="true"></i>
+            </button>
+          `;
+
+
+          if (Recipe.matchingRecipes.length === 0) {
+            updateCardsAndFiltersTagsWhenSomeFilterIsSelected(Recipe.originalRecipes, filter, filterType, page); 
+          } else {
+            updateCardsAndFiltersTagsWhenSomeFilterIsSelected(Recipe.matchingRecipes, filter, filterType, page);
+          }
+
+          const searchBar = dropdownMenuInDOM?.querySelector('input');
+          if (searchBar) searchBar.value = '';
+        }
+      } else if (activeFiltersMenu?.contains(e.target)) {
+        const filter = e.target.textContent.trim();
+        const filtersTypes: FilterType[] = ["ingredient", "appliance", "ustensil"];
+        updateCardsAndFiltersTagsWhenAFilterIsRemoved(filter, filterType, filtersTypes, page);
+        const dropdownMenuInDOM = page.querySelector(`${filterType}__dropdown`);
+        console.log('blabla')
+        const event = new MouseEvent('click', {
+          bubbles: true,
+        });
+        dropdownMenuInDOM?.querySelector('header')?.dispatchEvent(event);
+      }
+      /***************************** */
     }
   }
 

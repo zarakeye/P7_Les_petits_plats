@@ -191,23 +191,32 @@ export class Recipe {
   }
 
   static filterRecipeswithUserInput(recipes: Recipe[], entry: string): void {
-    let matchingRecipes: Recipe[] = [];
+    // let matchingRecipes: Recipe[] = [];
     
-    for (const recipe of recipes) {
-      for (const ingredient of recipe.ingredients) {
-        if (firstStringInSecondString(entry, ingredient.ingredient)) {
-          matchingRecipes.push(recipe);
-        }
-      }
+    // for (const recipe of recipes) {
+    //   for (const ingredient of recipe.ingredients) {
+    //     if (firstStringInSecondString(entry, ingredient.ingredient)) {
+    //       matchingRecipes.push(recipe);
+    //     }
+    //   }
 
-      if (firstStringInSecondString(entry, recipe.name)) {
-        matchingRecipes.push(recipe);
-      }
+    //   if (firstStringInSecondString(entry, recipe.name)) {
+    //     matchingRecipes.push(recipe);
+    //   }
 
-      if (firstStringInSecondString(entry, recipe.description)) {
-        matchingRecipes.push(recipe);
-      }
-    }
+    //   if (firstStringInSecondString(entry, recipe.description)) {
+    //     matchingRecipes.push(recipe);
+    //   }
+    // }
+    const regexp = new RegExp(entry, "i");
+
+    let matchingRecipes: Recipe[] = recipes.filter(recipe => {
+      return regexp.test(recipe.name) ||
+        recipe.ingredients.some(ingredient => regexp.test(ingredient.ingredient)) ||
+        recipe.ustensils.some(ustensil => regexp.test(ustensil));
+    });
+
+    console.log('matchingRecipes', matchingRecipes)
 
     matchingRecipes = [...new Set(matchingRecipes)];
 
@@ -236,62 +245,62 @@ export class Recipe {
    */
   
 
-  static handleCancelFilterEvent() {
-    const matchingRecipes: Recipe[] = [];
-    /**
-     * For each recipe in the original list of recipes, check if any of its ingredients, appliances or ustensils match any of the active filters
-     * to determine if the recipe should be included in the list of matching recipes
-     */
-    for (const recipe of Recipe.originalRecipes) {
-      const ingredients = recipe.ingredients.map((ingredient) => ingredient.ingredient);
-      let matchingCount = 0;
+  // static handleCancelFilterEvent() {
+  //   const matchingRecipes: Recipe[] = [];
+  //   /**
+  //    * For each recipe in the original list of recipes, check if any of its ingredients, appliances or ustensils match any of the active filters
+  //    * to determine if the recipe should be included in the list of matching recipes
+  //    */
+  //   for (const recipe of Recipe.originalRecipes) {
+  //     const ingredients = recipe.ingredients.map((ingredient) => ingredient.ingredient);
+  //     let matchingCount = 0;
 
-      Recipe.activeFilters.forEach((filter: string) => {
-        const filterTrim = filter.trim();
-        const regexp = new RegExp(`^${filterTrim}$`);
+  //     Recipe.activeFilters.forEach((filter: string) => {
+  //       const filterTrim = filter.trim();
+  //       const regexp = new RegExp(`^${filterTrim}$`);
 
-        ingredients.find(ingredient => {
-          if (regexp.exec(ingredient)) {
-            matchingCount++;
-          }
-        });
+  //       ingredients.find(ingredient => {
+  //         if (regexp.exec(ingredient)) {
+  //           matchingCount++;
+  //         }
+  //       });
         
-        recipe.ustensils.find(ustensil => {
-          if (regexp.exec(ustensil)) {
-            matchingCount++;
-          }
-        });
+  //       recipe.ustensils.find(ustensil => {
+  //         if (regexp.exec(ustensil)) {
+  //           matchingCount++;
+  //         }
+  //       });
         
-        if (regexp.exec(recipe.appliance)) {
-          matchingCount++;
-        }
-      });
+  //       if (regexp.exec(recipe.appliance)) {
+  //         matchingCount++;
+  //       }
+  //     });
 
-      if (matchingCount === Recipe.activeFilters.length) {
-        matchingRecipes.push(recipe);
-      }
-    }
-    Recipe.matchingRecipes = matchingRecipes;
+  //     if (matchingCount === Recipe.activeFilters.length) {
+  //       matchingRecipes.push(recipe);
+  //     }
+  //   }
+  //   Recipe.matchingRecipes = matchingRecipes;
 
-    const recipesSection = document.getElementById('recipes-section');
-    let recipesGrid = document.getElementById('recipes-grid');
-    const recipesCards = recipesGrid?.querySelectorAll('.recipe');
+  //   const recipesSection = document.getElementById('recipes-section');
+  //   let recipesGrid = document.getElementById('recipes-grid');
+  //   const recipesCards = recipesGrid?.querySelectorAll('.recipe');
     
-    if (recipesCards && recipesGrid && recipesSection) {
-      for (const card of recipesCards) {
-        card.remove();
-      }
-      recipesGrid.remove();
+  //   if (recipesCards && recipesGrid && recipesSection) {
+  //     for (const card of recipesCards) {
+  //       card.remove();
+  //     }
+  //     recipesGrid.remove();
 
-      if (matchingRecipes.length !== 0) {
-        recipesGrid = RecipesGrid(matchingRecipes);
-      } else {
-        recipesGrid = RecipesGrid(Recipe.originalRecipes);
-      }
+  //     if (matchingRecipes.length !== 0) {
+  //       recipesGrid = RecipesGrid(matchingRecipes);
+  //     } else {
+  //       recipesGrid = RecipesGrid(Recipe.originalRecipes);
+  //     }
 
-      recipesSection.appendChild(recipesGrid);
-    }
-  }
+  //     recipesSection.appendChild(recipesGrid);
+  //   }
+  // }
 
   static updateSelectableFilters() {
     const filtersTypes: FilterType[] = ['ingredient', 'appliance', 'ustensil'];

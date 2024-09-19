@@ -1,7 +1,4 @@
-import { Recipe } from '../modules/recipe';
-import { RecipeCard } from './RecipeCard';
-
-export function RecipesGrid(recipes: Recipe[]) {
+export function RecipesGrid() {
   const recipesGrid = document.createElement('div');
   recipesGrid.id = 'recipes-grid';
   recipesGrid.classList.add(

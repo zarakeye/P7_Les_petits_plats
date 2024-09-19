@@ -1,7 +1,6 @@
 import { SearchBar } from '../components/SearchBar';
 import { Recipe, FilterType } from '../modules/recipe';
 import { createEventAndDispatch, escapeSearchTerm } from '../helpers';
-import { FilterTag } from './FilterTag';
 import { NoMatchFound } from './NoMatchFound';
 import { updateRecipesCounter } from './RecipesCounter';
 
@@ -123,27 +122,27 @@ export function Header() {
 export function handleMainSearchbarEvent(e: any, page: HTMLElement) {
   const searchTerm = e.detail.searchTerm;
   if (Recipe.matchingRecipes.length !== 0) {
-    // const filtersTypes = ['ingredient', 'appliance', 'ustensil'] as FilterType[];
-    // const newFilters: any = Recipe.extractFilters(Recipe.matchingRecipes, filtersTypes);
- 
-    // for (const type of filtersTypes) {
-    //   const filtersMenu = page.querySelector(`#list-of-selectable-${type}s`) as HTMLUListElement;
-    //   filtersMenu.innerHTML = '';
+    let recipesGrid = page.querySelector('#recipes-grid') as HTMLDivElement;
+    console.log('recipesGrid', recipesGrid);
+    recipesGrid.classList.remove('hidden');
 
-    //   for (const newFilter of newFilters[`${type}s`]) {
-    //     filtersMenu.appendChild(FilterTag(newFilter, type));
-    //   }
-    // }
-    
-    const recipesGrid = page.querySelector('#recipes-grid') as HTMLDivElement;
     const newRecipesCards = Recipe.createRecipesCards(Recipe.matchingRecipes);
-    recipesGrid.replaceChildren(...newRecipesCards);
+    console.log('newRecipesCards', newRecipesCards);
+    recipesGrid.append(...newRecipesCards);
+    
+    page.querySelector('#filters-section')?.classList.remove('hidden');
+
+    page.querySelector('#no-match-found')?.remove();
 
     updateRecipesCounter(Recipe.matchingRecipes.length, page);
   } else {
     if (searchTerm.length >= 3) {
       const main = page.querySelector('main') as HTMLElement;
-      main.innerHTML = '';
+      // main.innerHTML = '';
+      const filtersSection = main.querySelector('#filters-section');
+      filtersSection?.classList.add('hidden');
+      const recipesGrid = main.querySelector('#recipes-grid');
+      recipesGrid?.classList.add('hidden');
       main.appendChild(NoMatchFound(e.detail.searchTerm));
     } else {
       const recipesGrid = page.querySelector('#recipes-grid') as HTMLElement;

@@ -6,7 +6,6 @@ import { Header, MainSearchbarEvent,handleMainSearchbarEvent } from '../componen
 import {  FilterType } from '../modules/recipe';
 import { DisplayFiltersMenusEvent, HideFiltersMenusEvent } from '../components/SomeTypeOfFiltersManager';
 import { displayFiltersMenu, hideFiltersMenu } from '../components/SomeTypeFiltersMenu';
-import { SelectFilterEvent,handleClickOnFilterListItem } from '../components/FilterTag';
 import { UnselectFilterEvent, unselectFilter } from '../components/FilterButton';
 import { RecipesCounter } from '../components/RecipesCounter';
 import { buildFilterSection } from '../components/FiltersSection';
@@ -30,7 +29,7 @@ export const HomePage = async () => {
   const recipesSection: HTMLElement = RecipesSection();
   const recipesCards = Recipe.createRecipesCards(Recipe.originalRecipes);
 
-  let recipesGrid: HTMLDivElement = RecipesGrid(Recipe.originalRecipes);
+  let recipesGrid: HTMLDivElement = RecipesGrid();
   recipesGrid.append(...recipesCards);
   recipesSection.appendChild(recipesGrid);
   
@@ -48,8 +47,6 @@ export const HomePage = async () => {
   main.appendChild(recipesSection);
 
   page.addEventListener(MainSearchbarEvent, (e: any) => handleMainSearchbarEvent(e, page));
-
-  page.addEventListener(SelectFilterEvent, (e: any) => handleClickOnFilterListItem(e, page));
 
   page.addEventListener(UnselectFilterEvent, (e: any) => unselectFilter(e, page));
 
