@@ -1,5 +1,4 @@
-import { firstStringInSecondString, introSort } from '../helpers';
-import { RecipesGrid } from '../components/RecipesGrid';
+import { introSort } from '../helpers';
 import { RecipeCard } from '../components/RecipeCard';
 import { FilterTag } from '../components/FilterTag';
 
@@ -191,23 +190,6 @@ export class Recipe {
   }
 
   static filterRecipeswithUserInput(recipes: Recipe[], entry: string): void {
-    // let matchingRecipes: Recipe[] = [];
-    
-    // for (const recipe of recipes) {
-    //   for (const ingredient of recipe.ingredients) {
-    //     if (firstStringInSecondString(entry, ingredient.ingredient)) {
-    //       matchingRecipes.push(recipe);
-    //     }
-    //   }
-
-    //   if (firstStringInSecondString(entry, recipe.name)) {
-    //     matchingRecipes.push(recipe);
-    //   }
-
-    //   if (firstStringInSecondString(entry, recipe.description)) {
-    //     matchingRecipes.push(recipe);
-    //   }
-    // }
     const regexp = new RegExp(entry, "i");
 
     let matchingRecipes: Recipe[] = recipes.filter(recipe => {
@@ -237,70 +219,6 @@ export class Recipe {
       recipesGrid?.append(RecipeCard(recipe));
     }
   }
-
-  /**
-   * Handles the searchbar event by filtering the recipes, removing the filter section
-   * and the recipes grid, and adding a "No match found" card if no recipe matches the search term.
-   * @param event - The CustomEvent emitted by the SearchBar component, with the matching recipes and search term.
-   */
-  
-
-  // static handleCancelFilterEvent() {
-  //   const matchingRecipes: Recipe[] = [];
-  //   /**
-  //    * For each recipe in the original list of recipes, check if any of its ingredients, appliances or ustensils match any of the active filters
-  //    * to determine if the recipe should be included in the list of matching recipes
-  //    */
-  //   for (const recipe of Recipe.originalRecipes) {
-  //     const ingredients = recipe.ingredients.map((ingredient) => ingredient.ingredient);
-  //     let matchingCount = 0;
-
-  //     Recipe.activeFilters.forEach((filter: string) => {
-  //       const filterTrim = filter.trim();
-  //       const regexp = new RegExp(`^${filterTrim}$`);
-
-  //       ingredients.find(ingredient => {
-  //         if (regexp.exec(ingredient)) {
-  //           matchingCount++;
-  //         }
-  //       });
-        
-  //       recipe.ustensils.find(ustensil => {
-  //         if (regexp.exec(ustensil)) {
-  //           matchingCount++;
-  //         }
-  //       });
-        
-  //       if (regexp.exec(recipe.appliance)) {
-  //         matchingCount++;
-  //       }
-  //     });
-
-  //     if (matchingCount === Recipe.activeFilters.length) {
-  //       matchingRecipes.push(recipe);
-  //     }
-  //   }
-  //   Recipe.matchingRecipes = matchingRecipes;
-
-  //   const recipesSection = document.getElementById('recipes-section');
-  //   let recipesGrid = document.getElementById('recipes-grid');
-  //   const recipesCards = recipesGrid?.querySelectorAll('.recipe');
-    
-  //   if (recipesCards && recipesGrid && recipesSection) {
-  //     for (const card of recipesCards) {
-  //       card.remove();
-  //     }
-  //     recipesGrid.remove();
-
-  //     if (matchingRecipes.length !== 0) {
-  //       recipesGrid = RecipesGrid(matchingRecipes);
-  //     } else {
-  //       recipesGrid = RecipesGrid(Recipe.originalRecipes);
-  //     }
-
-  //     recipesSection.appendChild(recipesGrid);
-  //   }
-  // }
 
   static updateSelectableFilters() {
     const filtersTypes: FilterType[] = ['ingredient', 'appliance', 'ustensil'];

@@ -138,7 +138,6 @@ export function handleMainSearchbarEvent(e: any, page: HTMLElement) {
   } else {
     if (searchTerm.length >= 3) {
       const main = page.querySelector('main') as HTMLElement;
-      // main.innerHTML = '';
       const filtersSection = main.querySelector('#filters-section');
       filtersSection?.classList.add('hidden');
       const recipesGrid = main.querySelector('#recipes-grid');

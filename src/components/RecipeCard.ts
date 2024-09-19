@@ -1,10 +1,10 @@
 import { Recipe } from '../modules/recipe';
 
-  /**
-   * Creates a recipe card element from a given recipe.
-   * @param recipe - The recipe to display.
-   * @returns The recipe card element.
-   */
+/**
+ * Creates a recipe card element from a given recipe.
+ * @param recipe - The recipe to display.
+ * @returns The recipe card element.
+ */
 export function RecipeCard(recipe: Recipe) {
   const card = document.createElement('article')
   card.id = `recipe-${recipe.id}`
@@ -63,14 +63,6 @@ export function RecipeCard(recipe: Recipe) {
   `;
 
   const ingredientsList = card.querySelector(`#recipe-${recipe.id}-ingredients`) as HTMLUListElement;
-  // for (const ingredient of recipe.ingredients) {
-  //   ingredientsList.innerHTML += `
-  //     <li class="w-[50%] mb-[21px] text-[14px]">
-  //       <p>${ingredient.ingredient}</p>
-  //       <p class="text-gray">${ingredient.quantity ?? '-'} ${ingredient.unit ?? ''}</p>
-  //     </li>
-  //   `;
-  // }
 
   recipe.ingredients.forEach(ingredient => {
     ingredientsList.innerHTML += `
