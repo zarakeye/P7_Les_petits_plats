@@ -1,5 +1,10 @@
-import { Recipe } from '../models/recipe.model'
+import { Recipe } from '../modules/recipe';
 
+  /**
+   * Creates a recipe card element from a given recipe.
+   * @param recipe - The recipe to display.
+   * @returns The recipe card element.
+   */
 export function RecipeCard(recipe: Recipe) {
   const card = document.createElement('article')
   card.id = `recipe-${recipe.id}`
@@ -69,8 +74,8 @@ export function RecipeCard(recipe: Recipe) {
 
   recipe.ingredients.forEach(ingredient => {
     ingredientsList.innerHTML += `
-      <li class="w-[50%] mb-[21px] text-[14px]">
-        <p>${ingredient.ingredient}</p>
+      <li class="w-[50%] h-[63px] text-[14px]">
+        <p class="ingredient">${ingredient.ingredient}</p>
         <p class="text-gray">${ingredient.quantity ?? '-'} ${ingredient.unit ?? ''}</p>
       </li>
     `;

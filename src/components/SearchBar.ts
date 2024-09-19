@@ -1,5 +1,9 @@
+  /**
+   * Creates the search bar component.
+   * @returns The search bar element.
+   */
 export function SearchBar() {
-  const searchComponent = document.createElement('div');
+  const searchComponent = document.createElement('form');
   searchComponent.classList.add(
     'relative',
     'w-full',
@@ -21,5 +25,5 @@ export function SearchBar() {
     </button>
   `
 
-  return searchComponent
+  return searchComponent;
 }

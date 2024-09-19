@@ -1,15 +1,18 @@
 import { SearchBar } from '../components/SearchBar';
-import { Recipe } from '../models/recipe.model';
-import { createEventAndDispatch } from '../helpers';
+import { Recipe, FilterType } from '../modules/recipe';
+import { createEventAndDispatch, escapeSearchTerm } from '../helpers';
+import { FilterTag } from './FilterTag';
+import { NoMatchFound } from './NoMatchFound';
+import { updateRecipesCounter } from './RecipesCounter';
 
-export const SearchbarEvent = 'searchbar-event';
+export const MainSearchbarEvent = 'main-searchbar-event';
 
   /**
    * Creates the header of the page, which includes a search bar.
-   * @param recipes - The array of recipes to be searched.
+   * @param recipes - The array of recipes on which the input will base its search.
    * @returns The header element.
    */
-export function Header(recipes: Recipe[]) {
+export function Header() {
   const header = document.createElement('header')
   header.id = 'header'
   header.classList.add(
@@ -78,40 +81,75 @@ export function Header(recipes: Recipe[]) {
   )
 
   searchInput.addEventListener('input', (e) => {
-    let matchingRecipes: Recipe[] = [];
-    
-    const searchTerm = (e.target as HTMLInputElement).value.trim().toLowerCase();
+    const userInput = escapeSearchTerm((e.target as HTMLInputElement).value);
 
-    if (searchTerm.length < 3) {
-      createEventAndDispatch(header, SearchbarEvent, {matchingRecipes: recipes});
-      return;
+    console.log('searchTerm', userInput);
+
+    if (userInput.length >= 3) {
+      if (Recipe.matchingRecipes.length !== 0) {
+        Recipe.filterRecipeswithUserInput(Recipe.matchingRecipes, userInput);
+        createEventAndDispatch(header, MainSearchbarEvent, {searchTerm: userInput});
+      } else {
+        Recipe.filterRecipeswithUserInput(Recipe.originalRecipes, userInput);
+        createEventAndDispatch(header, MainSearchbarEvent, {searchTerm: userInput});
+      }
     } else {
-      // for (const recipe of recipes) {
-      //   if (!matchingRecipes.includes(recipe)) {
-      //     if ((recipe.name.trim().toLowerCase().includes(searchTerm) || recipe.description.trim().toLowerCase().includes(searchTerm))) {
-      //       matchingRecipes.push(recipe);
-      //     } else for (const ingredient of recipe.ingredients) {
-      //       if (ingredient.ingredient.trim().toLowerCase().includes(searchTerm)) {
-      //         matchingRecipes.push(recipe);
-      //       }
-      //     }
-      //   }
-      // }
-      recipes.forEach(recipe => {
-        if (!matchingRecipes.includes(recipe)) {
-          if ((recipe.name.trim().toLowerCase().includes(searchTerm) || recipe.description.trim().toLowerCase().includes(searchTerm))) {
-            matchingRecipes.push(recipe);
-          } else recipe.ingredients.forEach(ingredient => {
-            if (ingredient.ingredient.trim().toLowerCase().includes(searchTerm)) {
-              matchingRecipes.push(recipe);
-            }
+      const filtersTypes = ['ingredient', 'appliance', 'ustensil'] as FilterType[];
+
+      if (Recipe.activeFilters.ingredients.length === 0 && Recipe.activeFilters.appliances.length == 0 && Recipe.activeFilters.ustensils.length !== 0) {
+        const updatedRecipesCards = Recipe.createRecipesCards(Recipe.originalRecipes);
+        const recipesGrid = document.querySelector('#recipes-grid');
+        recipesGrid?.replaceChildren(...updatedRecipesCards);
+      } else {
+        Recipe.matchingRecipes = Recipe.originalRecipes;
+        filtersTypes.forEach((type: FilterType) => {
+          Recipe.activeFilters[`${type}s`].forEach((activeFilter: any) => {
+            Recipe.filterRecipesWithActivatedFilter(Recipe.matchingRecipes, type, activeFilter);
           })
-        }
-      })
+          const updatedRecipesCards = Recipe.createRecipesCards(Recipe.matchingRecipes);
+          const recipesGrid = document.querySelector('#recipes-grid');
 
-      createEventAndDispatch(header, SearchbarEvent, {searchTerm: searchTerm, matchingRecipes: matchingRecipes});
+          recipesGrid?.replaceChildren(...updatedRecipesCards);
+        });
+      }
+      
+      createEventAndDispatch(header, MainSearchbarEvent, {searchTerm: userInput});
     }
-  })
+  });
 
-  return header
+  return header;
+}
+
+export function handleMainSearchbarEvent(e: any, page: HTMLElement) {
+  const searchTerm = e.detail.searchTerm;
+  if (Recipe.matchingRecipes.length !== 0) {
+    // const filtersTypes = ['ingredient', 'appliance', 'ustensil'] as FilterType[];
+    // const newFilters: any = Recipe.extractFilters(Recipe.matchingRecipes, filtersTypes);
+ 
+    // for (const type of filtersTypes) {
+    //   const filtersMenu = page.querySelector(`#list-of-selectable-${type}s`) as HTMLUListElement;
+    //   filtersMenu.innerHTML = '';
+
+    //   for (const newFilter of newFilters[`${type}s`]) {
+    //     filtersMenu.appendChild(FilterTag(newFilter, type));
+    //   }
+    // }
+    
+    const recipesGrid = page.querySelector('#recipes-grid') as HTMLDivElement;
+    const newRecipesCards = Recipe.createRecipesCards(Recipe.matchingRecipes);
+    recipesGrid.replaceChildren(...newRecipesCards);
+
+    updateRecipesCounter(Recipe.matchingRecipes.length, page);
+  } else {
+    if (searchTerm.length >= 3) {
+      const main = page.querySelector('main') as HTMLElement;
+      main.innerHTML = '';
+      main.appendChild(NoMatchFound(e.detail.searchTerm));
+    } else {
+      const recipesGrid = page.querySelector('#recipes-grid') as HTMLElement;
+      recipesGrid.innerHTML = '';
+      const newRecipesCards = Recipe.createRecipesCards(Recipe.originalRecipes);
+      recipesGrid.append(...newRecipesCards);
+    } 
+  }
 }

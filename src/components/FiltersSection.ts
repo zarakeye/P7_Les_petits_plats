@@ -1,36 +1,32 @@
-import { FilterList, FilterRule } from '../components/FilterList';
-import { Recipe } from '../models/recipe.model';
+import { FilterType } from "../modules/recipe";
+import { buildFiltersTypeManager } from "./SomeTypeOfFiltersManager";
 
-export function FiltersSection(recipes: Recipe[], filterRules: FilterRule[]) {
-  // let itemsOfSomeGivenRule = [];
-  // for (const filter of filterRules) {
-  //   itemsOfSomeGivenRule.push(FilterList(recipes, filter));
-  // }
-
-  let itemsOfSomeGivenRule = filterRules.map(filter => FilterList(recipes, filter));
-
-  const filtersSection = document.createElement('section')
-  filtersSection.id = 'filters-section'
+export function FiltersSection() {
+  const filtersSection = document.createElement('section');
+  filtersSection.id = 'filters-section';
+  
   filtersSection.classList.add('relative', 'flex', 'justify-between','bg-light-gray', 'pt-[21px]', 'px-[108px]')
-
+  
   filtersSection.innerHTML = `
     <div
-      id="filter-types"
+      id="filter-types-managers_container"
       class="flex justify-between w-[669px] gap-[66px] left-[104px] text-gray font-bold"
     >
     </div>
-    <p class="font-anton text-[21px] pt-[17px]">1500 RECETTES</p>
   `;
   
-  const filterTypesContainer = filtersSection.querySelector('#filter-types');
+  return filtersSection;
+}
 
-  // for (const list of itemsOfSomeGivenRule) {
-  //   filterTypesContainer?.appendChild(list);
-  // }
+export function buildFilterSection(filterTypes: FilterType[]) {
+  const filtersSection = FiltersSection();
+  const typesManagersContainers = filtersSection.querySelector('#filter-types-managers_container');
 
-  itemsOfSomeGivenRule.forEach(list => {
-    filterTypesContainer?.appendChild(list);
-  });
+  for (const filterType of filterTypes) {
+    const filtersTypeManager = buildFiltersTypeManager(filterType);
+    typesManagersContainers?.appendChild(filtersTypeManager);
+  }
 
   return filtersSection;
 }
+
