@@ -9,8 +9,8 @@ export function RecipesCounter (recipes: Recipe[]) {
   return recipesCounter;
 }
 
-export function updateRecipesCounter(recipesLength: number, page: HTMLElement) {
-  const recipesCounter = page.querySelector('#recipes-counter');
+export function updateRecipesCounter(recipesLength: number) {
+  const recipesCounter = document.querySelector('#recipes-counter');
   if (recipesCounter) {
     recipesCounter.textContent = `${recipesLength} RECETTES`;
   }

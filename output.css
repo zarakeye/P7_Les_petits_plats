@@ -726,10 +726,6 @@ video {
   margin-top: 14px;
 }
 
-.mt-\[20px\]{
-  margin-top: 20px;
-}
-
 .mt-\[77px\]{
   margin-top: 77px;
 }
@@ -912,6 +908,10 @@ video {
   gap: 66px;
 }
 
+.gap-\[15px\]{
+  gap: 15px;
+}
+
 .gap-x-\[48px\]{
   -moz-column-gap: 48px;
        column-gap: 48px;
@@ -1046,11 +1046,6 @@ video {
 .px-\[16px\]{
   padding-left: 16px;
   padding-right: 16px;
-}
-
-.px-\[18px\]{
-  padding-left: 18px;
-  padding-right: 18px;
 }
 
 .px-\[200px\]{
@@ -1202,10 +1197,6 @@ video {
 
 .scrollbar-hide::-webkit-scrollbar{
   display: none;
-}
-
-.first\:mt-\[79px\]:first-child{
-  margin-top: 79px;
 }
 
 .hover\:bg-black:hover{

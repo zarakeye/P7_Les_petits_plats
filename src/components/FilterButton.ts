@@ -1,23 +1,22 @@
-import { createEventAndDispatch } from "../helpers";
 import { FilterType } from "../modules/recipe";
-import { updateCardsAndFiltersTagsWhenAFilterIsRemoved } from "./FilterTag";
+import { handleFilterDeactivation } from "./ActivableFilterTag";
 
 export const UnselectFilterEvent = 'unselect-filter-event';
 
-  /**
-   * Creates a button representing a filter that is currently active.
-   * It dispatches an event when clicked to remove the filter from the active filters.
-   * @param {string} filter - the name of the filter
-   * @param {FilterType} type - the type of the filter
-   * @returns {HTMLElement} The button element
-   */
+/**
+ * Creates a button representing a filter that is currently active.
+ * It dispatches an event when clicked to remove the filter from the active filters.
+ * @param {string} filter - the name of the filter
+ * @param {FilterType} type - the type of the filter
+ * @returns {HTMLElement} The button element
+ */
 export function FilterButton(filter: string, type: FilterType): HTMLDivElement {
   const buttonWrapper = document.createElement('div');
   buttonWrapper.classList.add('relative');
   buttonWrapper.innerHTML = `
     <button
       type="button"
-      class="current-${type} z-0 active text-[14px] text-left text-black bg-yellow rounded-[10px] pl-[18px] pr-[38px] py-[17px] mr-[5px] mb-[21px]"
+      class="unselect-filter-button z-0 active text-[14px] text-left text-black bg-yellow rounded-[10px] pl-[18px] pr-[38px] py-[17px] mr-[5px] mb-[21px]"
     >
       ${ filter }
     </button>
@@ -26,28 +25,17 @@ export function FilterButton(filter: string, type: FilterType): HTMLDivElement {
     </div>
   `;
 
-  buttonWrapper.addEventListener('click', () => {
-    createEventAndDispatch(buttonWrapper, UnselectFilterEvent, {
-      filter: filter,
-      type: type
-    });
-  });
+  buttonWrapper.addEventListener('click', () => unselectFilter(filter, type));
 
   return buttonWrapper;
 }
 
-  /**
-   * Handles the event of unselecting a filter.
-   * When a filter is unselected, it is removed from the active filters list,
-   * and the matching recipes are updated.
-   * @param {object} event - The event detail object containing the filter and type of the filter.
-   * @param {HTMLElement} page - The page element containing the recipe cards and filters.
-   */
-export function unselectFilter(event: any, page: HTMLElement) {
-  const filter: string = event.detail.filter;
-  const filterType: FilterType = event.detail.type;
-  
-  const filtersTypesList = ['ingredient', 'appliance', 'ustensil'] as FilterType[];
-
-  updateCardsAndFiltersTagsWhenAFilterIsRemoved(filter, filterType, filtersTypesList, page);
+/**
+ * Unselects a filter from the active filters.
+ * It just calls handleFilterDeactivation with the filter name and type.
+ * @param {string} filter - the name of the filter
+ * @param {FilterType} type - the type of the filter
+ */
+export function unselectFilter(filter: string, type: FilterType) {
+  handleFilterDeactivation(filter, type);
 }

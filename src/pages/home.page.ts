@@ -2,13 +2,12 @@ import { recipes as recipesArray } from '../data/recipes';
 import { Recipe } from '../modules/recipe';
 import { RecipesSection } from '../components/RecipesSection';
 import { RecipesGrid } from '../components/RecipesGrid';
-import { Header, MainSearchbarEvent,handleMainSearchbarEvent } from '../components/Header';
+import { Header } from '../components/Header';
 import {  FilterType } from '../modules/recipe';
-import { DisplayFiltersMenusEvent, HideFiltersMenusEvent } from '../components/SomeTypeOfFiltersManager';
-import { displayFiltersMenu, hideFiltersMenu } from '../components/SomeTypeFiltersMenu';
-import { UnselectFilterEvent, unselectFilter } from '../components/FilterButton';
 import { RecipesCounter } from '../components/RecipesCounter';
 import { buildFilterSection } from '../components/FiltersSection';
+import { setDropdownState, getDropdownState, initDropdownStates } from '../state_managers/dropdownSateManager';
+import { createRecipesCards } from '../components/RecipeCard';
 
 /**
  * Creates the home page, which includes a header with a search bar, a
@@ -16,7 +15,8 @@ import { buildFilterSection } from '../components/FiltersSection';
  * @returns The home page element.
  */
 export const HomePage = async () => {
-  Recipe.originalRecipes = Recipe.createRecipes(recipesArray);
+
+  const originalRecipes = Recipe.createRecipes(recipesArray);
   
   const page = document.createElement('div');
   
@@ -27,7 +27,7 @@ export const HomePage = async () => {
   page.appendChild(main);
 
   const recipesSection: HTMLElement = RecipesSection();
-  const recipesCards = Recipe.createRecipesCards(Recipe.originalRecipes);
+  const recipesCards = createRecipesCards(originalRecipes);
 
   let recipesGrid: HTMLDivElement = RecipesGrid();
   recipesGrid.append(...recipesCards);
@@ -37,7 +37,7 @@ export const HomePage = async () => {
 
   Recipe.updateSelectableFilters();
   
-  const recipesCounter = RecipesCounter(Recipe.originalRecipes);
+  const recipesCounter = RecipesCounter(originalRecipes);
   let filtersSection = buildFilterSection(filtersTypes);
 
   filtersSection.appendChild(recipesCounter);
@@ -46,13 +46,13 @@ export const HomePage = async () => {
   
   main.appendChild(recipesSection);
 
-  page.addEventListener(MainSearchbarEvent, (e: any) => handleMainSearchbarEvent(e, page));
+  filtersTypes.forEach((filterType: FilterType) => {
+    setDropdownState(filterType, getDropdownState(filterType));
+  });
 
-  page.addEventListener(UnselectFilterEvent, (e: any) => unselectFilter(e, page));
-
-  page.addEventListener(DisplayFiltersMenusEvent, (e: any) => displayFiltersMenu(e, page));
-
-  page.addEventListener(HideFiltersMenusEvent, (e: any) => hideFiltersMenu(e, page));
+  window.onload = () => {
+    initDropdownStates();
+  };
 
   return page;
 }

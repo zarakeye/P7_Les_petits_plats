@@ -483,7 +483,7 @@ export const recipes = [
         unit: 'cuillère à soupe',
       },
       {
-        ingredient: "huile d'olive",
+        ingredient: "Huile d'olive",
         quantity: 2,
         unit: 'cuillère à soupe',
       },
@@ -602,7 +602,7 @@ export const recipes = [
         unit: 'tiges',
       },
       {
-        ingredient: "huile d'olive",
+        ingredient: "Huile d'olive",
         quantity: 2,
         unit: 'cuillère à soupe',
       },
@@ -736,7 +736,7 @@ export const recipes = [
         unit: 'grammes',
       },
       {
-        ingredient: "huile d'olive",
+        ingredient: "Huile d'olive",
         quantity: 1,
         unit: 'cuillères à soupe',
       },

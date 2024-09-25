@@ -1,16 +1,29 @@
 import { SearchBar } from './SearchBar';
-import { createEventAndDispatch } from '../helpers';
 import { FilterType, Recipe } from '../modules/recipe';
 import { SomeTypeActiveFiltersMenu } from './SomeTypeActiveFiltersMenu';
 import { SomeTypeFiltersMenu } from './SomeTypeFiltersMenu';
 import { SomeTypeButtonsContainerOfActiveFilters } from './SomeTypeButtonsContainerOfActiveFilters';
-import { createTagsOfATypeOfFilters, updateCardsAndFiltersTagsWhenAFilterIsRemoved, updateCardsAndFiltersTagsWhenSomeFilterIsSelected } from './FilterTag';
+import { createfiltersTagsForType } from './ActivableFilterTag';
+
+import { setDropdownState, getDropdownState, initDropdownStates } from '../state_managers/dropdownSateManager';
 
 export const DisplayFiltersMenusEvent = 'display-selectable-filters-event';
 export const HideFiltersMenusEvent = 'hide-selectable-filters-event';
 
+  /**
+   * Creates a manager for a type of filters (e.g. "diets", "cooking-times", etc.).
+   * The manager contains a dropdown menu with a search bar and a list of selectable filters.
+   * The manager also contains a list of active filters.
+   * When the user clicks on the dropdown menu, it toggles the expanded state of the menu,
+   * shows/hides the search bar and the list of selectable filters, and updates the tags of the active filters.
+   * When the user clicks outside of the dropdown menu, it hides the dropdown menu,
+   * the search bar and the list of selectable filters.
+   * When the user types in the search bar, it shows/hides the items of the list of selectable filters based on the input value.
+   * @param {FilterType} filterType - the type of the filters (e.g. "diets", "cooking-times", etc.)
+   * @returns {HTMLElement} The manager element
+   */
 export function SomeTypeOfFiltersManager(filterType: FilterType) {
-  const searchBar = SearchBar();
+  const searchBar = SearchBar("magnifying_glass-gray.svg");
   searchBar.classList.add(
     'hidden',
     'mt-[14px]',
@@ -38,17 +51,14 @@ export function SomeTypeOfFiltersManager(filterType: FilterType) {
       aria-expanded="false"
     >
       <header
-        class="flex flex-row justify-between items-center text-[16px] text-black px-[16px] font-bold"
+        class="flex flex-row justify-between items-center text-[16px] text-black px-[16px]"
       >
         <h2 class="">${filterType}</h2>
         <button type="button" class="expandCollapse">
-          <i class="fa fa-chevron-up" aria-hidden="true"></i>
+          <img src="icons/chevron.svg" alt="expand button">
         </button>
       </header>
-      <!-- //TODO:Insert active filters menu of ${filterType} : SomeTypeActiveFiltersMenu -->
-      <!-- //TODO:Insert selectable filters menu of ${filterType} : SomeTypeFiltersMenu -->
     </aside>
-    <!-- //TODO:Insert container of active filters of ${filterType} : SomeTypeButtonsContainerOfActiveFilters -->
   `;
   
   const header = filterList.querySelector('header');
@@ -66,12 +76,14 @@ export function SomeTypeOfFiltersManager(filterType: FilterType) {
 
   const inputElement = filterList.querySelector('input');
   inputElement?.addEventListener('input', (e: any) => handleInputEvent(e));
+
  
+
   /**
-   * Handles the click event on the dropdown menu.
-   * If the dropdown menu is expanded, it collapses it and hides the search bar, items list and active container.
-   * If the dropdown menu is collapsed, it expands it and shows the search bar, items list and active container.
-   * It also removes the hidden class from all the active items.
+   * Handles the click event on the dropdown menu. If the event target is the header of the menu,
+   * toggles the expanded state of the menu, shows/hides the search bar and the list of selectable
+   * filters, and updates the tags of the active filters.
+   * @param {MouseEvent} e - the mouse event
    */
    function handleClickEventOnDropdownMenu(e: any) {
     if (dropdownMenu?.querySelector('header')?.contains(e.target)) {
@@ -83,14 +95,13 @@ export function SomeTypeOfFiltersManager(filterType: FilterType) {
         searchBar.querySelector('input')?.focus();
         const selectablefiltersMenu = SomeTypeFiltersMenu(filterType);
         dropdownMenu?.appendChild(selectablefiltersMenu);
-        Recipe.updateSelectableFilters();
-        const tags = createTagsOfATypeOfFilters(filterType);
+        const filters = Recipe.updateSelectableFilters();
+        console.log('filters', filters);
+        const tags = createfiltersTagsForType(filterType);
         const activeTagsMenu = dropdownMenu.querySelector(`#list-of-active-${filterType}s`) as HTMLUListElement;
         activeTagsMenu.classList.remove('hidden');
+        selectablefiltersMenu.classList.remove('hidden');
         selectablefiltersMenu.replaceChildren(...tags);
-
-        // page.querySelector(`#list-of-active-${filterType}s`)?.classList.remove('hidden');
-        createEventAndDispatch(filterList, DisplayFiltersMenusEvent, {filterType: filterType});
       } else {
         dropdownMenu.setAttribute('aria-expanded', 'false');
         expandCollapse?.classList.remove('rotate-180');
@@ -98,74 +109,17 @@ export function SomeTypeOfFiltersManager(filterType: FilterType) {
         searchBar.classList.add('hidden');
         dropdownMenu?.querySelector(`#list-of-selectable-${filterType}s`)?.remove();
         dropdownMenu?.querySelector(`#list-of-active-${filterType}s`)?.classList.add('hidden');
-        createEventAndDispatch(filterList, HideFiltersMenusEvent, {filterType: filterType});
       }
-    } else {
-      const page = document.querySelector('#app') as HTMLElement;
-      const dropdownMenuInDOM = page.querySelector(`#${filterType}__dropdown`);
-      console.log('dropdownMenuInDOM', dropdownMenuInDOM)
-      const selectableFiltersMenu = dropdownMenuInDOM?.querySelector(`#list-of-selectable-${filterType}s`);
-      console.log('selectableFiltersMenu', selectableFiltersMenu);
-      const activeFiltersMenu = dropdownMenuInDOM?.querySelector(`#list-of-active-${filterType}s`);
-
-      /******************* */
-      if (selectableFiltersMenu?.contains(e.target)) {
-        const tag = e.target;
-        const filter = tag.textContent.trim();
-        const tagsInDOM = dropdownMenuInDOM?.querySelectorAll('.filter');
-        let tagInDOM;
-        if (tagsInDOM) {
-          tagInDOM = Array.from(tagsInDOM)?.find(tag => tag.textContent === e.target.textContent);
-        }
-        const textContent = tag.textContent;
-        tagInDOM?.classList.add('active');
-
-        const activeFiltersMenu = page.querySelector(`#list-of-active-${filterType}s`);
-        Recipe.activeFilters[`${filterType}s`].push(filter);
-        if (tagInDOM) {
-          activeFiltersMenu?.appendChild(tagInDOM);
-          tagInDOM.classList.add('relative', 'text-[14px]', 'text-center', 'bg-yellow');
-          tagInDOM.textContent = '';
-          tagInDOM.innerHTML = `
-            <p
-              class="active-item text-[14px] text-black text-left px-[16px] py-[9px] mb-px hover:font-bold"
-              aria-label="filtre ${textContent} actif"
-            >
-              ${textContent}
-            </p>
-            <div
-              class="absolute right-[5px] top-[50%] translate-y-[-50%] w-[17px] h-[17px] hover:bg-black hover:text-yellow rounded-[50%] flex justify-center items-center"
-              aria-label="close ${textContent}"
-            >
-              <img src="icons/close_yellow.svg" alt"close button"class="h-[5px] p-[12px]" aria-hidden="true"></i>
-            </button>
-          `;
-
-
-          if (Recipe.matchingRecipes.length === 0) {
-            updateCardsAndFiltersTagsWhenSomeFilterIsSelected(Recipe.originalRecipes, filter, filterType, page); 
-          } else {
-            updateCardsAndFiltersTagsWhenSomeFilterIsSelected(Recipe.matchingRecipes, filter, filterType, page);
-          }
-
-          const searchBar = dropdownMenuInDOM?.querySelector('input');
-          if (searchBar) searchBar.value = '';
-        }
-      } else if (activeFiltersMenu?.contains(e.target)) {
-        const filter = e.target.textContent.trim();
-        const filtersTypes: FilterType[] = ["ingredient", "appliance", "ustensil"];
-        updateCardsAndFiltersTagsWhenAFilterIsRemoved(filter, filterType, filtersTypes, page);
-        const dropdownMenuInDOM = page.querySelector(`${filterType}__dropdown`);
-        console.log('blabla')
-        const event = new MouseEvent('click', {
-          bubbles: true,
-        });
-        dropdownMenuInDOM?.querySelector('header')?.dispatchEvent(event);
-      }
-      /***************************** */
     }
   }
 
+  /**
+   * Handles the click event on the page, outside of the dropdown menu.
+   * If the event target is not a descendant of the dropdown menu, hides the dropdown menu,
+   * the search bar and the list of selectable filters.
+   * @param {MouseEvent} e - the mouse event
+   * @param {HTMLElement} page - the page element
+   */
   function handleClickEventOutOfDropdownMenu(e: any, page: HTMLElement) {
     if (!dropdownMenu?.contains(e.target)) {
       dropdownMenu?.setAttribute('aria-expanded', 'false');
@@ -179,6 +133,11 @@ export function SomeTypeOfFiltersManager(filterType: FilterType) {
     }
   }
 
+  /**
+   * Handles the input event on the search bar of the dropdown menu. Shows/hides the items
+   * of the list of selectable filters based on the input value.
+   * @param {InputEvent} e - the input event
+   */
   function handleInputEvent(e: any) {
     const items = filterList.querySelectorAll('li');
     for (const item of items) {
@@ -194,6 +153,12 @@ export function SomeTypeOfFiltersManager(filterType: FilterType) {
   return filterList;
 }
 
+  /**
+   * Builds a filters type manager element, which is a dropdown menu
+   * containing the list of active filters and the list of selectable filters.
+   * @param {FilterType} filterType - the type of filters
+   * @returns {HTMLElement} the filters type manager element
+   */
 export function buildFiltersTypeManager(filterType: FilterType) {
   const activeFiltersMenu = SomeTypeActiveFiltersMenu(filterType);
   const activeFiltersButtonsContainer = SomeTypeButtonsContainerOfActiveFilters(filterType);

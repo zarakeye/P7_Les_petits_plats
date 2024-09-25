@@ -2,7 +2,7 @@
    * Creates the search bar component.
    * @returns The search bar element.
    */
-export function SearchBar() {
+export function SearchBar(iconPath: string) {
   const searchComponent = document.createElement('form');
   searchComponent.classList.add(
     'relative',
@@ -20,7 +20,7 @@ export function SearchBar() {
     >
       <span class='sr-only'>Rechercher</span>
       <span class="inline-block">
-        <i class="fa fa-search"></i>
+        <img src="icons/${iconPath}">
       </span>
     </button>
   `

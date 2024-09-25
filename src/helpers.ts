@@ -103,11 +103,11 @@ function heapify(array: string[], i: number, heapSize: number): void {
   let left = 2 * i + 1;
   let right = 2 * i + 2;
 
-  if (left < heapSize && array[left].localeCompare(array[largest], undefined, { sensitivity: 'base' }) > 0) {
+  if (left < heapSize && String(array[left]).localeCompare(array[largest], undefined, { sensitivity: 'base' }) > 0) {
     largest = left;
   }
 
-  if (right < heapSize && array[right].localeCompare(array[largest], undefined, { sensitivity: 'base' }) > 0) {
+  if (right < heapSize && String(array[right]).localeCompare(array[largest], undefined, { sensitivity: 'base' }) > 0) {
     largest = right;
   }
 
@@ -119,10 +119,10 @@ function heapify(array: string[], i: number, heapSize: number): void {
 
 function medianOfThree(array: string[]): string {
   const medianIndex = Math.floor(array.length / 2);
-  const first = array[0];
+  const first = String(array[0]);
   
-  const middle = array[medianIndex];
-  const last = array[array.length - 1];
+  const middle = String(array[medianIndex]);
+  const last = String(array[array.length - 1]);
   if (first.localeCompare(middle, undefined, { sensitivity: 'base' }) < 0 && middle.localeCompare(last, undefined, { sensitivity: 'base' }) < 0) {
     return middle;
   } else if (first.localeCompare(last, undefined, { sensitivity: 'base' }) < 0 && last.localeCompare(middle, undefined, { sensitivity: 'base' }) < 0) {
@@ -143,7 +143,7 @@ export function introSort(array: string[], depthMax: number = 2 * Math.floor(Mat
     const right = []
     
     for (const element of array) {
-      if (element.localeCompare(pivot, undefined, { sensitivity: 'base' }) < 0) {
+      if (String(element).localeCompare(pivot, undefined, { sensitivity: 'base' }) < 0) {
         left.push(element);
       } else {
         right.push(element);

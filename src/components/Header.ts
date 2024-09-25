@@ -1,8 +1,9 @@
 import { SearchBar } from '../components/SearchBar';
-import { Recipe, FilterType } from '../modules/recipe';
-import { createEventAndDispatch, escapeSearchTerm } from '../helpers';
+import { Recipe, RecipeType } from '../modules/recipe';
+import { escapeSearchTerm } from '../helpers';
 import { NoMatchFound } from './NoMatchFound';
 import { updateRecipesCounter } from './RecipesCounter';
+import { RecipeCard } from './RecipeCard';
 
 export const MainSearchbarEvent = 'main-searchbar-event';
 
@@ -56,7 +57,7 @@ export function Header() {
     </div>
   `
 
-  const searchBar = SearchBar()
+  const searchBar = SearchBar("magnifying_glass-black.svg");
   const headerMiddle = header.querySelector('#header__middle') as HTMLDivElement
   headerMiddle.appendChild(searchBar)
 
@@ -79,75 +80,48 @@ export function Header() {
     'bottom-[10px]'
   )
 
-  searchInput.addEventListener('input', (e) => {
-    const userInput = escapeSearchTerm((e.target as HTMLInputElement).value);
-
-    console.log('searchTerm', userInput);
-
-    if (userInput.length >= 3) {
-      if (Recipe.matchingRecipes.length !== 0) {
-        Recipe.filterRecipeswithUserInput(Recipe.matchingRecipes, userInput);
-        createEventAndDispatch(header, MainSearchbarEvent, {searchTerm: userInput});
-      } else {
-        Recipe.filterRecipeswithUserInput(Recipe.originalRecipes, userInput);
-        createEventAndDispatch(header, MainSearchbarEvent, {searchTerm: userInput});
-      }
-    } else {
-      const filtersTypes = ['ingredient', 'appliance', 'ustensil'] as FilterType[];
-
-      if (Recipe.activeFilters.ingredients.length === 0 && Recipe.activeFilters.appliances.length == 0 && Recipe.activeFilters.ustensils.length !== 0) {
-        const updatedRecipesCards = Recipe.createRecipesCards(Recipe.originalRecipes);
-        const recipesGrid = document.querySelector('#recipes-grid');
-        recipesGrid?.replaceChildren(...updatedRecipesCards);
-      } else {
-        Recipe.matchingRecipes = Recipe.originalRecipes;
-        filtersTypes.forEach((type: FilterType) => {
-          Recipe.activeFilters[`${type}s`].forEach((activeFilter: any) => {
-            Recipe.filterRecipesWithActivatedFilter(Recipe.matchingRecipes, type, activeFilter);
-          })
-          const updatedRecipesCards = Recipe.createRecipesCards(Recipe.matchingRecipes);
-          const recipesGrid = document.querySelector('#recipes-grid');
-
-          recipesGrid?.replaceChildren(...updatedRecipesCards);
-        });
-      }
-      
-      createEventAndDispatch(header, MainSearchbarEvent, {searchTerm: userInput});
-    }
-  });
+  searchInput.addEventListener('input', (e) => handleMainSearchbarEvent(e));
 
   return header;
 }
 
-export function handleMainSearchbarEvent(e: any, page: HTMLElement) {
-  const searchTerm = e.detail.searchTerm;
-  if (Recipe.matchingRecipes.length !== 0) {
-    let recipesGrid = page.querySelector('#recipes-grid') as HTMLDivElement;
-    console.log('recipesGrid', recipesGrid);
-    recipesGrid.classList.remove('hidden');
+  /**
+   * Handles the input event for the main search bar.
+   * @param {any} e - The event triggered by the input.
+   * 
+   * This function trims the user input and escapes any special characters.
+   * It then filters the recipes based on the user input and updates the
+   * recipes cards section. If the user input does not match any recipe, it
+   * displays a "no match found" message.
+   */
+export function handleMainSearchbarEvent(e: any) {
+  let userInput = e.target.value.trim();
+  userInput = escapeSearchTerm(userInput);
 
-    const newRecipesCards = Recipe.createRecipesCards(Recipe.matchingRecipes);
-    console.log('newRecipesCards', newRecipesCards);
-    recipesGrid.append(...newRecipesCards);
+  let filteredRecipes = Recipe.filterRecipeswithUserInput(userInput);
+  let updatedRecipesCards: HTMLElement[] = [];
+  if (filteredRecipes.length !== 0) {
+    const noMatchMessage = document.querySelector('#no-match-found');
+    if (noMatchMessage) {
+      noMatchMessage?.remove();
+    }
     
-    page.querySelector('#filters-section')?.classList.remove('hidden');
-
-    page.querySelector('#no-match-found')?.remove();
-
-    updateRecipesCounter(Recipe.matchingRecipes.length, page);
+    const filtersSection = document.querySelector('#filters-section');
+    filtersSection?.classList.remove('hidden');
+    const recipesSection = document.querySelector('#recipes-section');
+    recipesSection?.classList.remove('hidden');
+    updatedRecipesCards = filteredRecipes.map((recipe: RecipeType) => RecipeCard(recipe));
+    const recipesGrid = document.querySelector('#recipes-grid');
+    recipesGrid?.replaceChildren(...updatedRecipesCards);
+    updateRecipesCounter(filteredRecipes.length);
   } else {
-    if (searchTerm.length >= 3) {
-      const main = page.querySelector('main') as HTMLElement;
-      const filtersSection = main.querySelector('#filters-section');
-      filtersSection?.classList.add('hidden');
-      const recipesGrid = main.querySelector('#recipes-grid');
-      recipesGrid?.classList.add('hidden');
-      main.appendChild(NoMatchFound(e.detail.searchTerm));
-    } else {
-      const recipesGrid = page.querySelector('#recipes-grid') as HTMLElement;
-      recipesGrid.innerHTML = '';
-      const newRecipesCards = Recipe.createRecipesCards(Recipe.originalRecipes);
-      recipesGrid.append(...newRecipesCards);
-    } 
+    const filtersSection = document.querySelector('#filters-section');
+    filtersSection?.classList.add('hidden');
+    const recipesSection = document.querySelector('#recipes-section');
+    recipesSection?.classList.add('hidden');
+
+    let noMatchMessage = NoMatchFound(userInput);
+    const main = document.querySelector('main') as HTMLElement;
+    main.appendChild(noMatchMessage);
   }
 }

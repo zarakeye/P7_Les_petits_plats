@@ -1,11 +1,11 @@
-import { Recipe } from '../modules/recipe';
+import { RecipeType } from '../modules/recipe';
 
 /**
  * Creates a recipe card element from a given recipe.
  * @param recipe - The recipe to display.
  * @returns The recipe card element.
  */
-export function RecipeCard(recipe: Recipe) {
+export function RecipeCard(recipe: RecipeType) {
   const card = document.createElement('article')
   card.id = `recipe-${recipe.id}`
   card.classList.add(
@@ -74,4 +74,10 @@ export function RecipeCard(recipe: Recipe) {
   });
 
   return card
+}
+
+export function createRecipesCards(recipes: RecipeType[]): HTMLLIElement[] {
+  let cards = recipes.map((recipe: RecipeType) => RecipeCard(recipe));
+  const recipesCards: HTMLLIElement[] = cards as HTMLLIElement[];
+  return recipesCards;
 }
