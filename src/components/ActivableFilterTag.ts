@@ -21,6 +21,7 @@ export function ActivableFilterTag(filter: any, type: FilterType): HTMLLIElement
 
   tag.addEventListener('click', (e: any) => handleClickOnFilter(e, type));
 
+
   return tag;
 }
 
@@ -34,7 +35,7 @@ export function ActivableFilterTag(filter: any, type: FilterType): HTMLLIElement
  * @param {FilterType} type - the type of the filter
  * @returns {void}
 /******  a1c34025-3c09-4101-843e-4b72d878a529  *******/
-export function handleClickOnFilter(e: any, type: FilterType) {
+export function handleClickOnFilter(e: any, type: FilterType): void {
   const activableFiltersMenu = document.querySelector(`#list-of-selectable-${type}s`) as HTMLUListElement;
   const activeFiltersMenu = document.querySelector(`#list-of-active-${type}s`) as HTMLUListElement;
 
@@ -222,8 +223,21 @@ export function moveTagToActiveFiltersMenu(tag: HTMLLIElement, filter: string, t
     </button>
   `;
 
+  tag.addEventListener('mouseover', () => handleMouseOverActiveFilter(tag));
+  tag.addEventListener('mouseout', () => handleMouseOutofActiveFilter(tag))
+
   const activeTags = activeFiltersMenu?.querySelectorAll('.active');
   Array.from(activeTags).forEach((activeTag: any) => {
     activeTag.classList.remove('hidden');
   })
+}
+
+function handleMouseOverActiveFilter (tag: HTMLElement): void {
+  const closeIcon = tag.querySelector('div');
+  closeIcon?.classList.add('bg-black');
+}
+
+function handleMouseOutofActiveFilter (tag: HTMLElement): void {
+  const closeIcon = tag.querySelector('div');
+  closeIcon?.classList.remove('bg-black');
 }

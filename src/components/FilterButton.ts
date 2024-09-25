@@ -21,7 +21,7 @@ export function FilterButton(filter: string, type: FilterType): HTMLDivElement {
       ${ filter }
     </button>
     <div class="absolute w-[17px] h-[17px] right-[18px] top-[17px] text-black">
-      <i class="fa fa-times" aria-hidden="true"></i>
+      <img src="icons/close_black.svg">
     </div>
   `;
 
