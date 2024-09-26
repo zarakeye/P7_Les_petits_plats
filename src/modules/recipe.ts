@@ -1,5 +1,4 @@
 import { introSort } from '../helpers';
-import { RecipeCard } from '../components/RecipeCard';
 
 export type Ingredient = {
   ingredient: string;
@@ -39,89 +38,16 @@ export class Recipe {
     ustensils: [],
   };
 
-  static getMainSearchResults(): RecipeType[] {
-    return this.mainSearchResults;
-  }
-
-  static getOriginalRecipes(): RecipeType[] {
-    return this.originalRecipes;
-  }
-
-  static getMatchingRecipes(): RecipeType[] {
-    return this.matchingRecipes;
-  }
-
-  static getNumberOfActiveFilters(): number {
-    return this.activeFilters.ingredients.length + this.activeFilters.appliances.length + this.activeFilters.ustensils.length;
-  }
-
-  static filterRecipesWithActivatedFilter(recipes: RecipeType[], filterType: FilterType, filter: any): RecipeType[] {
-    let recipesToFilter = this.matchingRecipes;
-    if (this.matchingRecipes.length === 0) {
-      recipesToFilter = recipes;
-    }
-    
-    const filteredRecipes: RecipeType[] = [];
-
-    let filtered: RecipeType[] = [];
-
-    switch (filterType) {
-      case 'ingredient':
-        // recipesToFilter.forEach((recipe) => {
-        //   if (recipe.ingredients.some((ingredient) => ingredient.ingredient.trim().toLowerCase() === filter.trim().toLowerCase())) {
-        //     filteredRecipes.push(recipe);
-        //   }
-        // });
-        filtered = recipesToFilter.filter((recipe) => recipe.ingredients.some((ingredient) => ingredient.ingredient.trim().toLowerCase() === filter.trim().toLowerCase()));
-        console.log('filtered', filtered);
-        filteredRecipes.push(...filtered);
-        break;
-      case 'appliance':
-        // recipesToFilter.forEach((recipe) => {
-        //   if (recipe.appliance.trim().toLowerCase() === filter.trim().toLowerCase()) {
-        //     filteredRecipes.push(recipe);
-        //   }
-        // });
-        filtered = recipesToFilter.filter((recipe) => recipe.appliance.trim().toLowerCase() === filter.trim().toLowerCase());
-        console.log('filtered', filtered);
-        filteredRecipes.push(...filtered);
-        break;
-      case 'ustensil':
-        // recipesToFilter.forEach((recipe) => {
-        //   if (recipe.ustensils.some((ustensil) => ustensil.trim().toLowerCase() === filter.trim().toLowerCase())) {
-        //     filteredRecipes.push(recipe);
-        //   }
-        // });
-        filtered = recipesToFilter.filter((recipe) => recipe.ustensils.some((ustensil) => ustensil.trim().toLowerCase() === filter.trim().toLowerCase()));
-        console.log('filtered', filtered);
-        filteredRecipes.push(...filtered);
-        break;
-    }
-
-    this.matchingRecipes = filteredRecipes;
-
-    return filteredRecipes;
-  }
-
-  static filterRecipesAfterFilterDeactivation(): RecipeType[] {
-    this.matchingRecipes = this.originalRecipes;
-    
-    if (this.mainSearchResults.length !== 0) {
-      this.matchingRecipes = this.mainSearchResults;
-    }
-
-    const filtersTypes: FilterType[] = ['ingredient', 'appliance', 'ustensil'];
-    filtersTypes.forEach((type: FilterType) => {
-      if (this.activeFilters[`${type}s`].length !== 0) {
-        this.activeFilters[`${type}s`].forEach((filter: string) => {
-          this.matchingRecipes = this.filterRecipesWithActivatedFilter(this.matchingRecipes, type, filter);
-        })
-      }
-    });
-
-    return this.matchingRecipes;
-  }
-
+  /**
+   * Takes an array of recipes and creates an array of RecipeType objects.
+   * It parses the ingredients and ustensils of each recipe, trims the strings
+   * and converts the quantity of ingredients from string to number if given.
+   * It also sorts the recipes by their name.
+   * The resulting array of RecipeType objects is stored in the Recipe.originalRecipes
+   * property and is returned by the function.
+   * @param recipes The array of recipes to be parsed.
+   * @returns The parsed array of RecipeType objects.
+   */
   static createRecipes(recipes: any[]): RecipeType[] {
     for (const recipe of recipes) {
       const ingredients: Ingredient[] = [];
@@ -164,7 +90,7 @@ export class Recipe {
         ustensils: ustensils,
       };
   
-      Recipe.originalRecipes.push(newRecipe);
+      this.originalRecipes.push(newRecipe);
     }
 
     let recipesNames = Recipe.originalRecipes.map((recipe) => recipe.name);
@@ -172,19 +98,167 @@ export class Recipe {
     
     const sortedRecipes: RecipeType[] = [];
     recipesNames.forEach((name) => {
-      const recipe = Recipe.originalRecipes.find((recipe) => recipe.name === name);
+      const recipe = this.originalRecipes.find((recipe) => recipe.name === name);
       if (recipe) {
         sortedRecipes.push(recipe);
       }
     });
 
     if (sortedRecipes !== undefined) {
-      Recipe.originalRecipes = sortedRecipes;
+      this.originalRecipes = sortedRecipes;
     }
 
-    return Recipe.originalRecipes;
+    return this.originalRecipes;
   }
 
+  /**
+   * Gets the main search results array.
+   * This array is updated each time the user enters a new search query in the search bar.
+   * It contains all the recipes that match the user's search query.
+   * @returns {RecipeType[]} the main search results array
+   */
+  static getMainSearchResults(): RecipeType[] {
+    return this.mainSearchResults;
+  }
+
+  /**
+   * Gets the original recipes array.
+   * This array is set once, when the recipes data is loaded.
+   * It contains all the recipes, without any filtering.
+   * @returns {RecipeType[]} the original recipes array
+   */
+  static getOriginalRecipes(): RecipeType[] {
+    return this.originalRecipes;
+  }
+
+  /**
+   * Gets the matching recipes after a filter has been activated or deactivated.
+   * It returns the recipes that match the active filters.
+   * @returns {RecipeType[]} the matching recipes
+   */
+  static getMatchingRecipes(): RecipeType[] {
+    return this.matchingRecipes;
+  }
+
+  /**
+   * Gets the number of active filters.
+   * It returns the sum of the length of the active filters arrays of each type.
+   * @returns {number} the number of active filters
+   */
+  static getNumberOfActiveFilters(): number {
+    return this.activeFilters.ingredients.length + this.activeFilters.appliances.length + this.activeFilters.ustensils.length;
+  }
+
+  /**
+   * Filters the recipes based on the user's input in the search bar.
+   * It returns an array of recipes that match the user's input.
+   * If the user's input is empty or less than 3 characters, it returns the same array of recipes as the input.
+   * If the user's input is 3 characters or more, it filters the recipes based on the user's input.
+   * It checks if the name of the recipe contains the user's input (case insensitive).
+   * It also checks if any of the ingredients or ustensils of the recipe contain the user's input (case insensitive).
+   * If the user's input matches any of the above, the recipe is added to the resulting array.
+   * The resulting array is then deduplicated and returned.
+   * @param {string} entry - the user's input in the search bar
+   * @returns {RecipeType[]} an array of recipes that match the user's input
+   */
+  static filterRecipeswithUserInput(entry: string): RecipeType[] {
+    let recipesBackup: RecipeType[] = this.matchingRecipes;
+
+    if (this.matchingRecipes.length === 0 && this.activeFilters.ingredients.length === 0 && this.activeFilters.appliances.length === 0 && this.activeFilters.ustensils.length === 0) {
+      recipesBackup = this.originalRecipes;
+    }
+    
+    let recipesToFilter = recipesBackup;
+    if (entry.length >= 3) {
+      recipesToFilter = recipesToFilter.filter(recipe => {
+        return recipe.name.toLocaleLowerCase().includes(entry) ||
+          recipe.ingredients.some(ingredient => ingredient.ingredient.toLocaleLowerCase().includes(entry.trim().toLowerCase())) ||
+          recipe.ustensils.some(ustensil => ustensil.toLowerCase().includes(entry.trim().toLowerCase()));
+      });
+    }
+
+    recipesToFilter = [...new Set(recipesToFilter)];
+
+    this.mainSearchResults = recipesToFilter;
+
+    return recipesToFilter;
+  }
+
+  /**
+   * Filters the recipes with the activated filter.
+   * It returns an array of recipes that match the activated filter.
+   * The matching recipes are the ones that have the activated filter in their ingredients, appliance, or ustensils.
+   * If the matchingRecipes array is empty, it filters the recipes parameter.
+   * @param {RecipeType[]} recipes - the recipes to filter
+   * @param {FilterType} filterType - the type of the filter (e.g. "ingredient", "appliance", "ustensil")
+   * @param {any} filter - the value of the activated filter
+   * @returns {RecipeType[]} an array of recipes that match the activated filter
+   */
+  static filterRecipesWithActivatedFilter(recipes: RecipeType[], filterType: FilterType, filter: any): RecipeType[] {
+    let recipesToFilter = this.matchingRecipes;
+    if (this.matchingRecipes.length === 0) {
+      recipesToFilter = recipes;
+    }
+    
+    const filteredRecipes: RecipeType[] = [];
+
+    let filtered: RecipeType[] = [];
+
+    switch (filterType) {
+      case 'ingredient':
+        filtered = recipesToFilter.filter((recipe) => recipe.ingredients.some((ingredient) => ingredient.ingredient.trim().toLowerCase() === filter.trim().toLowerCase()));
+        console.log('filtered', filtered);
+        filteredRecipes.push(...filtered);
+        break;
+      case 'appliance':
+        filtered = recipesToFilter.filter((recipe) => recipe.appliance.trim().toLowerCase() === filter.trim().toLowerCase());
+        console.log('filtered', filtered);
+        filteredRecipes.push(...filtered);
+        break;
+      case 'ustensil':
+        filtered = recipesToFilter.filter((recipe) => recipe.ustensils.some((ustensil) => ustensil.trim().toLowerCase() === filter.trim().toLowerCase()));
+        console.log('filtered', filtered);
+        filteredRecipes.push(...filtered);
+        break;
+    }
+
+    this.matchingRecipes = filteredRecipes;
+
+    return filteredRecipes;
+  }
+
+  /**
+   * Updates the matching recipes after a filter has been deactivated.
+   * It re-filters the recipes based on the active filters.
+   * If there are no active filters, it sets the matching recipes to the original recipes.
+   * If the main search results are not empty, it sets the matching recipes to the main search results.
+   * @returns the updated matching recipes
+   */
+  static filterRecipesAfterFilterDeactivation(): RecipeType[] {
+    this.matchingRecipes = this.originalRecipes;
+    
+    if (this.mainSearchResults.length !== 0) {
+      this.matchingRecipes = this.mainSearchResults;
+    }
+
+    const filtersTypes: FilterType[] = ['ingredient', 'appliance', 'ustensil'];
+    filtersTypes.forEach((type: FilterType) => {
+      if (this.activeFilters[`${type}s`].length !== 0) {
+        this.activeFilters[`${type}s`].forEach((filter: string) => {
+          this.matchingRecipes = this.filterRecipesWithActivatedFilter(this.matchingRecipes, type, filter);
+        })
+      }
+    });
+
+    return this.matchingRecipes;
+  }
+
+  /**
+   * Extracts all filters from a given array of recipes.
+   * @param {RecipeType[]} recipes - the recipes to extract filters from
+   * @param {FilterType[]} filtersTypes - the types of filters to extract
+   * @returns {any} an object containing arrays of filters, each array sorted in ascending order and deduplicated
+   */
   static extractFilters(recipes: RecipeType[], filtersTypes: FilterType[]): any {
     let filters: any = {
       ingredients: [],
@@ -204,13 +278,6 @@ export class Recipe {
       }
     }
 
-    // for (const type of filtersTypes) {
-    //   let temporaryArray = [...new Set(filters[`${type}s`])];
-    //   let temporaryArrayCastedToArrayOfStrings: string[] = temporaryArray.map((item) => String(item));
-    //   temporaryArray= [...introSort(temporaryArrayCastedToArrayOfStrings)];
-    //   filters[`${type}s`] = [...new Set(temporaryArray)];
-    // }
-
     filtersTypes.forEach((type: FilterType) => {
       filters[`${type}s`] = [...new Set(filters[`${type}s`])];
       filters[`${type}s`] = [...introSort(filters[`${type}s`])];
@@ -218,47 +285,6 @@ export class Recipe {
     });
 
     return filters;
-  }
-
-  // static clone(recipe: RecipeType): RecipeType {
-  //   return new Recipe(recipe.id, recipe.image, recipe.name, recipe.servings, recipe.ingredients, recipe.time, recipe.description, recipe.appliance, recipe.ustensils);
-  // }
-
-
-  static filterRecipeswithUserInput(entry: string): RecipeType[] {
-    let recipesBackup: RecipeType[] = this.matchingRecipes;
-
-    if (this.matchingRecipes.length === 0 && this.activeFilters.ingredients.length === 0 && this.activeFilters.appliances.length === 0 && this.activeFilters.ustensils.length === 0) {
-      recipesBackup = Recipe.originalRecipes;
-    }
-    
-    let recipesToFilter = recipesBackup;
-    if (entry.length >= 3) {
-      recipesToFilter = recipesToFilter.filter(recipe => {
-        return recipe.name.toLocaleLowerCase().includes(entry) ||
-          recipe.ingredients.some(ingredient => ingredient.ingredient.toLocaleLowerCase().includes(entry.trim().toLowerCase())) ||
-          recipe.ustensils.some(ustensil => ustensil.toLowerCase().includes(entry.trim().toLowerCase()));
-      });
-    }
-
-    recipesToFilter = [...new Set(recipesToFilter)];
-
-    this.mainSearchResults = recipesToFilter;
-
-    return recipesToFilter;
-  }
-
-  static rebuildFiltersSection(recipes: RecipeType[]) {
-    const recipesCards = document.querySelectorAll('.recipe');
-
-    for (const card of recipesCards) {
-      card.remove();
-    }
-
-    const recipesGrid = document.querySelector('#recipes-grid');
-    for (const recipe of recipes) {
-      recipesGrid?.append(RecipeCard(recipe));
-    }
   }
 
   static updateSelectableFilters(): any {
@@ -293,18 +319,42 @@ export class Recipe {
     return this.selectableFilters;
   }
 
+  /**
+   * Returns the array of selectable filters of the given type.
+   * @param {FilterType} type - the type of the filters (e.g. "ingredient", "appliance", "ustensil")
+   * @returns {string[]} the array of strings representing the filters of the given type
+   */
   static filtersOfType(type: FilterType): string[] {
     return this.selectableFilters[`${type}s`];
   }
 
+  /**
+   * Adds a filter to the active filters of the given type.
+   * @param {string} filter - the name of the filter to add
+   * @param {FilterType} type - the type of the filters
+   */
   static addFilterToActiveOnes(filter: string, type: FilterType) {
-    Recipe.activeFilters[`${type}s`].push(filter);
+    this.activeFilters[`${type}s`].push(filter);
   }
 
+  /**
+   * Removes a filter from the active filters of the given type.
+   * @param {string} filter - the name of the filter to remove
+   * @param {FilterType} type - the type of the filters
+   */
   static removeFilterFromActiveOnes(filter: string, type: FilterType) {
-    Recipe.activeFilters[`${type}s`] = Recipe.activeFilters[`${type}s`].filter((activeFilter: string) => activeFilter.trim().toLowerCase() !== filter.trim().toLowerCase());
+    this.activeFilters[`${type}s`] = this.activeFilters[`${type}s`].filter((activeFilter: string) => activeFilter.trim().toLowerCase() !== filter.trim().toLowerCase());
   }
 
+  /**
+   * Gets the matching recipes and filters of the given type after a filter has been activated.
+   * It adds the filter to the active filters of the given type,
+   * filters the recipes with the activated filter, and
+   * updates the selectable filters.
+   * @param {string} filter - the name of the activated filter
+   * @param {FilterType} type - the type of the filters (e.g. "ingredient", "appliance", "ustensil")
+   * @returns {{ matchingRecipes: RecipeType[], filtersOfType: string[] }} an object containing the matching recipes and the filters of the given type
+   */
   static getMatchingRecipesAndFiltersOfTypeAfterFilterActivation(filter: string, type: FilterType): { matchingRecipes: RecipeType[], filtersOfType: string[] } {
     Recipe.addFilterToActiveOnes(filter, type);
     let recipesTofilter: RecipeType[] = [];
@@ -321,6 +371,15 @@ export class Recipe {
     return { matchingRecipes, filtersOfType };
   }
 
+  /**
+   * Gets the matching recipes and filters of the given type after a filter has been deactivated.
+   * It removes the filter from the active filters of the given type,
+   * filters the recipes with the active filters, and
+   * updates the selectable filters.
+   * @param {string} filter - the name of the deactivated filter
+   * @param {FilterType} type - the type of the filters (e.g. "ingredient", "appliance", "ustensil")
+   * @returns {{ matchingRecipes: RecipeType[], filtersOfType: string[] }} an object containing the matching recipes and the filters of the given type
+   */
   static getMatchingRecipesAndFiltersOfTypeAfterFilterDeactivation(filter: string, type: FilterType): { matchingRecipes: RecipeType[], filtersOfType: string[] } {
     Recipe.removeFilterFromActiveOnes(filter, type);
     const matchingRecipes = Recipe.filterRecipesAfterFilterDeactivation();

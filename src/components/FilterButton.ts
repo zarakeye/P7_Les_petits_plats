@@ -20,7 +20,7 @@ export function FilterButton(filter: string, type: FilterType): HTMLDivElement {
     >
       ${ filter }
     </button>
-    <div class="absolute w-[17px] h-[17px] right-[18px] top-[17px] text-black">
+    <div class="absolute w-[10px] h-[10px] right-[18px] top-[24px] text-black">
       <img src="icons/close_black.svg">
     </div>
   `;

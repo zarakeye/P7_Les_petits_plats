@@ -16,7 +16,7 @@ import { updateRecipesCounter } from './RecipesCounter';
 export function ActivableFilterTag(filter: any, type: FilterType): HTMLLIElement {
   const filterName = String(filter);
   const tag: HTMLLIElement = document.createElement('li');
-  tag.classList.add('text-[14px]', 'bg-white', `${type}`, 'filter', 'text-black'); 
+  tag.classList.add('block', 'text-[14px]', 'bg-white', `${type}`, 'filter', 'text-black', 'mb-[13px]'); 
   tag.textContent = capitalizeFirstLetter(filterName);
 
   tag.addEventListener('click', (e: any) => handleClickOnFilter(e, type));
@@ -207,10 +207,10 @@ export function moveTagToActiveFiltersMenu(tag: HTMLLIElement, filter: string, t
   const activeFiltersMenu = document.querySelector(`#list-of-active-${type}s`) as HTMLUListElement;
   tag.classList.add('active');
   activeFiltersMenu?.appendChild(tag);
-  tag.classList.add('relative', 'text-[14px]', 'text-center', 'bg-yellow');
+  tag.classList.add('relative', 'block', 'text-[14px]', 'h-[39px]', 'text-center', 'bg-white');
   tag.innerHTML = `
     <p
-      class="active-item text-[14px] text-black text-left px-[16px] py-[9px] mb-px hover:font-bold"
+      class="active-item text-[14px] text-black bg-yellow text-left px-[16px] py-[9px] mb-[3px] h-[37px] hover:font-bold"
       aria-label="filtre ${filter} actif"
     >
       ${filter}

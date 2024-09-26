@@ -6,7 +6,7 @@ import { buildFiltersTypeManager } from "./SomeTypeOfFiltersManager";
  * the id `filters-section` and adding the necessary elements to it.
  * @returns {HTMLElement} the filters section element
  */
-export function FiltersSection() {
+export function FiltersSection(): HTMLElement {
   const filtersSection = document.createElement('section');
   filtersSection.id = 'filters-section';
   
