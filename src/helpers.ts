@@ -15,7 +15,13 @@ export function extractJSONData(res: any): Promise<any> {
   return json;
 }
 
-export function capitalizeFirstLetter(str: string) {
+/**
+ * Capitalizes the first letter of the given string, and lowercases the rest of the string.
+ *
+ * @param {string} str The string to capitalize.
+ * @return {string} The capitalized string.
+ */
+export function capitalizeFirstLetter(str: string): string {
   str.trim();
   let charArray = str.split(' ');
   charArray[0] = charArray[0].charAt(0).toUpperCase() + charArray[0].slice(1);
@@ -27,6 +33,14 @@ export function capitalizeFirstLetter(str: string) {
   return str;
 }
 
+/**
+ * Creates a custom event with the given name and detail, and dispatches it
+ * from the given element.
+ *
+ * @param {HTMLElement} element The element to dispatch the event from.
+ * @param {string} event The name of the event.
+ * @param {any} detail The detail of the event.
+ */
 export function createEventAndDispatch(element: HTMLElement, event: string, detail: any) {
   const eventToDispatch = new CustomEvent(event, {
     bubbles: true,
@@ -34,6 +48,7 @@ export function createEventAndDispatch(element: HTMLElement, event: string, deta
   });
   element.dispatchEvent(eventToDispatch);
 }
+
 
 export function escapeSearchTerm(searchTerm: string): string {
   return searchTerm.toLowerCase().trim()
@@ -46,6 +61,13 @@ export function escapeSearchTerm(searchTerm: string): string {
     ;
 }
 
+/**
+ * Checks if a given string is a substring of another given string, ignoring case.
+ *
+ * @param {string} a The substring to search for.
+ * @param {string} b The string to search in.
+ * @return {boolean} true if `a` is a substring of `b`, false otherwise.
+ */
 export function firstStringInSecondString(a: string, b: string): boolean {
   const aLowerCase = a.trim().toLowerCase();
   const bLowerCase = b.trim().toLowerCase();
@@ -64,6 +86,7 @@ export function firstStringInSecondString(a: string, b: string): boolean {
   return false;
 }
 
+
 function insertionSort(array: string[]): string[] {
   for (let i = 1; i < array.length; i++) {
     let key = array[i];
@@ -79,6 +102,12 @@ function insertionSort(array: string[]): string[] {
   return array;
 }
 
+/**
+ * Sorts a given array of strings in ascending order, using the heapsort algorithm.
+ * The time complexity of this algorithm is O(n log n).
+ * @param {string[]} array The array of strings to be sorted.
+ * @return {string[]} The sorted array of strings.
+ */
 function heapSort(array: string[]): string[] {
   for (let i = Math.floor(array.length / 2) - 1; i >= 0; i--) {
     heapify(array, i, array.length);
@@ -92,12 +121,26 @@ function heapSort(array: string[]): string[] {
   return array;
 }
 
+/**
+ * Swaps two elements in a given array of strings.
+ * @param {string[]} array The array of strings.
+ * @param {number} i The index of the first element to be swapped.
+ * @param {number} j The index of the second element to be swapped.
+ */
 function swap(array: string[], i: number, j: number): void {
   const temp = array[i];
   array[i] = array[j];
   array[j] = temp;
 }
 
+
+/**
+ * Builds a max heap from a given array of strings, at the given index `i` and heap size `heapSize`.
+ * The time complexity of this algorithm is O(log n).
+ * @param {string[]} array The array of strings to be turned into a max heap.
+ * @param {number} i The index of the root of the subtree to be turned into a max heap.
+ * @param {number} heapSize The size of the heap.
+ */
 function heapify(array: string[], i: number, heapSize: number): void {
   let largest = i;
   let left = 2 * i + 1;
@@ -117,6 +160,13 @@ function heapify(array: string[], i: number, heapSize: number): void {
   }
 }
 
+/**
+ * Finds the median of the first, middle and last elements of a given array of strings.
+ * It returns the median of the three elements.
+ * The time complexity of this algorithm is O(1).
+ * @param {string[]} array The array of strings from which to find the median.
+ * @returns {string} The median of the three elements.
+ */
 function medianOfThree(array: string[]): string {
   const medianIndex = Math.floor(array.length / 2);
   const first = String(array[0]);
@@ -132,6 +182,15 @@ function medianOfThree(array: string[]): string {
   }
 }
 
+/**
+ * Sorts a given array of strings in ascending order, using the introsort algorithm.
+ * The algorithm is a hybrid sorting algorithm that provides both quicksort and heapsort as fallbacks.
+ * It starts with quicksort and switches to heapsort when the recursion depth exceeds a level based on (log N).
+ * The time complexity of this algorithm is O(n log n) on average, and O(n^2) in the worst case.
+ * @param {string[]} array The array of strings to be sorted.
+ * @param {number} depthMax The maximum recursion depth. If not specified, it is set to 2 * Math.log(array.length).
+ * @returns {string[]} The sorted array of strings.
+ */
 export function introSort(array: string[], depthMax: number = 2 * Math.floor(Math.log(array.length))): string[] {
   if (array.length <= 16) {
     return insertionSort(array);

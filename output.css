@@ -738,6 +738,10 @@ video {
   margin-top: 13px;
 }
 
+.mb-0{
+  margin-bottom: 0px;
+}
+
 .block{
   display: block;
 }
@@ -1188,6 +1192,10 @@ video {
 
 .text-\[44px\]{
   font-size: 44px;
+}
+
+.capitalize{
+  text-transform: capitalize;
 }
 
 .text-black{

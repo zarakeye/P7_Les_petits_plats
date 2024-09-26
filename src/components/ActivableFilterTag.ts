@@ -207,7 +207,7 @@ export function moveTagToActiveFiltersMenu(tag: HTMLLIElement, filter: string, t
   const activeFiltersMenu = document.querySelector(`#list-of-active-${type}s`) as HTMLUListElement;
   tag.classList.add('active');
   activeFiltersMenu?.appendChild(tag);
-  tag.classList.add('relative', 'block', 'text-[14px]', 'h-[39px]', 'text-center', 'bg-white');
+  tag.classList.add('relative', 'block', 'text-[14px]', 'h-[39px]', 'text-center', 'bg-white', 'mb-0');
   tag.classList.remove('mt-[13px]');
   tag.innerHTML = `
     <p
