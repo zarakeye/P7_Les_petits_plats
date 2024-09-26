@@ -16,7 +16,7 @@ import { updateRecipesCounter } from './RecipesCounter';
 export function ActivableFilterTag(filter: any, type: FilterType): HTMLLIElement {
   const filterName = String(filter);
   const tag: HTMLLIElement = document.createElement('li');
-  tag.classList.add('block', 'text-[14px]', 'bg-white', `${type}`, 'filter', 'text-black', 'mb-[13px]'); 
+  tag.classList.add('block', 'text-[14px]', 'bg-white', `${type}`, 'filter', 'text-black', 'mt-[13px]'); 
   tag.textContent = capitalizeFirstLetter(filterName);
 
   tag.addEventListener('click', (e: any) => handleClickOnFilter(e, type));
@@ -34,7 +34,7 @@ export function ActivableFilterTag(filter: any, type: FilterType): HTMLLIElement
  * @param {any} e - the click event
  * @param {FilterType} type - the type of the filter
  * @returns {void}
-/******  a1c34025-3c09-4101-843e-4b72d878a529  *******/
+ */
 export function handleClickOnFilter(e: any, type: FilterType): void {
   const activableFiltersMenu = document.querySelector(`#list-of-selectable-${type}s`) as HTMLUListElement;
   const activeFiltersMenu = document.querySelector(`#list-of-active-${type}s`) as HTMLUListElement;
@@ -101,7 +101,7 @@ export function addUnselectFilterButton(filter: string, type: FilterType) {
  * @param {string} filter - the name of the filter of which to remove the unselect button
  * @returns {void}
  */
-export function removeUnselectFilterButton(filter: string) {
+export function removeUnselectFilterButton(filter: string): void {
   const unselectButtons = document.querySelectorAll(`.unselect-filter-button`);
   const unselectButton = Array.from(unselectButtons).find((button: any) => button.textContent.trim() === filter.trim());
   unselectButton?.parentElement?.remove();
@@ -142,7 +142,7 @@ export function updateActivableFiltersMenu(type: FilterType, filtersOfType: stri
  * @param {FilterType} type - the type of the filters
  * @returns {void}
  */
-export function removeTagOfDeactivatedFilter(filter: string, type: FilterType) {
+export function removeTagOfDeactivatedFilter(filter: string, type: FilterType): void {
   let activeTags  = document.querySelectorAll(`#list-of-active-${type}s .active`);
   const tag = Array.from(activeTags).find(tag => String(tag.querySelector('p')?.textContent?.trim()) === filter.trim()) as HTMLLIElement;
   document.querySelector(`#list-of-active-${type}s`)?.removeChild(tag);
@@ -208,6 +208,7 @@ export function moveTagToActiveFiltersMenu(tag: HTMLLIElement, filter: string, t
   tag.classList.add('active');
   activeFiltersMenu?.appendChild(tag);
   tag.classList.add('relative', 'block', 'text-[14px]', 'h-[39px]', 'text-center', 'bg-white');
+  tag.classList.remove('mt-[13px]');
   tag.innerHTML = `
     <p
       class="active-item text-[14px] text-black bg-yellow text-left px-[16px] py-[9px] mb-[3px] h-[37px] hover:font-bold"

@@ -5,8 +5,6 @@ import { SomeTypeFiltersMenu } from './SomeTypeFiltersMenu';
 import { SomeTypeButtonsContainerOfActiveFilters } from './SomeTypeButtonsContainerOfActiveFilters';
 import { createfiltersTagsForType } from './ActivableFilterTag';
 
-import { setDropdownState, getDropdownState, initDropdownStates } from '../state_managers/dropdownSateManager';
-
 export const DisplayFiltersMenusEvent = 'display-selectable-filters-event';
 export const HideFiltersMenusEvent = 'hide-selectable-filters-event';
 
@@ -27,7 +25,7 @@ export function SomeTypeOfFiltersManager(filterType: FilterType) {
   searchBar.classList.add(
     'hidden',
     'mt-[14px]',
-    'mb-[24px]',
+    'mb-[15px]',
     'px-[16px]',
     'h-[36px]',
   );

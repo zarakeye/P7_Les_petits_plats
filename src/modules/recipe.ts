@@ -161,42 +161,46 @@ export class Recipe {
    * @param {string} entry - the user's input in the search bar
    * @returns {RecipeType[]} an array of recipes that match the user's input
    */
-  static filterRecipeswithUserInput(entry: string): RecipeType[] {
+  static filterRecipesWithUserInput(entry: string): RecipeType[] {
     let recipesBackup: RecipeType[] = this.matchingRecipes;
 
-    if (this.matchingRecipes.length === 0 && this.activeFilters.ingredients.length === 0 && this.activeFilters.appliances.length === 0 && this.activeFilters.ustensils.length === 0) {
+    if (Recipe.getNumberOfActiveFilters() === 0) {
       recipesBackup = this.originalRecipes;
     }
     
     let recipesToFilter = recipesBackup;
 
-    const query = entry.trim().toLowerCase();
+    let mainSearchResults: RecipeType[] = [];
     
-    if (query.length >= 3) {
+    if (entry.length >= 3) {
       for (const recipe of recipesToFilter) {
-        if (firstStringInSecondString(recipe.name, query)) {
-          recipesToFilter.push(recipe);
+        if (firstStringInSecondString(entry, recipe.name)) {
+          mainSearchResults.push(recipe);
         }
 
         for (const ingredient of recipe.ingredients) {
-          if (firstStringInSecondString(ingredient.ingredient, query)) {
-            recipesToFilter.push(recipe);
+          if (firstStringInSecondString(entry, ingredient.ingredient)) {
+            mainSearchResults.push(recipe);
             break;
           }
         }
 
         for (const ustensil of recipe.ustensils) {
-          if (firstStringInSecondString(ustensil, query)) {
-            recipesToFilter.push(recipe);
+          if (firstStringInSecondString(entry, ustensil)) {
+            mainSearchResults.push(recipe);
             break;
           }
         }
       }
+
+      mainSearchResults = [...new Set(mainSearchResults)];
+    } else {
+      mainSearchResults = recipesBackup;
     }
 
-    this.mainSearchResults = recipesToFilter;
+    this.mainSearchResults = mainSearchResults;
 
-    return recipesToFilter;
+    return mainSearchResults;
   }
 
   /**

@@ -6,7 +6,6 @@ import { Header } from '../components/Header';
 import {  FilterType } from '../modules/recipe';
 import { RecipesCounter } from '../components/RecipesCounter';
 import { buildFilterSection } from '../components/FiltersSection';
-import { setDropdownState, getDropdownState, initDropdownStates } from '../state_managers/dropdownSateManager';
 import { createRecipesCards } from '../components/RecipeCard';
 
 /**
@@ -45,14 +44,6 @@ export const HomePage = async () => {
   main.appendChild(filtersSection);
   
   main.appendChild(recipesSection);
-
-  filtersTypes.forEach((filterType: FilterType) => {
-    setDropdownState(filterType, getDropdownState(filterType));
-  });
-
-  window.onload = () => {
-    initDropdownStates();
-  };
 
   return page;
 }

@@ -47,8 +47,8 @@ export function escapeSearchTerm(searchTerm: string): string {
 }
 
 export function firstStringInSecondString(a: string, b: string): boolean {
-  const aLowerCase = a.toLowerCase();
-  const bLowerCase = b.toLowerCase();
+  const aLowerCase = a.trim().toLowerCase();
+  const bLowerCase = b.trim().toLowerCase();
   for (let i = 0; i < bLowerCase.length - aLowerCase.length; i++) {
     let j: number;
     for (j = 0; j < aLowerCase.length; j++) {

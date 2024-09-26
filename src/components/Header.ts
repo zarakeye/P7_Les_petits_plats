@@ -98,7 +98,7 @@ export function handleMainSearchbarEvent(e: any) {
   let userInput = e.target.value.trim();
   userInput = escapeSearchTerm(userInput);
 
-  let filteredRecipes = Recipe.filterRecipeswithUserInput(userInput);
+  let filteredRecipes = Recipe.filterRecipesWithUserInput(userInput);
   let updatedRecipesCards: HTMLElement[] = [];
   if (filteredRecipes.length !== 0) {
     const noMatchMessage = document.querySelector('#no-match-found');
