@@ -42,6 +42,7 @@ export function RecipeCard(recipe: RecipeType) {
         id="recipe-${recipe.id}-description"
         aria-label="Description de la recette: ${recipe.description}"
         class="font-manrope text-[14px] text-black mb-[32px] h-[84px] overflow-hidden"
+        title="${recipe.description}"
       >
         ${recipe.description}
       </p>

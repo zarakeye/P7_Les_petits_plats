@@ -27,7 +27,7 @@ export function SomeTypeOfFiltersManager(filterType: FilterType) {
   searchBar.classList.add(
     'hidden',
     'mt-[14px]',
-    'mb-[24px]',
+    'mb-[15px]',
     'px-[16px]',
     'h-[36px]',
   );

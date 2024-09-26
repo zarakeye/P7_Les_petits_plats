@@ -161,23 +161,25 @@ export class Recipe {
    * @param {string} entry - the user's input in the search bar
    * @returns {RecipeType[]} an array of recipes that match the user's input
    */
-  static filterRecipeswithUserInput(entry: string): RecipeType[] {
+  static filterRecipesWithUserInput(entry: string): RecipeType[] {
     let recipesBackup: RecipeType[] = this.matchingRecipes;
 
-    if (this.matchingRecipes.length === 0 && this.activeFilters.ingredients.length === 0 && this.activeFilters.appliances.length === 0 && this.activeFilters.ustensils.length === 0) {
+    if (Recipe.getNumberOfActiveFilters() === 0) {
       recipesBackup = this.originalRecipes;
     }
     
     let recipesToFilter = recipesBackup;
-    if (entry.length >= 3) {
-      recipesToFilter = recipesToFilter.filter(recipe => {
-        return recipe.name.toLocaleLowerCase().includes(entry) ||
-          recipe.ingredients.some(ingredient => ingredient.ingredient.toLocaleLowerCase().includes(entry.trim().toLowerCase())) ||
-          recipe.ustensils.some(ustensil => ustensil.toLowerCase().includes(entry.trim().toLowerCase()));
-      });
-    }
 
-    recipesToFilter = [...new Set(recipesToFilter)];
+    const query = entry.trim().toLowerCase();
+    if (query.length >= 3) {
+      recipesToFilter = recipesToFilter.filter(recipe => {
+        return recipe.name.toLocaleLowerCase().includes(query) ||
+          recipe.ingredients.some(ingredient => ingredient.ingredient.toLocaleLowerCase().includes(query)) ||
+          recipe.ustensils.some(ustensil => ustensil.toLowerCase().includes(query));
+      });
+    } else {
+      recipesToFilter = recipesBackup;
+    }
 
     this.mainSearchResults = recipesToFilter;
 

@@ -132,6 +132,7 @@ function medianOfThree(array: string[]): string {
   }
 }
 
+
 export function introSort(array: string[], depthMax: number = 2 * Math.floor(Math.log(array.length))): string[] {
   if (array.length <= 16) {
     return insertionSort(array);
