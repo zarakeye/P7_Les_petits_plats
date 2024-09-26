@@ -778,6 +778,10 @@ video {
   margin-top: 24px;
 }
 
+.mt-\[20px\]{
+  margin-top: 20px;
+}
+
 .block{
   display: block;
 }
@@ -1154,6 +1158,11 @@ video {
   padding-bottom: 9px;
 }
 
+.px-\[18px\]{
+  padding-left: 18px;
+  padding-right: 18px;
+}
+
 .pb-\[61px\]{
   padding-bottom: 61px;
 }
@@ -1243,6 +1252,10 @@ video {
   font-size: 44px;
 }
 
+.font-bold{
+  font-weight: 700;
+}
+
 .text-black{
   --tw-text-opacity: 1;
   color: rgb(0 0 0 / var(--tw-text-opacity));
@@ -1274,6 +1287,10 @@ video {
 
 .scrollbar-hide::-webkit-scrollbar{
   display: none;
+}
+
+.first\:mt-\[79px\]:first-child{
+  margin-top: 79px;
 }
 
 .hover\:bg-black:hover{

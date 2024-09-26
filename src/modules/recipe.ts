@@ -1,4 +1,4 @@
-import { introSort } from '../helpers';
+import { firstStringInSecondString, introSort } from '../helpers';
 
 export type Ingredient = {
   ingredient: string;
@@ -169,15 +169,30 @@ export class Recipe {
     }
     
     let recipesToFilter = recipesBackup;
-    if (entry.length >= 3) {
-      recipesToFilter = recipesToFilter.filter(recipe => {
-        return recipe.name.toLocaleLowerCase().includes(entry) ||
-          recipe.ingredients.some(ingredient => ingredient.ingredient.toLocaleLowerCase().includes(entry.trim().toLowerCase())) ||
-          recipe.ustensils.some(ustensil => ustensil.toLowerCase().includes(entry.trim().toLowerCase()));
-      });
-    }
 
-    recipesToFilter = [...new Set(recipesToFilter)];
+    const query = entry.trim().toLowerCase();
+    
+    if (query.length >= 3) {
+      for (const recipe of recipesToFilter) {
+        if (firstStringInSecondString(recipe.name, query)) {
+          recipesToFilter.push(recipe);
+        }
+
+        for (const ingredient of recipe.ingredients) {
+          if (firstStringInSecondString(ingredient.ingredient, query)) {
+            recipesToFilter.push(recipe);
+            break;
+          }
+        }
+
+        for (const ustensil of recipe.ustensils) {
+          if (firstStringInSecondString(ustensil, query)) {
+            recipesToFilter.push(recipe);
+            break;
+          }
+        }
+      }
+    }
 
     this.mainSearchResults = recipesToFilter;
 
