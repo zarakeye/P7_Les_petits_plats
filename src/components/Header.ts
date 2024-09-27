@@ -40,7 +40,7 @@ export function Header() {
         class="text-2xl font-anton text-white top-[51px] left-[69px] mr-[3px]"
       >
         <span class='sr-only'>Les Petits Plats</span>
-        <img src="Logo.png" alt="Les Petits Plats Logo" class="h-[25px]">
+        <img src="Logo.svg" alt="Les Petits Plats Logo" class="h-[25px]">
       </h1>
     </div>
     <div
