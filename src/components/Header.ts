@@ -100,28 +100,44 @@ export function handleMainSearchbarEvent(e: any) {
 
   let filteredRecipes = Recipe.filterRecipesWithUserInput(userInput);
   let updatedRecipesCards: HTMLElement[] = [];
-  if (filteredRecipes.length !== 0) {
-    const noMatchMessage = document.querySelector('#no-match-found');
+  const filtersSection = document.querySelector('#filters-section');
+  const recipesSection = document.querySelector('#recipes-section');
+  const recipesGrid = document.querySelector('#recipes-grid');
+  let noMatchMessage = document.querySelector('#no-match-found');
+
+  if (userInput.length >= 3) {
+    if (filteredRecipes.length !== 0) {
+      if (noMatchMessage) {
+        noMatchMessage?.remove();
+      }
+      
+      filtersSection?.classList.remove('hidden');
+      recipesSection?.classList.remove('hidden');
+      updatedRecipesCards = filteredRecipes.map((recipe: RecipeType) => RecipeCard(recipe));
+      recipesGrid?.replaceChildren(...updatedRecipesCards);
+      updateRecipesCounter(filteredRecipes.length);
+    } else {
+      filtersSection?.classList.add('hidden');
+      recipesSection?.classList.add('hidden');
+
+      if (noMatchMessage) {
+        noMatchMessage?.remove();
+      }
+  
+      noMatchMessage = NoMatchFound(userInput);
+      const main = document.querySelector('main') as HTMLElement;
+      main.appendChild(noMatchMessage);
+    }
+  } else {
     if (noMatchMessage) {
       noMatchMessage?.remove();
     }
     
-    const filtersSection = document.querySelector('#filters-section');
     filtersSection?.classList.remove('hidden');
-    const recipesSection = document.querySelector('#recipes-section');
+      
     recipesSection?.classList.remove('hidden');
     updatedRecipesCards = filteredRecipes.map((recipe: RecipeType) => RecipeCard(recipe));
-    const recipesGrid = document.querySelector('#recipes-grid');
     recipesGrid?.replaceChildren(...updatedRecipesCards);
     updateRecipesCounter(filteredRecipes.length);
-  } else {
-    const filtersSection = document.querySelector('#filters-section');
-    filtersSection?.classList.add('hidden');
-    const recipesSection = document.querySelector('#recipes-section');
-    recipesSection?.classList.add('hidden');
-
-    let noMatchMessage = NoMatchFound(userInput);
-    const main = document.querySelector('main') as HTMLElement;
-    main.appendChild(noMatchMessage);
   }
 }
