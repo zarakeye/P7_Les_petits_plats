@@ -174,8 +174,8 @@ export class Recipe {
     if (query.length >= 3) {
       recipesToFilter = recipesToFilter.filter(recipe => {
         return recipe.name.toLocaleLowerCase().includes(query) ||
-          recipe.ingredients.some(ingredient => ingredient.ingredient.toLocaleLowerCase().includes(query)) ||
-          recipe.ustensils.some(ustensil => ustensil.toLowerCase().includes(query));
+          recipe.description.toLowerCase().includes(query) ||
+          recipe.ingredients.some(ingredient => ingredient.ingredient.toLocaleLowerCase().includes(query));
       });
     } else {
       recipesToFilter = recipesBackup;
