@@ -178,15 +178,12 @@ export class Recipe {
           mainSearchResults.push(recipe);
         }
 
-        for (const ingredient of recipe.ingredients) {
-          if (firstStringInSecondString(entry, ingredient.ingredient)) {
-            mainSearchResults.push(recipe);
-            break;
-          }
+        if (firstStringInSecondString(entry, recipe.description)) {
+          mainSearchResults.push(recipe);
         }
 
-        for (const ustensil of recipe.ustensils) {
-          if (firstStringInSecondString(entry, ustensil)) {
+        for (const ingredient of recipe.ingredients) {
+          if (firstStringInSecondString(entry, ingredient.ingredient)) {
             mainSearchResults.push(recipe);
             break;
           }
@@ -226,17 +223,14 @@ export class Recipe {
     switch (filterType) {
       case 'ingredient':
         filtered = recipesToFilter.filter((recipe) => recipe.ingredients.some((ingredient) => ingredient.ingredient.trim().toLowerCase() === filter.trim().toLowerCase()));
-        console.log('filtered', filtered);
         filteredRecipes.push(...filtered);
         break;
       case 'appliance':
         filtered = recipesToFilter.filter((recipe) => recipe.appliance.trim().toLowerCase() === filter.trim().toLowerCase());
-        console.log('filtered', filtered);
         filteredRecipes.push(...filtered);
         break;
       case 'ustensil':
         filtered = recipesToFilter.filter((recipe) => recipe.ustensils.some((ustensil) => ustensil.trim().toLowerCase() === filter.trim().toLowerCase()));
-        console.log('filtered', filtered);
         filteredRecipes.push(...filtered);
         break;
     }
