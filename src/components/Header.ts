@@ -131,7 +131,6 @@ export function handleMainSearchbarEvent(e: any) {
       main.appendChild(noMatchMessage);
     }
   } else {
-    console.log('filteredRecipes', filteredRecipes);
     if (noMatchMessage) {
       noMatchMessage?.remove();
     }
